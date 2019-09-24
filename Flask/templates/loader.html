@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<!-- iCardio.ai -->
+<html style="height:100%;overscroll-behavior: none;">
+<head>
+    <title>iCardio.ai</title>
+    <link rel="icon" type="image/png" href="images/favicon-32x32.png" />
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link type="text/css" rel="stylesheet" href="static/css/materialize.css" media="screen,projection" />
+    <!--Import app.css-->
+    <link type="text/css" rel="stylesheet" href="static/css/app.css" media="screen,projection" />
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+<canvas id=c></canvas>
+<h1 class="loader typewriter" id="typewriter">We are loading your results.</h1>
+<!--
+ALGORITHM:
+
+structure:
+- gen( x,y,z ):
+	- create node at x,y,z // blue
+	- append some children to list:
+		- within a certain distance to parent
+		- outside a certain distance from any node
+		- within a global distance
+	- if no children
+		- don't append any
+		- set as end node // green-ish
+
+- gen( 0,0,0 ) // red
+- while list has items
+	- gen( position of first item )
+	- remove first item
+
+
+impulse behaviour:
+- pick( node ):
+	- if node is end node
+		- pick( original node )
+	- else
+		- pick( random node from node children )
+
+- pick( original node)
+
+-->
+</body><script src="static/js/network.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script>
+<script>
+ $.ajaxSetup({
+    cache: false,
+    async: false
+});
+
+
+var setData = "Retrieving status.";
+var newData ;
+    
+$(function() {
+    console.log(setData);
+    setInterval(function() {
+        checkText();
+        console.log("Checking status at " + new Date().getTime());
+    }, 1000);
+});
+
+// set up text to print, each item in array is new line
+var iSpeed = 20; // time delay of print out
+var iIndex = 0; // start printing array at this posision
+var iScrollAt = 20; // start scrolling up at this many lines
+
+var iTextPos = 0; // initialise text position
+var sContents = ''; // initialise contents variable
+var iRow; // initialise current row
+
+
+// function checkText() {
+//     $.get('/get_status', function(data){
+//       var line = data.statusLine
+//       var isFinished = data.isFinished
+//       if (isFinished){
+//         window.location.replace("/app")
+//       }
+//       if (setData == line){
+//           return;
+//       } else {
+//         setData = line;
+//         shouldChange = 1;
+//         if(setData != undefined){
+//         }
+//       }
+//     });
+// }
+    
+    
+function checkText() {
+    $.get('static/status.txt', function(data) {
+        
+        var statusLines = data.split('\n')
+        
+        if (statusLines.length>1){
+          newData = statusLines[statusLines.length-2]
+          console.log(newData)
+        }
+        
+        if (newData == 'Done') {
+            window.location.replace('/app')
+        }
+        
+        if (setData == newData){
+            return;
+        } 
+        else {
+            setData = newData;
+            shouldChange = 1;
+            if(setData != undefined){
+            }
+        }
+    });    
+}
+    
+    
+    
+// set up text to print, each item in array is new line
+//var set = new Array(
+//"There are only 10 types of people in the world:", 
+//"Those who understand binary, and those who don't"
+//);
+var iSpeed = 10; // time delay of print out
+var iIndex = 0; // start printing array at this posision
+var iArrLength = setData.length; // the length of the text array
+var iScrollAt = 20; // start scrolling up at this many lines
+var shouldChange = 1;
+var iTextPos = 0; // initialise text position
+var sContents = ''; // initialise contents variable
+var iRow; // initialise current row
+var shouldStop = 0;
+
+function typewriter() {
+    if(shouldChange == 1) {
+        iIndex = 0;
+        iArrLength = setData.length;
+        iScrollAt = 20;
+        shouldChange = 0;
+        iTextPos = 0; 
+     }
+     if(shouldStop == 1) return;
+
+sContents = ' ';
+iRow = Math.max(0, iIndex-iScrollAt);
+var destination = document.getElementById("typewriter");
+ 
+
+destination.innerHTML = sContents + setData.substring(0, iTextPos) + "";
+if ( iTextPos++ == iArrLength ) {
+    iTextPos = 0;
+    iIndex++;
+    shouldStop = 1;
+    iArrLength = setData.length;
+}
+}
+    setInterval(function() {
+     typewriter();
+	 }, 100);
+
+</script></html>

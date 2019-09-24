@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<!-- iCardio.ai -->
+<html style="height:100%;overscroll-behavior: none;">
+
+<head>
+    <title>iCardio.ai</title>
+    <link rel="icon" type="image/png" href="images/favicon-32x32.png" />
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link type="text/css" rel="stylesheet" href="static/css/materialize.css" media="screen,projection" />
+    <!--Import app.css-->
+    <link type="text/css" rel="stylesheet" href="static/css/app.css" media="screen,projection" />
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body style="background-color: black">
+   <form method="post" enctype="multipart/form-data" style="transform: translate(50%, 100%);width: 50%;">
+    
+    <h1 id='daniel'> {{message}} </h1>
+       <div class="file-field input-field">
+      <div class="btn analysis-button">
+        <span>Upload Dicoms</span>
+        <input type="file" name="file" multiple>
+      </div>
+      <div class="file-path-wrapper">
+        <input class="file-path validate" type="text" style="color:white">
+      </div>
+      <button class="btn waves-effect waves-light analysis-button" type="submit" value="upload" name="action">Commence Processing
+          <i class="material-icons right" style="background-color: red">bolt</i>
+      </button>
+    </div>
+  </form>
+</body>
+<script type="text/javascript" src="static/js/materialize.min.js"></script>
+</html>

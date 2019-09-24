@@ -1,0 +1,239 @@
+/* app.css */
+
+/*Heebo Google Font*/
+@import url('https://fonts.googleapis.com/css?family=Heebo:300,400,500,700,900&display=swap');
+
+body {
+    overscroll-behavior: none;
+    display: flex;
+}
+
+.split-vertical-1 {
+    height: 100%;
+    width: calc(20% - 16px);
+    position: fixed;
+    z-index: initial;
+    top: 0;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    flex: 1 1 auto;
+}
+
+.handler {
+    height: 100%;
+    width: 16px;
+    position: fixed;
+    z-index: initial;
+    top: 0;
+    right: 80%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    background-color: #D8D8D8;
+    cursor: col-resize;
+    flex: 0 0 auto;
+}
+
+.split-vertical-2 {
+  height: 100%;
+  width: 80%;
+  position: fixed;
+  z-index: initial;
+  top: 0;
+  overflow-x: hidden;
+  flex: 1 1 auto;
+}
+
+/* Control the left side */
+.left {
+  left: 0;
+  background-color: black;
+}
+
+/* Control the right side */
+.right {
+    right: 0;
+    background-color: black;
+}
+
+.split-horizontal {
+    height: 50%;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+    overflow-y: hidden;
+}
+
+.top {
+    top: 0;
+    background-color: black;
+}
+
+.bottom {
+    bottom: 0;
+    background-color: black;
+}
+
+.title {
+    font-size: 30px;
+    font-family: 'Heebo', sans-serif;
+    font-weight: 700;
+    margin: 6px 6px 6px 6px;
+    color: #4A4A4A;
+/*    position: absolute;*/
+}
+
+section {
+    height: calc(33% - 16px);
+    border-bottom: 16px solid #D8D8D8;
+    position: relative;
+}
+
+section:last-child {
+    border-bottom: 0;
+}
+
+section:first-child {
+    margin-top: 45px;
+}
+
+.gif-div {
+    height: 100%;
+    text-align: center;
+    overflow-y: hidden;
+}
+
+.gif-img {
+    height: 100%;
+    overflow-y: hidden;
+    cursor: grab;
+    z-index: 1;
+}
+
+.analysis-img {
+    height: 100%;
+    overflow-y: hidden;
+}
+
+.analysis-div {
+    height: calc(100% - 54px);
+    text-align: center;
+    overflow-y: hidden;
+}
+
+.controls {
+    padding: 6px;
+    bottom: 0;
+    position: absolute;
+}
+
+.analysis-button {
+    font-size: 12px;
+    font-family: 'Heebo', sans-serif;
+    font-weight: 900;
+    background-color: red;
+    border-radius: 6px;
+}
+
+.analysis-button:hover {
+    background-color: red;
+    opacity: 0.9;
+}
+
+.view {
+    font-size: 16px;
+    font-family: 'Heebo', sans-serif;
+    font-weight: 900;
+    color:white;
+    right:6px;
+    position: absolute;
+    padding:6px;
+    bottom:0;
+    z-index: 5;
+    margin: 0 0 6px 0;
+}
+
+.report {
+    background-color: #D8D8D8;
+    height: 54px;
+    width: 100%;
+    border-bottom: 1px solid #979797;
+}
+
+.report-text {
+    font-size: 26px;
+    font-family: 'Heebo', sans-serif;
+    font-weight: 500;
+    color: #4A4A4A;
+    margin: 10px 0 0 0;
+    display: inline-block;
+}
+
+.report-button {
+    display: inline-block;
+    margin: -12px 0px 0px 10px;
+}
+
+.display {
+    position: relative;
+    width: 100%;
+}
+
+.split-display {
+    height: 100%;
+    width: 50%;
+    z-index: 0;
+    overflow-x: visible;
+    display: inline-block;
+    text-align: center;
+    border-top: 16px solid #D8D8D8;
+    position: absolute;
+}
+
+.meta-text-left {
+    position: absolute;
+    left: 6px;
+    top: -30px;
+    color: #4A4A4A;
+    font-size: 12px;
+    font-family: 'Heebo', sans-serif;
+    font-weight: 400;
+}
+
+.meta-text-right {
+    position: absolute;
+    right: 6px;
+    top: -30px;
+    color: #4A4A4A;
+    font-size: 12px;
+    font-family: 'Heebo', sans-serif;
+    font-weight: 400;
+}
+
+.meta-text-center {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    color: #4A4A4A;
+    font-size: 12px;
+    font-family: 'Heebo', sans-serif;
+    font-weight: 400;
+}
+
+.drop-me {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    -webkit-transition: font-size 0.2s;
+   -moz-transition: font-size 0.2s;
+     -o-transition: font-size 0.2s;
+        transition: font-size 0.2s;
+}
+
+.split-horizontal:hover .drop-me {
+    font-size: 32px;
+-webkit-transition: font-size 0.2s;
+   -moz-transition: font-size 0.2s;
+     -o-transition: font-size 0.2s;
+        transition: font-size 0.2s;
+}
+
