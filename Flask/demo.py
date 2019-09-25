@@ -8,14 +8,14 @@ app.secret_key = 'icardioai'
 import os
 import sys
 import json
+from pprint import pprint
 from time import time, sleep
 import subprocess
 
 # Pipeline imports:
-sys.path.insert(1, '/internal_drive/Production')
-sys.path.insert(2, '/internal_drive/Production/echo_production_pipeline/Pipeline')
-import ProductionPipeline as pl
-import Tools.ProductionTools as tools
+sys.path.insert(1, '/internal_drive/echo_production_pipeline/Pipeline')
+#import ProductionPipeline as pl
+#import Tools.ProductionTools as tools
 
 
 
@@ -41,12 +41,12 @@ def CheckForDicoms(files, verbose=False, start=time()):
         status = -1
         return message, status
 
-#     # file other than dicom submitted:
-#     for file in files:
-#         if file.filename[-3:] != 'dcm':
-#             message = '[%s] is not a dicom' %(file.filename)
-#             status = -2
-#             return message, status
+    # file other than dicom submitted:
+    for file in files:
+        if file.filename[-3:] != 'dcm':
+            message = '[%s] is not a dicom' %(file.filename)
+            status = -2
+            return message, status
     
     # file list okay:
     message = 'Reading dicoms'
@@ -63,30 +63,37 @@ def CheckForDicoms(files, verbose=False, start=time()):
 verbose = True
 start = time()   
 file_paths = {
-    'upload_directory' : '/internal_drive/Production/Dicoms/',
-    'status_file' : '/var/www/html/example/static/status.txt',
+    'upload_directory' : '/internal_drive/Dicoms/',
+    'dicoms_directory' : '/ineternal_drive/echo_production_pipeline/',
+    'status_file' : '/internal_drive/echo_production_pipeline/Flask/static/status.txt',
 }
 
 
 
 # Landing page:
 @app.route('/', methods=['GET', 'POST'])
+@app.route('/upload', methods=['GET', 'POST'])
 def index():
    
+    # default message:
+    message = "Drag and drop or click to select your set of Dicoms to analyze."
+
     # execute on post method:
     if request.method == 'POST':
-                
+        
         # get file list from request:
-        files = request.files.getlist('file')
+        files = request.files.getlist('dicoms')
+        print(files[0].filename)
         
         # check request for dicom files:
         message, status = CheckForDicoms(files, verbose, start)
         
         # raise error if incorrect file types are submitted:
         if (status == -1) or (status == -2):
-            return render_template('upload.html', message=message)
+            return render_template('uploader.html', message=message)
         
         # delete existing files in upload folder:
+        print('here')
         DeleteFilesInPath(file_paths['upload_directory'], verbose, start)
         
         # upload new files:
@@ -94,16 +101,16 @@ def index():
         
         return redirect('/loader')
     
-    return render_template('upload.html')
+    return render_template('uploader.html', message=message)
 
 
 
 # Loader page:
 @app.route('/loader')
 def loader():
-  
+    print('route to loader')
     # execute backend pipeline:
-    command = ['python3 -u /internal_drive/Production/Pipeline/Pipeline/ProductionPipeline.py > ' + file_paths['status_file']]
+    command = ['python3 -u /internal_drive/echo_production_pipeline/Pipeline/ProductionPipeline.py > ' + file_paths['status_file']]
 
     proc = subprocess.Popen(
         command,             
@@ -115,32 +122,7 @@ def loader():
     
 
 
-@app.route('/get_status')
-def get_status():
-    
-    content = {
-        'statusLine':'line',
-        'isFinished':False,
-    }
-    
-    with open(file_paths['status_file'], 'rb') as f:
-        
-        first = f.readline()        # Read the first line.
-        f.seek(-2, os.SEEK_END)     # Jump to the second last byte.
-        while f.read(1) != b"\n":   # Until EOL is found...
-            f.seek(-2, os.SEEK_CUR) # ...jump back the read byte plus one more.
-        last = f.readline()    
-        
-        content['statusLine'] = last.decode('utf-8')
-        
-        if last == 'Done':
-            content['isFinished'] = True
-            
-    return jsonify(content)
-    
-
-    
-@app.route('/app')
+@app.route('/results')
 def app_page():
     
     return render_template('app.html')
@@ -151,13 +133,15 @@ def app_page():
 @app.route('/reports', methods=['GET', 'POST'])
 def reports():
     
+    print('routed to reports')
+    
     # initialize variables:
-    reports_json = '/internal_drive/Production/Reports/reports.json'
+    reports_json = '/internal_drive/Reports/reports.json'
     
     # read json file:
     with open(reports_json) as json_file:
         json_data = json.load(json_file)
-    
+        
     # return json file:
     response = jsonify(json_data)
     
@@ -190,9 +174,9 @@ def dir_listing(req_path):
 if __name__ == "__main__":
     
     # Intialize script:
-    tools.InitializeScript(os.path.basename(__file__), verbose, start)
+    #tools.InitializeScript(os.path.basename(__file__), verbose, start)
     
     # Run app:
-    app.run()        
+    app.run(debug=True)        
     
 

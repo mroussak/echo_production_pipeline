@@ -55,6 +55,7 @@ impulse behaviour:
 });
 
 
+    
 var setData = "Retrieving status.";
 var newData ;
     
@@ -76,37 +77,24 @@ var sContents = ''; // initialise contents variable
 var iRow; // initialise current row
 
 
-// function checkText() {
-//     $.get('/get_status', function(data){
-//       var line = data.statusLine
-//       var isFinished = data.isFinished
-//       if (isFinished){
-//         window.location.replace("/app")
-//       }
-//       if (setData == line){
-//           return;
-//       } else {
-//         setData = line;
-//         shouldChange = 1;
-//         if(setData != undefined){
-//         }
-//       }
-//     });
-// }
-    
-    
+// continously reads status.txt for updates: 
 function checkText() {
     $.get('static/status.txt', function(data) {
         
+        // split status.txt by individual lines:
         var statusLines = data.split('\n')
         
-        if (statusLines.length>1){
-          newData = statusLines[statusLines.length-2]
-          console.log(newData)
+        // if status.txt is empty, do nothing, else, parse data:
+        if (statusLines.length<=1) {/*do nothing*/}
+        else {
+            
+            // get secont to last line of status.txt:
+            newData = statusLines[statusLines.length-2]            
+            console.log(newData)
         }
         
         if (newData == 'Done') {
-            window.location.replace('/app')
+            window.location.replace('/results')
         }
         
         if (setData == newData){
@@ -120,6 +108,7 @@ function checkText() {
         }
     });    
 }
+    
     
     
     
@@ -140,29 +129,30 @@ var shouldStop = 0;
 
 function typewriter() {
     if(shouldChange == 1) {
-        iIndex = 0;
-        iArrLength = setData.length;
-        iScrollAt = 20;
+        iIndex = 0; 
+        iArrLength = setData.length; 
+        iScrollAt = 20; 
         shouldChange = 0;
         iTextPos = 0; 
-     }
-     if(shouldStop == 1) return;
+    }
+    if(shouldStop == 1) return;
 
-sContents = ' ';
-iRow = Math.max(0, iIndex-iScrollAt);
-var destination = document.getElementById("typewriter");
- 
+    sContents = ' ';
+    iRow = Math.max(0, iIndex-iScrollAt);
+    
+    var destination = document.getElementById("typewriter");
+    destination.innerHTML = sContents + setData.substring(0, iTextPos) + "";
 
-destination.innerHTML = sContents + setData.substring(0, iTextPos) + "";
-if ( iTextPos++ == iArrLength ) {
+    if (iTextPos++ == iArrLength) {
     iTextPos = 0;
     iIndex++;
     shouldStop = 1;
     iArrLength = setData.length;
+    }
 }
-}
-    setInterval(function() {
-     typewriter();
-	 }, 100);
+
+setInterval(function() {
+    typewriter();
+}, 100);
 
 </script></html>

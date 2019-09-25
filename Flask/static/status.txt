@@ -1,0 +1,36 @@
+|__
+[DicomsPipeline.py]___
+[@    0.01 s] [ReadDicoms]: Read dicoms from [/internal_drive/Dicoms/]
+[@    0.15 s] [ParseDicoms]: Parsed [1] dicoms
+[@    0.29 s] [BuildVideos]: Built [1] videos
+[@    1.18 s] [BuildGifs]: Built [1] gifs
+[@    1.25 s] [ExportDataToFile]: Exported [dicom_data] to [/internal_drive/Tables/DicomsTable.pickle]
+|__
+[ViewsPipeline.py]___
+[@    1.25 s] [ReadDataFromFile]: Read data from [/internal_drive/Tables/DicomsTable.pickle]
+[@    1.25 s] [ParseDicomData]: Parsed dicom_data
+[@   62.37 s] [PredictView]: Predicted views on [1] videos
+[@   62.37 s] [ProcessViewPredictions]: Processed predictions
+[@   62.38 s] [JoinDataFrames]: Joined [views_post_processing_data] to [dicom_data]
+[@   62.38 s] [ExportDataToFile]: Exported [dicom_data] to [/internal_drive/Tables/ViewsTable.pickle]
+|__
+[SegmentationPipeline.py]___
+[@   62.38 s] [ReadDataFromFile]: Read data from [/internal_drive/Tables/ViewsTable.pickle]
+[@   62.40 s] [ParseViewsData]: Parsed views_data
+[@   62.40 s] [ParseViewsData]: Parsed views_data
+[@   62.41 s] [PrepSegmentationModel]: Prepped segmentation model
+[@   86.76 s] [PredictSegmentation]: Predicted [A4C] segmentation
+[@  108.14 s] [PredictSegmentation]: Predicted [None] segmentation
+[@  110.48 s] [ProcessSegmentationResults]: Processed [A4C] segmentation results
+[@  110.48 s] [ProcessSegmentationResults]: Processed [A2C] segmentation results
+[@  110.49 s] [JoinDataFrames]: Joined [A4C_segmentation_data] to [A4C_views_data]
+[@  110.49 s] [JoinDataFrames]: [A2C_views_data] empty, returning [A2C_segmentation_data]
+[@  110.49 s] [ConcatDataFrames]: Concatenated [A2C_segmentation_data] to [A4C_views_data]
+[@  110.50 s] [ExportDataToFile]: Exported [A4C_views_data] to [/internal_drive/Tables/SegmentationTable.pickle]
+|__
+[ReportsPipeline.py]___
+[@  110.50 s] [ReadDataFromFile]: Read data from [/internal_drive/Tables/SegmentationTable.pickle]
+[@  110.51 s] [ParseSegmentationData]: Parsed segmentation_data
+[@  110.51 s] [BuildJsonFromData]: Built json
+[@  110.51 s] [ExportDataToFile]: Exported [json_object] to [/internal_drive/Reports/reports.json]
+Done

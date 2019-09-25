@@ -17,7 +17,7 @@ def main(start=time()):
     verbose = True
     
     # directory tree:
-    production_directory =  '/internal_drive/Production/'
+    production_directory =  '/internal_drive/'
     file_paths = {
         'dicoms_directory' : production_directory + 'Dicoms/',
         'dicoms_videos_directory' : production_directory + 'Videos/Dicoms/',
