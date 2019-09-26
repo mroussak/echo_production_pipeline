@@ -6,7 +6,9 @@ import Tools.ProductionTools as tools
 
 
 
-def ParseSegmentationData(segmentation_data, verbose=False, start=time()):
+def ParseSegmentationApicalData(segmentation_data, verbose=False, start=time()):
+    
+    ''' Accepts apical segmentation data, returns parsed data '''
     
     # append gif file names to gif file paths:
     segmentation_data['path_to_dicom_gif'] = segmentation_data['path_to_dicom_gif'].map(str) + segmentation_data['dicom_id'].map(str) + '.gif'
@@ -37,7 +39,7 @@ def ParseSegmentationData(segmentation_data, verbose=False, start=time()):
     segmentation_data = segmentation_data.fillna(0)
         
     if verbose:
-        print("[@ %7.2f s] [ParseSegmentationData]: Parsed segmentation_data" %(time()-start))
+        print("[@ %7.2f s] [ParseSegmentationApicalData]: Parsed segmentation_data" %(time()-start))
     
     return segmentation_data
     

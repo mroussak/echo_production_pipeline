@@ -20,10 +20,11 @@ def main(file_paths, verbose=False, start=time()):
     
     # Step 3, parse dicoms:
     dicom_data, pixel_array_data = funcs.ParseDicoms(dicoms, videos_directory, verbose, start)
+    #pixel_array_data = funcs.AnonymizeDicoms(pixel_array_data, verbose, start)
     
     # Step 4, build videos, gifs:
     funcs.BuildVideos(pixel_array_data, verbose, start)
     funcs.BuildGifs(dicom_data, verbose, start)
     
-    # Step 5, export diacoms:
+    # Step 5, export dicoms:
     tools.ExportDataToFile(dicom_data, dicom_data_file, verbose, start)

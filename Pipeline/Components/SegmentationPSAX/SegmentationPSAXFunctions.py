@@ -15,10 +15,10 @@ def ParseViewsData(views_data, view, videos_directory, verbose=False, start=time
     ''' Accepts views data, returns parsed views data '''
 
     # build new directories:
-    views_data['path_to_mask_jpeg'] = videos_directory + 'SegmentationMasks/' + views_data['dicom_id'].map(str) + '/Jpeg/'
-    views_data['path_to_mask_gif'] = videos_directory + 'SegmentationMasks/' + views_data['dicom_id'].map(str) + '/Gif/'
-    views_data['path_to_simpsons_jpeg'] = videos_directory + 'SimpsonsMethod/' + views_data['dicom_id'].map(str) + '/Jpeg/'
-    views_data['path_to_simpsons_gif'] = videos_directory + 'SimpsonsMethod/' + views_data['dicom_id'].map(str) + '/Gif/'
+    views_data['path_to_mask_jpeg'] = videos_directory + 'SegmentationPSAX/SegmentationMasks/' + views_data['dicom_id'].map(str) + '/Jpeg/'
+    views_data['path_to_mask_gif'] = videos_directory + 'SegmentationPSAX/SegmentationMasks/' + views_data['dicom_id'].map(str) + '/Gif/'
+    views_data['path_to_cylinder_jpeg'] = videos_directory + 'SegmentationPSAX/Cylinder/' + views_data['dicom_id'].map(str) + '/Jpeg/'
+    views_data['path_to_cylinder_gif'] = videos_directory + 'SegmentationPSAX/Cylinder/' + views_data['dicom_id'].map(str) + '/Gif/'
     
     # sort for relevant data:
     views_data = views_data.loc[views_data['predicted_view'] == view]
@@ -65,7 +65,7 @@ def PrepSegmentationModel(configuration_file, verbose=False, start=time()):
 
 
 def PredictSegmentation(views_data, model, metrics, verbose=False, start=time()):
-    
+    print(views_data)
     ''' Accepts views data, segmentation model, returns predictions '''
     
     # initialize variables:
@@ -118,7 +118,7 @@ def PredictSegmentation(views_data, model, metrics, verbose=False, start=time())
 def ProcessSegmentationResults(masks, view, verbose=False, start=time()):
     
     ''' Accepts masks array, returns dataframe with post processing data '''
-    
+    print(masks)
     # intialize variables:
     post_processing_list = []
     
@@ -132,7 +132,7 @@ def ProcessSegmentationResults(masks, view, verbose=False, start=time()):
         tools.CreateDirectory(mask['path_to_simpsons_gif'])
         
         # collect post processing data:
-        post_processing_object = tools.SegmentationPostProcessing(mask)
+        post_processing_object = tools.SegmentationPSAXPostProcessing(mask)
         
         # append data to list:
         post_processing_list.append(post_processing_object)

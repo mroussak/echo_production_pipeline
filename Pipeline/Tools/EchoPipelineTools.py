@@ -258,7 +258,7 @@ def apical_disks(mask, number_of_disks):
         
         
         
-def seg_postprocessing(seg_dictionary):
+def seg_postprocessing_apical(seg_dictionary):
     dicom_id = seg_dictionary['dicom_id']
     thresh = 0.5
     original_vid = load_video(seg_dictionary['path_to_dicom_jpeg'], normalize='False', img_type='jpg', image_dim=None)
@@ -342,3 +342,78 @@ def rename_jpegs(path):
                     os.rename(root+'/'+jpg, root+'/'+'0'+jpg) 
         else:
             pass
+        
+        
+def seg_postprocessing_psax(seg_dictionary):
+    dicom_id = seg_dictionary['dicom_id']
+    thresh = 0.5
+    original_vid = load_video(seg_dictionary['path_to_dicom_jpeg'], normalize='False', img_type='dicom', image_dim=None)
+    original_img_size = original_vid.shape[1:]
+    lv_diam = []
+    lvv_teichholz = []
+    lvv_prolate_e = []
+    gif_pred_mask = []
+    gif_cylinder = []    
+    for idx, pred in enumerate(seg_dictionary['mask']):
+        frame = original_vid[idx].astype(np.uint8)
+        mask = np.where(pred[:,:,0]>thresh,255.0,0.0).astype(np.uint8)
+        if (mask==0.0).all():
+            im = Image.fromarray(frame)
+            im.save(seg_dictionary['path_to_mask_jpeg']+'/'+str(idx)+'.jpg')
+            gif_pred_mask.append(frame)
+            gif_cylinder.append(frame)
+            lv_diam.append(np.nan)                
+            lvv.append(np.nan)
+            lvv_prolate_e.append(np.nan)
+        else:   
+    #         Using connected components
+            ret, labels = cv2.connectedComponents(mask)
+            (values,counts) = np.unique(labels,return_counts=True)
+            values = values[1:]
+            counts = counts[1:]
+            ind=np.argmax(counts)
+            mask = np.where(labels==values[ind],255.0,0.0)   
+            mask = cv2.resize(mask, original_vid.shape[1:][::-1])
+            mask = np.where(mask==0.0,0.0,255.0).astype(np.uint8)
+            overlayed_mask = cv2.addWeighted(frame,1,mask,0.5,0)   
+            im = Image.fromarray(overlayed_mask)
+            im.save(seg_dictionary['path_to_mask_jpeg']+'/'+str(idx)+'.jpg')
+            gif_pred_mask.append(overlayed_mask)
+            original_img_rgb = cv2.cvtColor(frame,cv2.COLOR_GRAY2RGB)
+            try:
+                cylinder_info = psax_cylinder(mask,x_scale=seg_dictionary['len_x_pix'],y_scale=seg_dictionary['len_y_pix'])
+                height = cylinder_info[0]
+                width = cylinder_info[1]
+                coords_ellipse_x = cylinder_info[2][0]
+                coords_ellipse_y = cylinder_info[2][1]
+                D1 = height
+                D2 = width
+                for i in range(len(coords_ellipse_x)):                     original_img_rgb[int(coords_ellipse_y[i])-3:int(coords_ellipse_y[i])+3,int(coords_ellipse_x[i])-3:int(coords_ellipse_x[i])+3] = [0,0,255]                
+                lv_diam.append(D1)
+                lvv_teichholz.append((7/(2.4+D1))*(D1**3))
+                lvv_prolate_e.append((math.pi/3)*(D1**2)*D2)
+            except Exception as e:
+                print(e)
+                lv_diam.append(np.nan)
+                lvv_teichholz.append(np.nan)
+                lvv_prolate_e.append(np.nan)                
+            im = Image.fromarray(original_img_rgb)
+            im.save(seg_dictionary['path_to_cylinder_jpeg']+'/'+str(idx)+'.jpg')
+            gif_cylinder.append(original_img_rgb)
+            
+    lvv_teichholz = medfilt(lvv_teichholz)
+    lvv_prolate_e = medfilt(lvv_prolate_e)
+    
+    lvsv_teichholz = min(lvv_teichholz)    
+    lvdv_teichholz = max(lvv_teichholz)
+    
+    lvsv_prolate_e = min(lvv_prolate_e)    
+    lvdv_prolate_e = max(lvv_prolate_e)
+    
+    ef_teichholz = (1-lvsv_teichholz/lvdv_teichholz)*100
+    ef_prolate_e = (1-lvsv_prolate_e/lvdv_prolate_e)*100
+    
+    imageio.mimsave(seg_dictionary['path_to_mask_gif']+'/'+'pred_mask.gif', gif_pred_mask)
+    imageio.mimsave(seg_dictionary['path_to_cylinder_gif']+'/'+'cylinder.gif', gif_cylinder)
+   
+    return {'dicom_id' : dicom_id,'lvv_teichholz' : lvv_teichholz, 'lvv_prolate_e' : lvv_prolate_e, 'lvsv_teichholz' : lvsv_teichholz, 'lvdv_teichholz' : lvdv_teichholz, 'lvsv_prolate_e' : lvsv_prolate_e, 'lvdv_prolate_e' : lvdv_prolate_e, 'ef_teichholz' : ef_teichholz , 'ef_prolate_e' : ef_prolate_e}

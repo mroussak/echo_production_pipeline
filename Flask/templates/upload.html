@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <!-- iCardio.ai -->
 <html style="height:100%;overscroll-behavior: none;">
+
 <head>
     <title>iCardio.ai</title>
-    <link rel="icon" type="image/png" href="images/favicon-32x32.png" />
+    <link rel="icon" type="image/png" href="static/images/favicon-32x32.png" />
     <!--Import Google Icon Font-->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <!--Import materialize.css-->
@@ -15,16 +16,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
 <body style="background-color: black">
-    <canvas id=c></canvas>
-    <span style="display:none" id="message">{{message}}</span>
-
        <h3 class="loader typewriter" id="typewriter"></h3>
-
-   <form action="/upload" method="post" class="dropzone" enctype="multipart/form-data" style="transform: translate(50%, 100%);width: 50%;">
+<canvas id=c></canvas>
+   <div id="commence" style="opacity: 1;width: 100%;height:100%;position: absolute;visibility: hidden;transition: 2s;opacity: 1;transition: opacity 1s ease-in-out;-moz-transition: opacity 1s ease-in-out;-webkit-transition: opacity 1s ease-in-out;"><a class="waves-effect waves-light btn analysis-button modal-trigger" href="#modal1" style="transform: translate(0%, 200%);right: -25%;">Commence Processing</a></div>
+   <form action="#" method="post" enctype="multipart/form-data" style="transform: translate(50%, 100%);width: 50%;">
     <div class="file-field input-field">
 <!--      <div class="btn analysis-button">-->
 <!--        <span>Upload Dicoms</span>-->
-        <input type="file" name="dicoms" multiple>
+        <input type="file" name="filepond[]" multiple>
 <!--      </div>-->
 <!--
       <button class="btn-commence waves-effect waves-light analysis-button" type="submit" name="action">Commence Processing
@@ -35,31 +34,58 @@
   </form>
 </body>
   <!-- Load FilePond library -->
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script>
   <script src="static/js/filepond.js"></script>
+    <script src="https://unpkg.com/filepond-plugin-file-encode/dist/filepond-plugin-file-encode.js"></script>
     <script src="static/js/network.js"></script>
 <script>
 const inputElement = document.querySelector('input[type="file"]');
-const pond = FilePond.create( inputElement );
-    
-FilePond.setOptions({
-  server: {
-        url: '/upload',
-  }
+const pond = FilePond.create(inputElement, {
+//     onaddfilestart: (file) => { isLoadingCheck(); },
+    onprocessfiles: (files) => { isLoadingCheck(); }
 });
-console.log(file.status)
-if (file.status === FilePond.FileStatus.PROCESSING_COMPLETE) {
-window.location.replace("/loader");   
-}
+
+function isLoadingCheck(){
+    let files = pond.getFiles();
+    console.log(files);
+    const isUploadPending = files.filter(file => file.status != 5).length > 0;
+    if (isUploadPending == false){
+        fetch('/upload',{
+            method: 'POST',
+            async: 'true',
+            data: {files},            
+        })
+        document.getElementById('commence').style.visibility="visible";
+    }
+//     var isLoading = pond.getFiles().filter(x=>x.status !== 5).length !== 0;
+//     if(isLoading) {
+//         $('#createCaseForm [type="submit"]').attr("disabled", "disabled");
+//     } else {
+//         $('#createCaseForm [type="submit"]').removeAttr("disabled");
+//     }
+}   
+FilePond.registerPlugin(
+    // encodes files as base64 (needed for regular form post)
+    FilePondPluginFileEncode
+);
+
+FilePond.setOptions({
+    server: {url:'/upload',method: 'post'},
+    withCredentials: true,
+    allowMultiple: true,
+    allowFileEncode: true,
+    name: "filePond",
+    instantUpload: true,
+});
     
     // set up text to print, each item in array is new line
 //var set = new Array(
 //"There are only 10 types of people in the world:", 
 //"Those who understand binary, and those who don't"
 //);
-alert(document.getElementById("message").innerHTML);
-var setData = document.getElementById("message").innerHTML;
+var setData = "Drag and drop or click to select your set of Dicoms to analyze."
 var iSpeed = 10; // time delay of print out
-var iIndex = 0; // start printing array at this position
+var iIndex = 0; // start printing array at this posision
 var iArrLength = setData.length; // the length of the text array
 var iScrollAt = 20; // start scrolling up at this many lines
 var shouldChange = 1;

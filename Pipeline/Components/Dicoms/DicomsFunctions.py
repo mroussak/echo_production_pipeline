@@ -115,6 +115,17 @@ def ParseDicoms(dicoms, videos_directory, verbose=False, start=time()):
 
 
 
+def AnonymizeDicoms(pixel_array_data, verbose=False, start=time()):
+
+    ''' Accepts dicoms as pixel array data, returns anonymized dicoms as pixel array data '''
+    
+    if verbose:
+        print("[@ %7.2f s] [AnonymizeDicoms]: Anonymized dicoms" %(time()-start))  
+        
+    return pixel_array_data
+
+
+
 def BuildVideos(pixel_array_data, verbose=False, start=time()):
     
     ''' Accepts dicom_data dataframe, builds folder with jpeg file of each frame '''

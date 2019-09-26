@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, Response, redirect, flash
 from flask import jsonify, abort, send_file, url_for
 app = Flask(__name__)
 app.secret_key = 'icardioai'
-
+        
 # Script imports:
 import os
 import sys
@@ -71,9 +71,9 @@ file_paths = {
 
 
 # Landing page:
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/app', methods=['GET', 'POST'])
 @app.route('/upload', methods=['GET', 'POST'])
-def index():
+def upload():
    
     # default message:
     message = "Drag and drop or click to select your set of Dicoms to analyze."
@@ -83,27 +83,30 @@ def index():
         
         # get file list from request:
         files = request.files.getlist('dicoms')
-        print(files[0].filename)
+        #print('[upload]: first file in file list [%s]' %(files[0].filename))
         
-        # check request for dicom files:
-        message, status = CheckForDicoms(files, verbose, start)
+#         # check request for dicom files:
+#         message, status = CheckForDicoms(files, verbose, start)
         
-        # raise error if incorrect file types are submitted:
-        if (status == -1) or (status == -2):
-            return render_template('uploader.html', message=message)
+#         # raise error if incorrect file types are submitted:
+#         if (status == -1) or (status == -2):
+#             return render_template('uploader.html', message=message)
         
-        # delete existing files in upload folder:
+#         # delete existing files in upload folder:
         print('here')
         DeleteFilesInPath(file_paths['upload_directory'], verbose, start)
         
         # upload new files:
         [file.save(os.path.join(file_paths['upload_directory'], file.filename)) for file in files] 
         
-        return redirect('/loader')
+        return redirect('https://icardio.ai/loader')
     
-    return render_template('uploader.html', message=message)
+    return render_template('upload.html', message=message)
 
-
+# Info page
+@app.route('/')
+def home():
+    return render_template('index.html')
 
 # Loader page:
 @app.route('/loader')
@@ -117,7 +120,7 @@ def loader():
         shell=True,
         stdout=subprocess.PIPE
     )
-
+    print('end of loader')
     return render_template('loader.html')
     
 
@@ -133,7 +136,7 @@ def app_page():
 @app.route('/reports', methods=['GET', 'POST'])
 def reports():
     
-    print('routed to reports')
+    print('[reports]: routed to reports')
     
     # initialize variables:
     reports_json = '/internal_drive/Reports/reports.json'
@@ -152,14 +155,14 @@ def reports():
 # Return video files:
 @app.route('/', defaults={'req_path': ''})
 @app.route('/<path:req_path>')
-def dir_listing(req_path):
+def get_file(req_path):
     
     # parse file path:
     req_path = '/' + req_path
     
     # return 404 if path doesn't exist
     if not os.path.exists(req_path):
-        print(req_path)
+        print('[get_file]: requested path [%s] not found'  %(req_path))
         return abort(404)
 
     # check if path is a file and serve
@@ -177,6 +180,5 @@ if __name__ == "__main__":
     #tools.InitializeScript(os.path.basename(__file__), verbose, start)
     
     # Run app:
-    app.run(debug=True)        
+    app.run(ssl_context='adhoc', debug=True)
     
-

@@ -7,24 +7,23 @@
 var jsonObject;
 
 $(function(){
-    //var jsonObject;
-    
     $.ajax({
-        url: '/reports',
-        dataType: 'json',
-        async: false,
-        global: false,
-        success: function(data) {
-            jsonObject = data;
-        },
-        statusCode: {
-            404: function() {
-                alert('There was a problem with the server.  Try again soon!');
-            }
-        }
+   url: '/reports',
+   dataType: 'json',
+   async: false,
+   global: false,
+   success: function(data) {
+       jsonObject = data;
+   },
+      statusCode: {
+         404: function() {
+           alert('There was a problem with the server.  Try again soon!');
+         }
+       }
     });
-    return {getDataObject : function() {
-        console.log('test return')
+
+    return {getDataObject : function()
+    {
         if (jsonObject) return jsonObject;
         // else show some error that it isn't loaded yet;
     }};
@@ -68,22 +67,39 @@ function updateJsonDetail(selectedDicomID, newParameter, value){
 //set view controls
 function setViewControls(dicomID, view) {
     if (view == undefined){
-        var reportControls = '<h3 class="report-text">No Presentation Loaded</h3><a class="waves-effect waves-light btn analysis-button report-button">Load Default Presentation</a>'
+        var reportControls = '<a class="btn report-button" style="margin:0px -4px 0px 0px" disabled>No views selected.</a>'
         return reportControls;
     }
     if (view == 'A4C') {
         var reportControls =
-        `<h3 class="report-text">Predicted EF: ${getJsonDetail(dicomID, 'ef')}</h3>
-        <a class="waves-effect waves-light btn analysis-button report-button" onclick="">Simpsons Calculation</a>
-        <a class="waves-effect waves-light btn analysis-button report-button" onclick="">Original Segmentation</a>`
+        `<span class="tools-left">
+            <a class="btn report-button" style="margin:0px -4px 0px 0px" disabled>EF:${Math.round(getJsonDetail(dicomID, 'ef'))}%</a>
+            <a class="btn report-button" disabled>LVSV:${Math.round(getJsonDetail(dicomID, 'lvsv'))}ml </a>
+            <a class="btn report-button" disabled>LVDV:${Math.round(getJsonDetail(dicomID, 'lvdv'))}ml </a>
+            <a class="btn report-button" disabled>LVSD: ${(Math.round(getJsonDetail(dicomID, 'lvsd')*100)/100).toFixed(2)}cm </a>
+            <a class="btn report-button" disabled>LVDD: ${(Math.round(getJsonDetail(dicomID, 'lvdd')*100)/100).toFixed(2)}cm </a>
+
+        </span>
+        <span class="tools-right">
+            <a class="waves-effect waves-light btn analysis-button report-button" onclick="changeImageDirectory('${dicomID}','path_to_simpsons_jpeg');">Simpsons Calculation</a>
+            <a class="waves-effect waves-light btn analysis-button report-button" onclick="changeImageDirectory('${dicomID}','path_to_mask_jpeg');">Original Segmentation</a>
+        </span>`
         return reportControls;
     }
     if (view == 'A2C') {
         var reportControls =
-        `<h3 class="report-text">EF: 87% BiPlane: 89%</h3>
-        <a class="waves-effect waves-light btn analysis-button report-button">Assess WMA</a>
-        <a class="waves-effect waves-light btn analysis-button report-button">Assess EF</a>
-        <a class="waves-effect waves-light btn analysis-button report-button">Assess Strain</a>`
+        `<span class="tools-left">
+            <a class="btn report-button" style="margin:0px -4px 0px 0px" disabled>EF:${Math.round(getJsonDetail(dicomID, 'ef'))}%</a>
+            <a class="btn report-button" disabled>LVSV:${Math.round(getJsonDetail(dicomID, 'lvsv'))}ml </a>
+            <a class="btn report-button" disabled>LVDV:${Math.round(getJsonDetail(dicomID, 'lvdv'))}ml </a>
+            <a class="btn report-button" disabled>LVSD: ${(Math.round(getJsonDetail(dicomID, 'lvsd')*100)/100).toFixed(2)}cm </a>
+            <a class="btn report-button" disabled>LVDD: ${(Math.round(getJsonDetail(dicomID, 'lvdd')*100)/100).toFixed(2)}cm </a>
+
+        </span>
+        <span class="tools-right">
+            <a class="waves-effect waves-light btn analysis-button report-button" onclick="changeImageDirectory('${dicomID}','path_to_simpsons_jpeg');">Simpsons Calculation</a>
+            <a class="waves-effect waves-light btn analysis-button report-button" onclick="changeImageDirectory('${dicomID}','path_to_mask_jpeg');">Original Segmentation</a>
+        </span>`
         return reportControls;
     }
     if (view == 'PSAX') {
@@ -96,7 +112,14 @@ function setViewControls(dicomID, view) {
     }
 }
 
-
+function changeImageDirectory(DicomID,desiredDirectory) {
+    var img = $(`.split-display.right .analysis-img[data-id="${DicomID}"]`).first();
+    console.log(img);
+    var img_source = img.attr("src");
+    console.log(img_source)
+    var newDirec = getJsonDetail(DicomID, desiredDirectory, 0)
+    img.attr("src", newDirec);
+}
 
 //initialize modals
 $(document).ready(function(){

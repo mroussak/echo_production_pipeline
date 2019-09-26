@@ -57,6 +57,7 @@ $(function() {
 
 //display the html in each view panel
 function displayConsole(draggedDicomId){
+    var reportControls = setViewControls(draggedDicomId, getJsonDetail(draggedDicomId, 'predicted_view'));
     var html = `
 <div class="split-display left">
     <p class="meta-text-left">Frame <span class="${draggedDicomId}">1</span>/${ getJsonDetail(draggedDicomId, 'number_of_frames') }</p>
@@ -78,7 +79,6 @@ function displayConsole(draggedDicomId){
     ${reportControls}
 </div>
     `;
-    var reportControls = setViewControls(draggedDicomId, getJsonDetail(draggedDicomId, 'predicted_view'));
     return html;
 }
 

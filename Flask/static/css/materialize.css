@@ -5203,10 +5203,10 @@ small {
 .btn-small[disabled],
 .btn-flat[disabled] {
   pointer-events: none;
-  background-color: #DFDFDF !important;
+/*  background-color: #DxsFDFDF !important;*/
   -webkit-box-shadow: none;
           box-shadow: none;
-  color: #9F9F9F !important;
+/*  color: #9F9F9F !important;*/
   cursor: default;
 }
 

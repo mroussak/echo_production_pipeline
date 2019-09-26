@@ -1,7 +1,7 @@
 import os
 from time import time
 import Tools.ProductionTools as tools
-import Components.Segmentation.SegmentationFunctions as funcs
+import Components.SegmentationApical.SegmentationApicalFunctions as funcs
 
 
 
@@ -10,8 +10,8 @@ def main(file_paths, verbose=False, start=time()):
     # Unpack files:
     videos_directory = file_paths['videos_directory']
     views_data_file = file_paths['views_table']
-    configuration_file = file_paths['segmentation_model_configuration']
-    export_file = file_paths['segmentation_table']
+    configuration_file = file_paths['segmentation_model_apical_configuration']
+    export_file = file_paths['segmentation_apical_table']
     a4c_model = file_paths['a4c_segmentation_model']
     a2c_model = file_paths['a2c_segmentation_model']
     
