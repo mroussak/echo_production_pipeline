@@ -347,7 +347,7 @@ def rename_jpegs(path):
 def seg_postprocessing_psax(seg_dictionary):
     dicom_id = seg_dictionary['dicom_id']
     thresh = 0.5
-    original_vid = load_video(seg_dictionary['path_to_dicom_jpeg'], normalize='False', img_type='dicom', image_dim=None)
+    original_vid = load_video(seg_dictionary['path_to_dicom_jpeg'], normalize='False', img_type='jpg', image_dim=None)
     original_img_size = original_vid.shape[1:]
     lv_diam = []
     lvv_teichholz = []
@@ -363,7 +363,7 @@ def seg_postprocessing_psax(seg_dictionary):
             gif_pred_mask.append(frame)
             gif_cylinder.append(frame)
             lv_diam.append(np.nan)                
-            lvv.append(np.nan)
+            lvv_teichholz.append(np.nan)
             lvv_prolate_e.append(np.nan)
         else:   
     #         Using connected components

@@ -5,7 +5,7 @@ from time import time
 from Tools.EchoPipelineTools import load_video as LoadVideo
 from Tools.EchoPipelineTools import view_postprocessing as ViewsPostProcessing
 from Tools.EchoPipelineTools import seg_postprocessing_apical as SegmentationApicalPostProcessing 
-from Tools.EchoPipelineTools import seg_postprocessing_psax as SegmentationPsaxPostProcessing
+from Tools.EchoPipelineTools import seg_postprocessing_psax as SegmentationPSAXPostProcessing
 
 
 

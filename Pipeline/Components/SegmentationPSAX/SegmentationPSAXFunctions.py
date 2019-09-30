@@ -65,7 +65,7 @@ def PrepSegmentationModel(configuration_file, verbose=False, start=time()):
 
 
 def PredictSegmentation(views_data, model, metrics, verbose=False, start=time()):
-    print(views_data)
+    
     ''' Accepts views data, segmentation model, returns predictions '''
     
     # initialize variables:
@@ -94,8 +94,8 @@ def PredictSegmentation(views_data, model, metrics, verbose=False, start=time())
                 'path_to_dicom_jpeg' : dicom['path_to_dicom_jpeg'],
                 'path_to_mask_jpeg' : dicom['path_to_mask_jpeg'],
                 'path_to_mask_gif' : dicom['path_to_mask_gif'],
-                'path_to_simpsons_jpeg' : dicom['path_to_simpsons_jpeg'],
-                'path_to_simpsons_gif' : dicom['path_to_simpsons_gif'],
+                'path_to_cylinder_jpeg' : dicom['path_to_cylinder_jpeg'],
+                'path_to_cylinder_gif' : dicom['path_to_cylinder_gif'],
             } 
 
             # append mask:
@@ -118,7 +118,7 @@ def PredictSegmentation(views_data, model, metrics, verbose=False, start=time())
 def ProcessSegmentationResults(masks, view, verbose=False, start=time()):
     
     ''' Accepts masks array, returns dataframe with post processing data '''
-    print(masks)
+    
     # intialize variables:
     post_processing_list = []
     
@@ -128,8 +128,8 @@ def ProcessSegmentationResults(masks, view, verbose=False, start=time()):
         # create new directories:
         tools.CreateDirectory(mask['path_to_mask_jpeg'])
         tools.CreateDirectory(mask['path_to_mask_gif'])
-        tools.CreateDirectory(mask['path_to_simpsons_jpeg'])
-        tools.CreateDirectory(mask['path_to_simpsons_gif'])
+        tools.CreateDirectory(mask['path_to_cylinder_jpeg'])
+        tools.CreateDirectory(mask['path_to_cylinder_gif'])
         
         # collect post processing data:
         post_processing_object = tools.SegmentationPSAXPostProcessing(mask)

@@ -1,17 +1,37 @@
 |__
-[SegmentationPSAXPipeline.py]___
-[@    0.12 s] [ReadDataFromFile]: Read data from [/internal_drive/Tables/ViewsTable.pickle]
-[@    0.15 s] [ParseViewsData]: Parsed views_data
-[@    0.16 s] [PrepSegmentationModel]: Prepped segmentation model
-      dicom_id  ...                               path_to_cylinder_gif
-1   0319057_01  ...  /internal_drive/Videos/SegmentationPSAX/Cylind...
-5   0319057_29  ...  /internal_drive/Videos/SegmentationPSAX/Cylind...
-7   0319057_31  ...  /internal_drive/Videos/SegmentationPSAX/Cylind...
-10  0319057_38  ...  /internal_drive/Videos/SegmentationPSAX/Cylind...
-11  0319057_39  ...  /internal_drive/Videos/SegmentationPSAX/Cylind...
-12  0319057_44  ...  /internal_drive/Videos/SegmentationPSAX/Cylind...
-13  0319057_47  ...  /internal_drive/Videos/SegmentationPSAX/Cylind...
-14  0319057_48  ...  /internal_drive/Videos/SegmentationPSAX/Cylind...
-16  0319057_52  ...  /internal_drive/Videos/SegmentationPSAX/Cylind...
-
-[9 rows x 19 columns]
+[DicomsPipeline.py]___
+[@    0.05 s] [ReadDicoms]: Read dicoms from [/internal_drive//Dicoms/]
+[@    2.10 s] [ParseDicoms]: Parsed [8] dicoms
+[@    3.79 s] [BuildVideos]: Built [8] videos
+[@   14.61 s] [BuildGifs]: Built [8] gifs
+[@   14.74 s] [ExportDataToFile]: Exported [dicom_data] to [/internal_drive/Tables/DicomsTable.pickle]
+|__
+[ViewsPipeline.py]___
+[@   14.76 s] [ReadDataFromFile]: Read data from [/internal_drive/Tables/DicomsTable.pickle]
+[@   14.76 s] [ParseDicomData]: Parsed dicom_data
+[@   90.10 s] [PredictView]: Predicted views on [7] videos
+[@   90.10 s] [ProcessViewPredictions]: Processed predictions
+[@   90.11 s] [JoinDataFrames]: Joined [views_post_processing_data] to [dicom_data]
+[@   90.11 s] [ExportDataToFile]: Exported [dicom_data] to [/internal_drive/Tables/ViewsTable.pickle]
+|__
+[SegmentationApicalPipeline.py]___
+[@   90.11 s] [ReadDataFromFile]: Read data from [/internal_drive/Tables/ViewsTable.pickle]
+[@   90.13 s] [ParseViewsData]: Parsed views_data
+[@   90.14 s] [ParseViewsData]: Parsed views_data
+[@   90.14 s] [PrepSegmentationModel]: Prepped segmentation model
+[@  115.66 s] [PredictSegmentation]: Predicted [A4C] segmentation
+[@  144.35 s] [PredictSegmentation]: Predicted [A2C] segmentation
+[@  146.43 s] [ProcessSegmentationResults]: Processed [A4C] segmentation results
+[@  148.98 s] [ProcessSegmentationResults]: Processed [A2C] segmentation results
+[@  148.98 s] [JoinDataFrames]: Joined [A4C_segmentation_data] to [A4C_views_data]
+[@  148.99 s] [JoinDataFrames]: Joined [A2C_segmentation_data] to [A2C_views_data]
+[@  148.99 s] [ConcatDataFrames]: Concatenated [A2C_views_data] to [A4C_views_data]
+[@  148.99 s] [ExportDataToFile]: Exported [A4C_views_data] to [/internal_drive/Tables/SegmentationApicalTable.pickle]
+|__
+[ReportsPipeline.py]___
+[@  149.00 s] [ReadDataFromFile]: Read data from [/internal_drive/Tables/SegmentationApicalTable.pickle]
+[@  149.00 s] [ReadDataFromFile]: Read data from [/internal_drive/Tables/SegmentationPSAXTable.pickle]
+[@  149.01 s] [ParseSegmentationApicalData]: Parsed segmentation_data
+[@  149.02 s] [BuildJsonFromData]: Built json
+[@  149.02 s] [ExportDataToFile]: Exported [json_object] to [/internal_drive/Reports/reports.json]
+Done

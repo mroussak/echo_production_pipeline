@@ -77,13 +77,13 @@ def upload():
    
     # default message:
     message = "Drag and drop or click to select your set of Dicoms to analyze."
+    #DeleteFilesInPath(file_paths['upload_directory'], verbose, start)
 
     # execute on post method:
     if request.method == 'POST':
         
         # get file list from request:
-        files = request.files.getlist('dicoms')
-        #print('[upload]: first file in file list [%s]' %(files[0].filename))
+        file = request.files['filePond']
         
 #         # check request for dicom files:
 #         message, status = CheckForDicoms(files, verbose, start)
@@ -94,12 +94,14 @@ def upload():
         
 #         # delete existing files in upload folder:
         print('here')
-        DeleteFilesInPath(file_paths['upload_directory'], verbose, start)
+#        DeleteFilesInPath(file_paths['upload_directory'], verbose, start)
         
         # upload new files:
-        [file.save(os.path.join(file_paths['upload_directory'], file.filename)) for file in files] 
+        file.save(os.path.join(file_paths['upload_directory'], file.filename))
         
-        return redirect('https://icardio.ai/loader')
+        print('[upload]: saved [%s] to [%s]' %(file.filename, file_paths['upload_directory']))
+        
+        return render_template('upload.html', message=message)
     
     return render_template('upload.html', message=message)
 
