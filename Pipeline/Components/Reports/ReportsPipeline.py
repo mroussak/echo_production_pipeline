@@ -23,8 +23,11 @@ def main(file_paths, verbose=False, start=time()):
     segmentation_apical_data = funcs.ParseSegmentationApicalData(segmentation_apical_data, verbose, start)
     #segmentation_psax_data = funcs.ParseSegmentationPSAXData(segmentation_psax_data, verbose, start)
     
-    # Step 4, build json:
+    # Step 4, resize videos:
+    funcs.ResizeVideos(segmentation_apical_data, verbose, start)
+    
+    # Step 5, build json:
     reports_json = funcs.BuildJsonFromData(segmentation_apical_data, verbose, start)
     
-    # Step 4, export json:
+    # Step 6, export json:
     tools.ExportDataToFile(reports_json, export_file, verbose, start)

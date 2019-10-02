@@ -1,6 +1,9 @@
+import cv2
 import json
+import itertools
 import numpy as np
 import pandas as pd
+from PIL import Image
 from time import time
 import Tools.ProductionTools as tools
 
@@ -42,6 +45,31 @@ def ParseSegmentationApicalData(segmentation_data, verbose=False, start=time()):
         print("[@ %7.2f s] [ParseSegmentationApicalData]: Parsed segmentation_data" %(time()-start))
     
     return segmentation_data
+    
+
+
+def ResizeVideos(segmentation_apical_data, verbose=False, start=time()):
+    
+    ''' Accepts data, rewrites videos with less pixels '''
+    
+    # get jpeg files:
+    dicom_jpegs = list(segmentation_apical_data['path_to_dicom_jpeg'])
+    mask_jpegs = list(segmentation_apical_data['path_to_mask_jpeg'])
+    simpsons_jpegs = list(segmentation_apical_data['path_to_simpsons_jpeg'])
+    jpeg_files = dicom_jpegs + mask_jpegs + simpsons_jpegs
+    jpeg_files = itertools.chain(*jpeg_files)
+    
+    print(jpeg_files)
+    
+    # resize each image:
+    for filepath in jpeg_files:
+        image = cv2.imread(filepath)
+        image = cv2.resize(image, None, fx=0.5, fy=0.5)
+        new_image = Image.fromarray(image)
+        new_image.save(filepath) 
+    
+    if verbose:
+        print("[@ %7.2f s] [ResizeVideos]: Resized videos" %(time()-start))
     
 
 
