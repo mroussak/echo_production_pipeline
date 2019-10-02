@@ -1,11 +1,11 @@
 |__
 [DicomsPipeline.py]___
-[@    0.05 s] [ReadDicoms]: Read dicoms from [/internal_drive//Dicoms/]
-[@    2.24 s] [ParseDicoms]: Parsed [11] dicoms
-[@    4.22 s] [BuildVideos]: Built [11] videos
-[@   18.85 s] [BuildGifs]: Built [11] gifs
-[@   18.98 s] [ExportDataToFile]: Exported [dicom_data] to [/internal_drive/Tables/DicomsTable.pickle]
+[@    0.04 s] [ReadDicoms]: Read dicoms from [/internal_drive//Dicoms/]
+[@    1.69 s] [ParseDicoms]: Parsed [6] dicoms
+[@    3.06 s] [BuildVideos]: Built [6] videos
+[@   12.87 s] [BuildGifs]: Built [6] gifs
+[@   13.00 s] [ExportDataToFile]: Exported [dicom_data] to [/internal_drive/Tables/DicomsTable.pickle]
 |__
 [ViewsPipeline.py]___
-[@   19.00 s] [ReadDataFromFile]: Read data from [/internal_drive/Tables/DicomsTable.pickle]
-[@   19.00 s] [ParseDicomData]: Parsed dicom_data
+[@   13.01 s] [ReadDataFromFile]: Read data from [/internal_drive/Tables/DicomsTable.pickle]
+[@   13.01 s] [ParseDicomData]: Parsed dicom_data

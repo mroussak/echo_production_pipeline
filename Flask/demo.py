@@ -182,5 +182,5 @@ if __name__ == "__main__":
     #tools.InitializeScript(os.path.basename(__file__), verbose, start)
     
     # Run app:
-    app.run(ssl_context='adhoc', debug=True)
+    app.run(debug=True)
     
