@@ -136,5 +136,16 @@ def CreateDirectory(directory_name, verbose=False, start=time()):
         
         
         
+def ValueExistsInTable(data, key, value, verbose=False, start=time()):
+    
+    ''' Accepts table as dataframe, key, value, returns true if the value exists 
+        in the table or false otherwise '''
+    
+    result = (data[key] == value).any()
+
+    if verbose:
+        print("[@ %7.2f s] [ValueExistsInTable]: Value [%s] exists in [%s] -> [%s]" %(time()-start, value, data.name, result))
         
+    return result
+    
         

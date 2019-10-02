@@ -1,11 +1,2 @@
 |__
 [DicomsPipeline.py]___
-[@    0.04 s] [ReadDicoms]: Read dicoms from [/internal_drive//Dicoms/]
-[@    1.69 s] [ParseDicoms]: Parsed [6] dicoms
-[@    3.06 s] [BuildVideos]: Built [6] videos
-[@   12.87 s] [BuildGifs]: Built [6] gifs
-[@   13.00 s] [ExportDataToFile]: Exported [dicom_data] to [/internal_drive/Tables/DicomsTable.pickle]
-|__
-[ViewsPipeline.py]___
-[@   13.01 s] [ReadDataFromFile]: Read data from [/internal_drive/Tables/DicomsTable.pickle]
-[@   13.01 s] [ParseDicomData]: Parsed dicom_data

@@ -72,7 +72,7 @@ function displayConsole(draggedDicomId){
     <p class="meta-text-center"></p>
     <p class="meta-text-right">${ getJsonDetail(draggedDicomId, 'predicted_view') }</p>
     <div class="analysis-div">
-        <img class="analysis-img ${draggedDicomId}" src="${ getJsonDetail(draggedDicomId, 'path_to_simpsons_jpeg', 0) }" data-id="${draggedDicomId}" img-analysis1">
+        <img class="analysis-img ${draggedDicomId}" data-directory="path_to_simpsons_jpeg" src="${ getJsonDetail(draggedDicomId, 'path_to_simpsons_jpeg', 0) }" data-id="${draggedDicomId}" img-analysis1">
     </div>
 </div>
 <div class="report controls">
@@ -86,9 +86,12 @@ function displayConsole(draggedDicomId){
 function changeImage(dir, dicomID, panel_direction) {
     var img = $(`.split-display.${panel_direction} .analysis-img[data-id="${dicomID}"]`).first();
     var img_source = img.attr("src");
+    var second_directory = img.attr("data-directory");
 
     //assign primary directory
-    image_directory = panel_direction == 'left' ? getJsonDetail(dicomID, 'path_to_dicom_jpeg') : getJsonDetail(dicomID, 'path_to_simpsons_jpeg');
+    image_directory = panel_direction == 'left' ? getJsonDetail(dicomID, 'path_to_dicom_jpeg') : getJsonDetail(dicomID, second_directory);
+    
+//     getJsonDetail(dicomID, 'path_to_simpsons_jpeg');
     
     const imgIndex = image_directory.indexOf(img_source)
     

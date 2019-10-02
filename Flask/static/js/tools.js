@@ -119,6 +119,7 @@ function changeImageDirectory(DicomID,desiredDirectory) {
     console.log(img_source)
     var newDirec = getJsonDetail(DicomID, desiredDirectory, 0)
     img.attr("src", newDirec);
+    img.attr("data-directory", desiredDirectory); 
 }
 
 //initialize modals
