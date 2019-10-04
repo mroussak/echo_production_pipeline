@@ -16,8 +16,8 @@ def main(start=time()):
     # Directory tree:
     production_directory =  '/internal_drive/'
     file_paths = {
-        #'dicoms_directory' : production_directory + '/Dicoms_Anon/0/',
-        'dicoms_directory' : production_directory + '/Dicoms/',
+        'dicoms_directory' : production_directory + '/Dicoms_Anon/1/',
+        #'dicoms_directory' : production_directory + '/Dicoms/',
         'dicoms_videos_directory' : production_directory + 'Videos/Dicoms/',
         'videos_directory' : production_directory + 'Videos/',
         'dicoms_table' : production_directory + 'Tables/DicomsTable.pickle',
@@ -30,7 +30,8 @@ def main(start=time()):
         'a4c_segmentation_model' : production_directory + 'Models/SegmentationApical/SegmentationModelA4C.keras',
         'a2c_segmentation_model' : production_directory + 'Models/SegmentationApical/SegmentationModelA2C.keras',
         'psax_model' : production_directory + 'Models/SegmentationPSAX/SegmentationModelPSAX.keras',
-        'reports' : production_directory + 'Reports/reports.json',        
+        'reports' : production_directory + 'Reports/reports.json',  
+        #'reports' : production_directory + 'echo_production_pipeline/Flask/static/reports.json',
     }
     
     # Step 1, dicoms pipeline:
@@ -41,7 +42,7 @@ def main(start=time()):
     
     # Step 3, segmentation pipelines:
     SegmentationApicalPipeline.main(file_paths, verbose, start)
-    #SegmentationPSAXPipeline.main(file_paths, verbose, start)
+    SegmentationPSAXPipeline.main(file_paths, verbose, start)
     
     # Step 3, reports pipeline:
     ReportsPipeline.main(file_paths, verbose, start)

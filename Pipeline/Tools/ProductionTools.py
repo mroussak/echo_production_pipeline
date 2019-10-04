@@ -111,7 +111,7 @@ def ConcatDataFrames(data1, data2, verbose=False, start=time()):
 
     ''' Accepts two dataframes, returns concatenated dataframe '''
 
-    data = pd.concat([data1, data2])
+    data = pd.concat([data1, data2], sort=False)
     data = data.reset_index()
     data.name = data1.name
     
@@ -148,4 +148,40 @@ def ValueExistsInTable(data, key, value, verbose=False, start=time()):
         
     return result
     
+
+
+def BuildGif(path_to_jpeg_folder, path_to_gif, verbose=False, start=time()):
+    
+    ''' Accepts path to jpeg folder, path to gifs, builds gifs from jpegs
+        and saves gif at path to gifs '''
+    
+    # build directories to store gifs:
+    tools.CreateDirectory(path_to_gif)
+    
+    # load video:
+    video = LoadVideo(path_to_jpeg, normalize=False, img_type='jpg', image_dim=None)
+    
+    # create gifs:
+    imageio.mimsave(path_to_gif, video)
+       
+    if verbose:
+        print("[@ %7.2f s] [BuildGif]: Built gif at [%s]" %(time()-start, path_to_gif))
         
+
+
+def GetItemsFromList(dictionary_list, key, value, verbose=False, start=time()):
+    
+    ''' Accepts list of dictionaries, key, value, returns subset list of dictionaries '''
+    
+    # intialize variables:
+    new_list = []
+    
+    for item in dictionary_list:
+        
+        if item[key] == value:
+            new_list.append(item)
+    
+    if verbose:
+        print("[@ %7.2f s] [GetItemsFromList]: Found [%d] items with [%s] = [%s]" %(time()-start, len(new_list), key, value))
+    
+    return new_list

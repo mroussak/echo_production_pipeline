@@ -32,5 +32,8 @@ def main(file_paths, verbose=False, start=time()):
     # Step 6, process model results:
     psax_segmentation_data = funcs.ProcessSegmentationResults(psax_segmentation, 'PSAX', verbose, start)
     
+    # Step 7, merge data:
+    psax_segmentation_data = tools.JoinDataFrames(psax_views_data, psax_segmentation_data, 'dicom_id', verbose, start)
+       
     # Step 8, export data:
     tools.ExportDataToFile(psax_segmentation_data, export_file, verbose, start)

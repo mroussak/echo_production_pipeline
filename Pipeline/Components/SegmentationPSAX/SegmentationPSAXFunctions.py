@@ -1,5 +1,6 @@
 import os
 import yaml
+import numpy as np
 import pandas as pd
 from time import time
 import Tools.ProductionTools as tools
@@ -14,15 +15,27 @@ def ParseViewsData(views_data, view, videos_directory, verbose=False, start=time
     
     ''' Accepts views data, returns parsed views data '''
 
-    # build new directories:
-    views_data['path_to_mask_jpeg'] = videos_directory + 'SegmentationPSAX/SegmentationMasks/' + views_data['dicom_id'].map(str) + '/Jpeg/'
-    views_data['path_to_mask_gif'] = videos_directory + 'SegmentationPSAX/SegmentationMasks/' + views_data['dicom_id'].map(str) + '/Gif/'
-    views_data['path_to_cylinder_jpeg'] = videos_directory + 'SegmentationPSAX/Cylinder/' + views_data['dicom_id'].map(str) + '/Jpeg/'
-    views_data['path_to_cylinder_gif'] = videos_directory + 'SegmentationPSAX/Cylinder/' + views_data['dicom_id'].map(str) + '/Gif/'
-    
     # sort for relevant data:
     views_data = views_data.loc[views_data['predicted_view'] == view]
     
+    # take two best views:
+    views_data = views_data.sort_values(by=['video_view_threshold'], ascending=False)
+    views_data = views_data.iloc[:2]
+
+    for index, row in views_data.iterrows():
+        
+        # build new directories:
+        paths = {
+            'path_to_dicom_jpeg' : row['paths']['path_to_dicom_jpeg'],
+            'path_to_dicom_gif' : row['paths']['path_to_dicom_gif'],
+            'path_to_mask_jpeg' : videos_directory + 'SegmentationPSAX/SegmentationMasks/' + row['dicom_id'] + '/Jpeg/',
+            'path_to_mask_gif' : videos_directory + 'SegmentationPSAX/SegmentationMasks/' + row['dicom_id'] + '/Gif/',
+            'path_to_cylinder_jpeg' : videos_directory + 'SegmentationPSAX/Cylinder/' + row['dicom_id'] + '/Jpeg/',
+            'path_to_cylinder_gif' : videos_directory + 'SegmentationPSAX/Cylinder/' + row['dicom_id'] + '/Gif/',
+        }
+    
+        views_data.at[index, 'paths'] = paths
+
     # name dataframe:
     views_data.name = view + '_views_data'
     
@@ -30,8 +43,8 @@ def ParseViewsData(views_data, view, videos_directory, verbose=False, start=time
         print("[@ %7.2f s] [ParseViewsData]: Parsed views_data" %(time()-start))
         
     return views_data
-
-
+    
+  
 
 def PrepSegmentationModel(configuration_file, verbose=False, start=time()):
 
@@ -79,7 +92,7 @@ def PredictSegmentation(views_data, model, metrics, verbose=False, start=time())
         
         try:
             # load videos:
-            frames = tools.LoadVideo(dicom['path_to_dicom_jpeg'], img_type='jpg', normalize='frame')
+            frames = tools.LoadVideo(dicom['paths']['path_to_dicom_jpeg'], img_type='jpg', normalize='frame')
             frames = frames.reshape(frames.shape + (1,))
 
             # predict segmentation:
@@ -89,20 +102,20 @@ def PredictSegmentation(views_data, model, metrics, verbose=False, start=time())
             mask = {
                 'mask' : prediction,
                 'dicom_id' : dicom['dicom_id'],
-                'len_x_pix' : dicom['len_x_pix'],
-                'len_y_pix' : dicom['len_y_pix'],
-                'path_to_dicom_jpeg' : dicom['path_to_dicom_jpeg'],
-                'path_to_mask_jpeg' : dicom['path_to_mask_jpeg'],
-                'path_to_mask_gif' : dicom['path_to_mask_gif'],
-                'path_to_cylinder_jpeg' : dicom['path_to_cylinder_jpeg'],
-                'path_to_cylinder_gif' : dicom['path_to_cylinder_gif'],
+                'len_x_pix' : dicom['config']['len_x_pix'],
+                'len_y_pix' : dicom['config']['len_y_pix'],
+                'path_to_dicom_jpeg' : dicom['paths']['path_to_dicom_jpeg'],
+                'path_to_mask_jpeg' : dicom['paths']['path_to_mask_jpeg'],
+                'path_to_mask_gif' : dicom['paths']['path_to_mask_gif'],
+                'path_to_cylinder_jpeg' : dicom['paths']['path_to_cylinder_jpeg'],
+                'path_to_cylinder_gif' : dicom['paths']['path_to_cylinder_gif'],
             } 
-
+            
             # append mask:
             masks.append(mask)
         
-        except:
-            pass
+        except Exception as e:
+            print(e)
         
     # handle case where no views of given type have been found:   
     if views_data.empty:
@@ -132,13 +145,25 @@ def ProcessSegmentationResults(masks, view, verbose=False, start=time()):
         tools.CreateDirectory(mask['path_to_cylinder_gif'])
         
         # collect post processing data:
-        post_processing_object = tools.SegmentationPSAXPostProcessing(mask)
+        post_processing_metrics = tools.SegmentationPSAXPostProcessing(mask)
         
-        # append data to list:
+        # parse results:
+        post_processing_metrics['lvv_teichholz'] = np.nan_to_num(post_processing_metrics['lvv_teichholz'])
+        post_processing_metrics['lvv_teichholz'] = list(post_processing_metrics['lvv_teichholz'])
+        post_processing_metrics['lvv_prolate_e'] = np.nan_to_num(post_processing_metrics['lvv_prolate_e'])
+        post_processing_metrics['lvv_prolate_e'] = list(post_processing_metrics['lvv_prolate_e'])
+        
+        # build post processing object:
+        post_processing_object = {
+            'metrics' : post_processing_metrics,
+            'dicom_id' : mask['dicom_id'],
+        }
+        
         post_processing_list.append(post_processing_object)
         
     # covnert to dataframe:
     post_processing_data = pd.DataFrame(post_processing_list)
+    
     post_processing_data.name = view + '_segmentation_data'
         
     if verbose:

@@ -77,15 +77,19 @@ def ParseDicoms(dicoms, videos_directory, verbose=False, start=time()):
             dicom_object = {
                 'dicom_id' : dicom_id,
                 'patient_id' : dicom.PatientID,
-                'path_to_dicom_jpeg' : path_to_dicom_jpeg,
-                'path_to_dicom_gif' : path_to_dicom_gif,
                 'dicom_type' : dicom_type,
-                'number_of_frames' : number_of_frames,
-                'frame_time' : frame_time, 
-                'x_scale' : dicom[0x18,0x6011][0][0x18,0x6024].value, 
-                'y_scale' : dicom[0x18,0x6011][0][0x18,0x6026].value,
-                'len_x_pix' : abs(dicom[0x18,0x6011][0][0x18,0x602c].value),
-                'len_y_pix' : abs(dicom[0x18,0x6011][0][0x18,0x602e].value),
+                'paths' : {
+                    'path_to_dicom_jpeg' : path_to_dicom_jpeg,
+                    'path_to_dicom_gif' : path_to_dicom_gif,
+                },
+                'config' : {
+                    'number_of_frames' : number_of_frames,
+                    'frame_time' : frame_time, 
+                    'x_scale' : dicom[0x18,0x6011][0][0x18,0x6024].value, 
+                    'y_scale' : dicom[0x18,0x6011][0][0x18,0x6026].value,
+                    'len_x_pix' : abs(dicom[0x18,0x6011][0][0x18,0x602c].value),
+                    'len_y_pix' : abs(dicom[0x18,0x6011][0][0x18,0x602e].value),
+                },
             }
 
             # build pixel_array_object:
@@ -182,14 +186,13 @@ def BuildGifs(dicom_data, verbose=False, start=time()):
     for index, dicom in dicom_data.iterrows():
         
         # build directories to store gifs:
-        tools.CreateDirectory(dicom["path_to_dicom_gif"])
+        tools.CreateDirectory(dicom['paths']["path_to_dicom_gif"])
         
-        try:
-            video = tools.LoadVideo(dicom['path_to_dicom_jpeg'], normalize=False, img_type='jpg', image_dim=None)
-            imageio.mimsave(dicom['path_to_dicom_gif'] + dicom['dicom_id'] + ".gif", video)
-        except Exception as exception:
-            print(exception)
-            pass
-
+        # load video:
+        video = tools.LoadVideo(dicom['paths']['path_to_dicom_jpeg'], normalize=False, img_type='jpg', image_dim=None)
+        
+        # create gifs:
+        imageio.mimsave(dicom['paths']['path_to_dicom_gif'] + dicom['dicom_id'] + ".gif", video)
+       
     if verbose:
         print("[@ %7.2f s] [BuildGifs]: Built [%d] gifs" %(time()-start, len(dicom_data)))

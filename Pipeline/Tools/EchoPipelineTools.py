@@ -388,7 +388,8 @@ def seg_postprocessing_psax(seg_dictionary):
                 coords_ellipse_y = cylinder_info[2][1]
                 D1 = height
                 D2 = width
-                for i in range(len(coords_ellipse_x)):                     original_img_rgb[int(coords_ellipse_y[i])-3:int(coords_ellipse_y[i])+3,int(coords_ellipse_x[i])-3:int(coords_ellipse_x[i])+3] = [0,0,255]                
+                for i in range(len(coords_ellipse_x)):                     
+                    original_img_rgb[int(coords_ellipse_y[i])-3:int(coords_ellipse_y[i])+3,int(coords_ellipse_x[i])-3:int(coords_ellipse_x[i])+3] = [0,0,255]                
                 lv_diam.append(D1)
                 lvv_teichholz.append((7/(2.4+D1))*(D1**3))
                 lvv_prolate_e.append((math.pi/3)*(D1**2)*D2)

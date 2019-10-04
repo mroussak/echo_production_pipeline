@@ -1,5 +1,6 @@
 import os
 import yaml
+import numpy as np
 import pandas as pd
 from time import time
 import Tools.ProductionTools as tools
@@ -14,15 +15,27 @@ def ParseViewsData(views_data, view, videos_directory, verbose=False, start=time
     
     ''' Accepts views data, returns parsed views data '''
 
-    # build new directories:
-    views_data['path_to_mask_jpeg'] = videos_directory + 'SegmentationApical/SegmentationMasks/' + views_data['dicom_id'].map(str) + '/Jpeg/'
-    views_data['path_to_mask_gif'] = videos_directory + 'SegmentationApical/SegmentationMasks/' + views_data['dicom_id'].map(str) + '/Gif/'
-    views_data['path_to_simpsons_jpeg'] = videos_directory + 'SegmentationApical/SimpsonsMethod/' + views_data['dicom_id'].map(str) + '/Jpeg/'
-    views_data['path_to_simpsons_gif'] = videos_directory + 'SegmentationApical/SimpsonsMethod/' + views_data['dicom_id'].map(str) + '/Gif/'
-    
     # sort for relevant data:
     views_data = views_data.loc[views_data['predicted_view'] == view]
     
+    # take two best views:
+    views_data = views_data.sort_values(by=['video_view_threshold'], ascending=False)
+    views_data = views_data.iloc[:2]
+
+    for index, row in views_data.iterrows():
+        
+        # build new directories:
+        paths = {
+            'path_to_dicom_jpeg' : row['paths']['path_to_dicom_jpeg'],
+            'path_to_dicom_gif' : row['paths']['path_to_dicom_gif'],
+            'path_to_mask_jpeg' : videos_directory + 'SegmentationApical/SegmentationMasks/' + row['dicom_id'] + '/Jpeg/',
+            'path_to_mask_gif' : videos_directory + 'SegmentationApical/SegmentationMasks/' + row['dicom_id'] + '/Gif/',
+            'path_to_simpsons_jpeg' : videos_directory + 'SegmentationApical/SimpsonsMethod/' + row['dicom_id'] + '/Jpeg/',
+            'path_to_simpsons_gif' : videos_directory + 'SegmentationApical/SimpsonsMethod/' + row['dicom_id'] + '/Gif/',
+        }
+    
+        views_data.at[index, 'paths'] = paths
+
     # name dataframe:
     views_data.name = view + '_views_data'
     
@@ -79,7 +92,7 @@ def PredictSegmentation(views_data, model, metrics, verbose=False, start=time())
         
         try:
             # load videos:
-            frames = tools.LoadVideo(dicom['path_to_dicom_jpeg'], img_type='jpg', normalize='frame')
+            frames = tools.LoadVideo(dicom['paths']['path_to_dicom_jpeg'], img_type='jpg', normalize='frame')
             frames = frames.reshape(frames.shape + (1,))
 
             # predict segmentation:
@@ -89,13 +102,13 @@ def PredictSegmentation(views_data, model, metrics, verbose=False, start=time())
             mask = {
                 'mask' : prediction,
                 'dicom_id' : dicom['dicom_id'],
-                'len_x_pix' : dicom['len_x_pix'],
-                'len_y_pix' : dicom['len_y_pix'],
-                'path_to_dicom_jpeg' : dicom['path_to_dicom_jpeg'],
-                'path_to_mask_jpeg' : dicom['path_to_mask_jpeg'],
-                'path_to_mask_gif' : dicom['path_to_mask_gif'],
-                'path_to_simpsons_jpeg' : dicom['path_to_simpsons_jpeg'],
-                'path_to_simpsons_gif' : dicom['path_to_simpsons_gif'],
+                'len_x_pix' : dicom['config']['len_x_pix'],
+                'len_y_pix' : dicom['config']['len_y_pix'],
+                'path_to_dicom_jpeg' : dicom['paths']['path_to_dicom_jpeg'],
+                'path_to_mask_jpeg' : dicom['paths']['path_to_mask_jpeg'],
+                'path_to_mask_gif' : dicom['paths']['path_to_mask_gif'],
+                'path_to_simpsons_jpeg' : dicom['paths']['path_to_simpsons_jpeg'],
+                'path_to_simpsons_gif' : dicom['paths']['path_to_simpsons_gif'],
             } 
 
             # append mask:
@@ -132,7 +145,17 @@ def ProcessSegmentationResults(masks, view, verbose=False, start=time()):
         tools.CreateDirectory(mask['path_to_simpsons_gif'])
         
         # collect post processing data:
-        post_processing_object = tools.SegmentationApicalPostProcessing(mask)
+        post_processing_metrics = tools.SegmentationApicalPostProcessing(mask)
+        
+        # parse results:
+        post_processing_metrics['lvv_simpson'] = np.nan_to_num(post_processing_metrics['lvv_simpson'])
+        post_processing_metrics['lvv_simpson'] = list(post_processing_metrics['lvv_simpson'])
+        
+        # build post processing object:
+        post_processing_object = {
+            'metrics' : post_processing_metrics,
+            'dicom_id' : mask['dicom_id'],
+        }
         
         # append data to list:
         post_processing_list.append(post_processing_object)
@@ -140,7 +163,7 @@ def ProcessSegmentationResults(masks, view, verbose=False, start=time()):
     # covnert to dataframe:
     post_processing_data = pd.DataFrame(post_processing_list)
     post_processing_data.name = view + '_segmentation_data'
-        
+    
     if verbose:
         print("[@ %7.2f s] [ProcessSegmentationResults]: Processed [%s] segmentation results" %(time()-start, view))
     

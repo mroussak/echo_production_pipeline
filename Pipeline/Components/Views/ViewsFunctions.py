@@ -15,6 +15,7 @@ def ParseDicomData(dicom_data, verbose=False, start=time()):
     
     ''' Accepts dicom data, returns parsed dicom data '''
     
+    #dicom_data = tools.GetItemsFromList(dicom_data, 'dicom_type', 'standard')
     dicom_data = dicom_data.loc[dicom_data['dicom_type'] == 'standard']
     dicom_data.name = 'dicom_data'
     
@@ -39,7 +40,7 @@ def PredictViews(dicom_data, model, verbose=False, start=time()):
     for index, dicom in dicom_data.iterrows():
 
         # load videos:
-        frames = tools.LoadVideo(dicom['path_to_dicom_jpeg'], img_type='jpg', normalize='frame')
+        frames = tools.LoadVideo(dicom['paths']['path_to_dicom_jpeg'], img_type='jpg', normalize='frame')
         frames = frames.reshape(frames.shape + (1,))
 
         # predict view:
@@ -71,7 +72,18 @@ def ProcessViewsPredictions(predictions, verbose=False, start=time()):
     # process each prediction:
     for prediction in predictions:
         
-        post_processing_object = tools.ViewsPostProcessing(prediction)
+        # post processing:
+        prediction = tools.ViewsPostProcessing(prediction)
+        
+        # build object:
+        post_processing_object = {
+            'view_details' : prediction,
+            'predicted_view' : prediction['predicted_view'],
+            'video_view_threshold' : prediction['video_view_threshold'],
+            'dicom_id' : prediction['dicom_id'],
+        }
+        
+        # append to list:
         post_processing_list.append(post_processing_object)
         
     # convert list to dataframe:
