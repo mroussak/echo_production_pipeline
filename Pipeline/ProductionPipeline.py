@@ -16,8 +16,8 @@ def main(start=time()):
     # Directory tree:
     production_directory =  '/internal_drive/'
     file_paths = {
-        'dicoms_directory' : production_directory + '/Dicoms_Anon/1/',
-        #'dicoms_directory' : production_directory + '/Dicoms/',
+        #'dicoms_directory' : production_directory + '/Dicoms_Anon/1/',
+        'dicoms_directory' : production_directory + '/Dicoms/',
         'dicoms_videos_directory' : production_directory + 'Videos/Dicoms/',
         'videos_directory' : production_directory + 'Videos/',
         'dicoms_table' : production_directory + 'Tables/DicomsTable.pickle',

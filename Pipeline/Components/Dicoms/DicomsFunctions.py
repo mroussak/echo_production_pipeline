@@ -58,7 +58,7 @@ def ParseDicoms(dicoms, videos_directory, verbose=False, start=time()):
                 try:
                     frame_time = dicom[0x18,0x1063].value 
                 except:
-                    frame_time = np.nan 
+                    frame_time = 0 
 
                 # check dicom type:
                 if len(list(dicom[0x18,0x6011])) == 1:
