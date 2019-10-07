@@ -1,5 +1,6 @@
 import os
 from time import time
+import pandas as pd
 import Tools.ProductionTools as tools
 import Components.Dicoms.DicomsFunctions as funcs
 
@@ -17,7 +18,7 @@ def main(file_paths, verbose=False, start=time()):
     
     # Step 2, read dicoms:
     dicoms = funcs.ReadDicoms(dicoms_directory, verbose, start)
-    
+
     # Step 3, parse dicoms:
     dicom_data, pixel_array_data = funcs.ParseDicoms(dicoms, videos_directory, verbose, start)
     #pixel_array_data = funcs.AnonymizeDicoms(pixel_array_data, verbose, start)
@@ -27,4 +28,6 @@ def main(file_paths, verbose=False, start=time()):
     funcs.BuildGifs(dicom_data, verbose, start)
     
     # Step 5, export dicoms:
+    dicom_data = pd.DataFrame(dicom_data)
+    dicom_data.name = 'dicom_data'
     tools.ExportDataToFile(dicom_data, dicom_data_file, verbose, start)

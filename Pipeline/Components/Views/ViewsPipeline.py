@@ -30,6 +30,6 @@ def main(file_paths, verbose=False, start=time()):
     
     # Step 6, merge predictions to dicom_data:
     dicom_data = tools.JoinDataFrames(dicom_data, predictions, "dicom_id", verbose, start)
-    
+
     # Step 7, export data:
     tools.ExportDataToFile(dicom_data, export_file, verbose, start)

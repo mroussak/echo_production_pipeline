@@ -7,6 +7,7 @@ import Tools.ProductionTools as tools
 import keras.models as km
 import tensorflow as tf
 import importlib
+from multiprocessing import Pool
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
@@ -85,9 +86,14 @@ def PredictSegmentation(views_data, model, metrics, verbose=False, start=time())
     masks = []
     
     # load model:
+    # print('loading psax model')
+    start_time = time()
     model = km.load_model(model, custom_objects = metrics)
-    
+    # print('loading psax model took : ', time()-start_time, 'seconds')
+
     # predict on each frame:
+    # print('predicting w psax model')
+    # start_time = time()
     for index, dicom in views_data.iterrows():
         
         try:
@@ -116,6 +122,8 @@ def PredictSegmentation(views_data, model, metrics, verbose=False, start=time())
         
         except Exception as e:
             print(e)
+
+    # print('predicting w psax model took : ', time() - start_time, 'seconds')
         
     # handle case where no views of given type have been found:   
     if views_data.empty:
@@ -126,7 +134,30 @@ def PredictSegmentation(views_data, model, metrics, verbose=False, start=time())
     
     return masks
 
+def post_process_single_psax_seg(mask):
 
+    # create new directories:
+    tools.CreateDirectory(mask['path_to_mask_jpeg'])
+    tools.CreateDirectory(mask['path_to_mask_gif'])
+    tools.CreateDirectory(mask['path_to_cylinder_jpeg'])
+    tools.CreateDirectory(mask['path_to_cylinder_gif'])
+
+    # collect post processing data:
+    post_processing_metrics = tools.SegmentationPSAXPostProcessing(mask)
+
+    # parse results:
+    post_processing_metrics['lvv_teichholz'] = np.nan_to_num(post_processing_metrics['lvv_teichholz'])
+    post_processing_metrics['lvv_teichholz'] = list(post_processing_metrics['lvv_teichholz'])
+    post_processing_metrics['lvv_prolate_e'] = np.nan_to_num(post_processing_metrics['lvv_prolate_e'])
+    post_processing_metrics['lvv_prolate_e'] = list(post_processing_metrics['lvv_prolate_e'])
+
+    # build post processing object:
+    post_processing_object = {
+        'metrics': post_processing_metrics,
+        'dicom_id': mask['dicom_id'],
+    }
+
+    return post_processing_object
 
 def ProcessSegmentationResults(masks, view, verbose=False, start=time()):
     
@@ -136,30 +167,15 @@ def ProcessSegmentationResults(masks, view, verbose=False, start=time()):
     post_processing_list = []
     
     # iterate over each mask:
-    for mask in masks:
-                
-        # create new directories:
-        tools.CreateDirectory(mask['path_to_mask_jpeg'])
-        tools.CreateDirectory(mask['path_to_mask_gif'])
-        tools.CreateDirectory(mask['path_to_cylinder_jpeg'])
-        tools.CreateDirectory(mask['path_to_cylinder_gif'])
-        
-        # collect post processing data:
-        post_processing_metrics = tools.SegmentationPSAXPostProcessing(mask)
-        
-        # parse results:
-        post_processing_metrics['lvv_teichholz'] = np.nan_to_num(post_processing_metrics['lvv_teichholz'])
-        post_processing_metrics['lvv_teichholz'] = list(post_processing_metrics['lvv_teichholz'])
-        post_processing_metrics['lvv_prolate_e'] = np.nan_to_num(post_processing_metrics['lvv_prolate_e'])
-        post_processing_metrics['lvv_prolate_e'] = list(post_processing_metrics['lvv_prolate_e'])
-        
-        # build post processing object:
-        post_processing_object = {
-            'metrics' : post_processing_metrics,
-            'dicom_id' : mask['dicom_id'],
-        }
-        
-        post_processing_list.append(post_processing_object)
+    # predict on each frame:
+    NUMBER_OF_THREADS = len(masks)
+
+    if len(masks)>0:
+        with Pool(NUMBER_OF_THREADS) as pool:
+            post_processing_list = pool.map(post_process_single_psax_seg, masks)
+            pool.close()
+    else:
+        post_processing_list = []
         
     # covnert to dataframe:
     post_processing_data = pd.DataFrame(post_processing_list)

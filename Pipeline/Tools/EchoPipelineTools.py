@@ -159,6 +159,7 @@ def psax_cylinder(mask, **kwargs):
     except:
         x_scale, y_scale = 1, 1
     #Find axis of rotation using largest distance between two points
+    mask = cv2.Canny(mask, 100, 200)
     y, x = np.nonzero(mask)
     pts = list(zip(*(x,y)))
     D = pdist(pts)
@@ -353,7 +354,7 @@ def seg_postprocessing_psax(seg_dictionary):
     lvv_teichholz = []
     lvv_prolate_e = []
     gif_pred_mask = []
-    gif_cylinder = []    
+    gif_cylinder = []
     for idx, pred in enumerate(seg_dictionary['mask']):
         frame = original_vid[idx].astype(np.uint8)
         mask = np.where(pred[:,:,0]>thresh,255.0,0.0).astype(np.uint8)
@@ -416,5 +417,5 @@ def seg_postprocessing_psax(seg_dictionary):
     
     imageio.mimsave(seg_dictionary['path_to_mask_gif']+'/'+'pred_mask.gif', gif_pred_mask)
     imageio.mimsave(seg_dictionary['path_to_cylinder_gif']+'/'+'cylinder.gif', gif_cylinder)
-   
+
     return {'dicom_id' : dicom_id,'lvv_teichholz' : lvv_teichholz, 'lvv_prolate_e' : lvv_prolate_e, 'lvsv_teichholz' : lvsv_teichholz, 'lvdv_teichholz' : lvdv_teichholz, 'lvsv_prolate_e' : lvsv_prolate_e, 'lvdv_prolate_e' : lvdv_prolate_e, 'ef_teichholz' : ef_teichholz , 'ef_prolate_e' : ef_prolate_e}

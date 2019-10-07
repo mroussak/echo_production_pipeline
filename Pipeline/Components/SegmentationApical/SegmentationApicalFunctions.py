@@ -7,6 +7,7 @@ import Tools.ProductionTools as tools
 import keras.models as km
 import tensorflow as tf
 import importlib
+from multiprocessing import Pool
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
@@ -85,9 +86,13 @@ def PredictSegmentation(views_data, model, metrics, verbose=False, start=time())
     masks = []
     
     # load model:
+    # print('loading apical model')
+    start_time = time()
     model = km.load_model(model, custom_objects = metrics)
+    # print('loading apical model took : ', time()-start_time, 'seconds')
     
     # predict on each frame:
+    # print('predicting w apical model')
     for index, dicom in views_data.iterrows():
         
         try:
@@ -116,7 +121,9 @@ def PredictSegmentation(views_data, model, metrics, verbose=False, start=time())
         
         except:
             pass
-        
+
+    # print('predicting w apical model took : ', time() - start_time, 'seconds')
+
     # handle case where no views of given type have been found:   
     if views_data.empty:
         dicom = {'predicted_view' : None}
@@ -127,38 +134,43 @@ def PredictSegmentation(views_data, model, metrics, verbose=False, start=time())
     return masks
 
 
+def post_process_single_apical_seg(mask):
+
+    # create new directories:
+    tools.CreateDirectory(mask['path_to_mask_jpeg'])
+    tools.CreateDirectory(mask['path_to_mask_gif'])
+    tools.CreateDirectory(mask['path_to_simpsons_jpeg'])
+    tools.CreateDirectory(mask['path_to_simpsons_gif'])
+
+    # collect post processing data:
+    post_processing_metrics = tools.SegmentationApicalPostProcessing(mask)
+
+    # parse results:
+    post_processing_metrics['lvv_simpson'] = np.nan_to_num(post_processing_metrics['lvv_simpson'])
+    post_processing_metrics['lvv_simpson'] = list(post_processing_metrics['lvv_simpson'])
+
+    # build post processing object:
+    post_processing_object = {
+        'metrics': post_processing_metrics,
+        'dicom_id': mask['dicom_id'],
+    }
+
+    # append data to list:
+    return post_processing_object
 
 def ProcessSegmentationResults(masks, view, verbose=False, start=time()):
     
     ''' Accepts masks array, returns dataframe with post processing data '''
-    
-    # intialize variables:
-    post_processing_list = []
-    
-    # iterate over each mask:
-    for mask in masks:
-                
-        # create new directories:
-        tools.CreateDirectory(mask['path_to_mask_jpeg'])
-        tools.CreateDirectory(mask['path_to_mask_gif'])
-        tools.CreateDirectory(mask['path_to_simpsons_jpeg'])
-        tools.CreateDirectory(mask['path_to_simpsons_gif'])
-        
-        # collect post processing data:
-        post_processing_metrics = tools.SegmentationApicalPostProcessing(mask)
-        
-        # parse results:
-        post_processing_metrics['lvv_simpson'] = np.nan_to_num(post_processing_metrics['lvv_simpson'])
-        post_processing_metrics['lvv_simpson'] = list(post_processing_metrics['lvv_simpson'])
-        
-        # build post processing object:
-        post_processing_object = {
-            'metrics' : post_processing_metrics,
-            'dicom_id' : mask['dicom_id'],
-        }
-        
-        # append data to list:
-        post_processing_list.append(post_processing_object)
+
+    # predict on each frame:
+    NUMBER_OF_THREADS = len(masks)
+
+    if len(masks)>0:
+        with Pool(NUMBER_OF_THREADS) as pool:
+            post_processing_list = pool.map(post_process_single_apical_seg, masks)
+            pool.close()
+    else:
+        post_processing_list = []
         
     # covnert to dataframe:
     post_processing_data = pd.DataFrame(post_processing_list)
