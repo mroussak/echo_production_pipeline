@@ -287,7 +287,10 @@ def seg_postprocessing_apical(seg_dictionary):
             values = values[1:]
             counts = counts[1:]
             ind=np.argmax(counts)
-            mask = np.where(labels==values[ind],255.0,0.0)   
+            mask = np.where(labels==values[ind],255.0,0.0)
+            print(mask.shape)
+            print(np.unique(mask,return_counts=True))
+            print(original_vid.shape)
             mask = cv2.resize(mask, original_vid.shape[1:][::-1])
             mask = np.where(mask==0.0,0.0,255.0).astype(np.uint8)
             overlayed_mask = cv2.addWeighted(frame,1,mask,0.5,0)   

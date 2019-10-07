@@ -21,7 +21,7 @@ def main(start=time()):
     production_directory =  '/internal_drive/'
     file_paths = {
         #'dicoms_directory' : production_directory + '/Dicoms_Anon/1/',
-        'dicoms_directory' : production_directory + 'Dicoms_Anon/0/',
+        'dicoms_directory' : production_directory + 'Dicoms_Anon/3/',
         'dicoms_videos_directory' : production_directory + 'Videos/Dicoms/',
         'videos_directory' : production_directory + 'Videos/',
         'dicoms_table' : production_directory + 'Tables/DicomsTable.pickle',
@@ -40,7 +40,7 @@ def main(start=time()):
 
     # Step 1, dicoms pipeline:
     DicomsPipeline.main(file_paths, verbose, start)
-
+    
     # Step 2, views pipeline:
     ViewsPipeline.main(file_paths, verbose, start)
 

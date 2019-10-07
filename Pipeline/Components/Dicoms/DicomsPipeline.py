@@ -25,7 +25,7 @@ def main(file_paths, verbose=False, start=time()):
     
     # Step 4, build videos, gifs:
     funcs.BuildVideos(pixel_array_data, verbose, start)
-    funcs.BuildGifs(dicom_data, verbose, start)
+    #funcs.BuildGifs(dicom_data, verbose, start) # moved to ReportsPipeline
     
     # Step 5, export dicoms:
     dicom_data = pd.DataFrame(dicom_data)

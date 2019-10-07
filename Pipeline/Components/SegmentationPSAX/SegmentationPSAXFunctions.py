@@ -134,6 +134,8 @@ def PredictSegmentation(views_data, model, metrics, verbose=False, start=time())
     
     return masks
 
+
+
 def post_process_single_psax_seg(mask):
 
     # create new directories:
@@ -158,6 +160,8 @@ def post_process_single_psax_seg(mask):
     }
 
     return post_processing_object
+
+
 
 def ProcessSegmentationResults(masks, view, verbose=False, start=time()):
     

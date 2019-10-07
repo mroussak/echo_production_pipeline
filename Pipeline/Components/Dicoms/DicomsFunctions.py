@@ -4,10 +4,12 @@ import pydicom
 import imageio
 import numpy as np
 import pandas as pd
-from time import time
 from PIL import Image
-import Tools.ProductionTools as tools
+from time import time
 from multiprocessing import Pool
+import Tools.ProductionTools as tools
+
+
 
 def ReadDicoms(dicoms_directory, verbose=False, start=time()):
 
@@ -22,18 +24,15 @@ def ReadDicoms(dicoms_directory, verbose=False, start=time()):
         dicoms = pool.map(pydicom.dcmread, [dicoms_directory + file for file in dicoms_file_list])
         pool.close()
 
-    # # get list of dicoms:
-    # for file in dicoms_file_list:
-    #     dicom = pydicom.dcmread(dicoms_directory + file)
-    #     dicoms.append(dicom)
-    
     if verbose:
         print("[@ %7.2f s] [ReadDicoms]: Read dicoms from [%s]" %(time()-start, dicoms_directory))
     
     return dicoms
 
 
+
 def parse_single_dicom(counter, dicom, videos_directory):
+    
     try:
         # create dicom id:
         dicom_id = '%s_%02d' % (dicom.PatientID, counter)
@@ -97,6 +96,8 @@ def parse_single_dicom(counter, dicom, videos_directory):
 
         return None
     
+    
+    
 def ParseDicoms(dicoms, videos_directory, verbose=False, start=time()):
     
     ''' Accepts list of dicoms, returns dataframe of dicoms '''
@@ -140,7 +141,9 @@ def AnonymizeDicoms(pixel_array_data, verbose=False, start=time()):
     return pixel_array_data
 
 
+
 def build_single_video(dicom):
+    
     # build directories to store videos:
     tools.CreateDirectory(dicom['path_to_dicom_jpeg'])
 
@@ -163,7 +166,7 @@ def build_single_video(dicom):
         # save image:
         image.save(image_name)
 
-        # multiple frames in dicom:
+    # multiple frames in dicom:
     else:
 
         # convert each frame to jpeg:
@@ -178,6 +181,8 @@ def build_single_video(dicom):
             # save image:
             image.save(image_name)
 
+
+
 def BuildVideos(pixel_array_data, verbose=False, start=time()):
     
     ''' Accepts dicom_data dataframe, builds folder with jpeg file of each frame '''
@@ -189,6 +194,8 @@ def BuildVideos(pixel_array_data, verbose=False, start=time()):
             
     if verbose:
         print("[@ %7.2f s] [BuildVideos]: Built [%d] videos" %(time()-start, len(pixel_array_data)))
+
+
 
 def build_single_gif(dicom):
     # build directories to store gifs:
