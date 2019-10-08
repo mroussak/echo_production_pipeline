@@ -40,7 +40,7 @@ def main(start=time()):
 
     # Step 1, dicoms pipeline:
     DicomsPipeline.main(file_paths, verbose, start)
-    
+
     # Step 2, views pipeline:
     ViewsPipeline.main(file_paths, verbose, start)
 
