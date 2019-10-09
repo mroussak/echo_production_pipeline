@@ -5,8 +5,9 @@ import Components.SegmentationPSAX.SegmentationPSAXFunctions as funcs
 
 
 
-def main(file_paths, psax_seg_model, verbose=False, start=time()):
-    
+def main(file_paths, verbose=False, start=time()):
+
+
     # Unpack files:
     videos_directory = file_paths['videos_directory']
     views_data_file = file_paths['views_table']
@@ -16,7 +17,7 @@ def main(file_paths, psax_seg_model, verbose=False, start=time()):
     
     # Step 1, initialize script:
     tools.InitializeScript(os.path.basename(__file__), verbose, start)
-    
+
     # Step 2, read views data from file:
     views_data = tools.ReadDataFromFile(views_data_file, verbose, start)
     

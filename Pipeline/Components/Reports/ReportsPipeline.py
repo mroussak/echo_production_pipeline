@@ -6,7 +6,8 @@ import Components.Reports.ReportsFunctions as funcs
 
 
 def main(file_paths, verbose=False, start=time()):
-    
+
+
     # Unpack files:
     views_data_file = file_paths['views_table']
     segmentation_apical_data_file = file_paths['segmentation_apical_table']
@@ -15,7 +16,7 @@ def main(file_paths, verbose=False, start=time()):
     
     # Step 1, initialize script:
     tools.InitializeScript(os.path.basename(__file__), verbose, start)
-    
+
     # Step 2, read data from file:
     views_data = tools.ReadDataFromFile(views_data_file, verbose, start)
     segmentation_apical_data = tools.ReadDataFromFile(segmentation_apical_data_file, verbose, start)

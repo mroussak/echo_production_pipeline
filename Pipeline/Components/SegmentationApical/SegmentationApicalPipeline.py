@@ -6,7 +6,8 @@ import Components.SegmentationApical.SegmentationApicalFunctions as funcs
 
 
 def main(file_paths, verbose=False, start=time()):
-    
+
+
     # Unpack files:
     videos_directory = file_paths['videos_directory']
     views_data_file = file_paths['views_table']

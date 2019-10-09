@@ -41,7 +41,9 @@ def ReadDataFromFile(file, verbose=False, start=time()):
         data = pd.read_excel(file)
     else:
         raise Exception("[ReadDataFromFile]: tried to read [%s], but file format not supported" %(file))
-    
+
+
+
     if verbose:
         print("[@ %7.2f s] [ReadDataFromFile]: Read data from [%s]" %(time()-start, file))
             
@@ -126,8 +128,10 @@ def CreateDirectory(directory_name, verbose=False, start=time()):
     
     ''' Accepts directory name, creates directory if it does not exist '''
     
-    if not os.path.isdir(directory_name):
+    try:
         os.makedirs(directory_name)
+    except:
+        pass
     
     if verbose:
         print("[@ %7.2f s] [CreateDirectory]: Created directory [%s]" %(time()-start, directory_name))

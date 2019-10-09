@@ -32,7 +32,7 @@ def ReadDicoms(dicoms_directory, verbose=False, start=time()):
 
 
 def parse_single_dicom(counter, dicom, videos_directory):
-    
+
     try:
         # create dicom id:
         dicom_id = '%s_%02d' % (dicom.PatientID, counter)

@@ -8,6 +8,7 @@ import Components.Dicoms.DicomsFunctions as funcs
 
 def main(file_paths, verbose=False, start=time()):
 
+
     # Unpack files:
     dicoms_directory = file_paths['dicoms_directory']
     videos_directory = file_paths['dicoms_videos_directory']

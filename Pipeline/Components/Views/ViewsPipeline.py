@@ -7,6 +7,7 @@ import Components.Views.ViewsFunctions as funcs
 
 def main(file_paths, verbose=False, start=time()):
 
+
     # Unpack files:
     dicom_data_file = file_paths['dicoms_table']
     export_file = file_paths['views_table']
