@@ -1,11 +1,22 @@
+<keras.engine.training.Model object at 0x7f700dfd6160>
+ * Serving Flask app "demo" (lazy loading)
+ * Environment: production
+   WARNING: Do not use the development server in a production environment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+[get_file]: requested path [/images/bg.jpg] not found
+route to loader
 |__
 [DicomsPipeline.py]___
-[@    0.04 s] [ReadDicoms]: Read dicoms from [/internal_drive//Dicoms/]
-[@    1.69 s] [ParseDicoms]: Parsed [6] dicoms
-[@    3.06 s] [BuildVideos]: Built [6] videos
-[@   12.87 s] [BuildGifs]: Built [6] gifs
-[@   13.00 s] [ExportDataToFile]: Exported [dicom_data] to [/internal_drive/Tables/DicomsTable.pickle]
+reading dicoms
+[@   95.59 s] [ReadDicoms]: Read dicoms from [/internal_drive/Dicoms/]
+parsing dicoms
+[@   96.66 s] [ParseDicoms]: Parsed [11] dicoms
+building videos
+[@   98.02 s] [BuildVideos]: Built [11] videos
+exporting dicoms
+[@   98.09 s] [ExportDataToFile]: Exported [dicom_data] to [/internal_drive/Tables/DicomsTable.pickle]
 |__
 [ViewsPipeline.py]___
-[@   13.01 s] [ReadDataFromFile]: Read data from [/internal_drive/Tables/DicomsTable.pickle]
-[@   13.01 s] [ParseDicomData]: Parsed dicom_data
+[@   98.09 s] [ReadDataFromFile]: Read data from [/internal_drive/Tables/DicomsTable.pickle]
+[@   98.09 s] [ParseDicomData]: Parsed dicom_data
