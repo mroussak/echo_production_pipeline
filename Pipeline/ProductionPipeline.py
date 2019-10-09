@@ -9,7 +9,7 @@ from Components.Reports import ReportsPipeline
 import global_vars
 import os
 import sys
-# sys.stdout = open('/sandbox/echo_production_pipeline/Flask/static/status.txt', 'w')
+sys.stdout = open('/internal_drive/echo_production_pipeline/Flask/static/status.txt', 'w')
 
 # os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 

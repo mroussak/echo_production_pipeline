@@ -119,7 +119,6 @@ def loader():
     # execute backend pipeline:
 
     pl.main()
-    # command = ['python3 -u /sandbox/echo_production_pipeline/Pipeline/ProductionPipeline.py' ]
 
     # command = ['python3 -u /sandbox/echo_production_pipeline/Pipeline/ProductionPipeline.py > ' + file_paths['status_file']]
 
