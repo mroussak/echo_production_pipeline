@@ -126,7 +126,12 @@ def loader():
     return render_template('loader.html')
     
 
-
+@app.route('/demo')
+def demo_page():
+    
+    return render_template('demo.html')
+    
+    
 @app.route('/results')
 def app_page():
     
