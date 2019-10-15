@@ -1,13 +1,12 @@
-import global_vars
-import os
-import yaml
-import numpy as np
-import pandas as pd
-from time import time
+import Components.Models.ModelsPipeline as models
 import Tools.ProductionTools as tools
-import importlib
 from multiprocessing import Pool
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+from time import time
+import pandas as pd
+import numpy as np
+import importlib
+import yaml
+import os
 
 
 
@@ -44,6 +43,8 @@ def ParseViewsData(views_data, view, videos_directory, verbose=False, start=time
         
     return views_data
 
+
+
 def PredictSegmentation(views_data, model, verbose=False, start=time()):
     
     ''' Accepts views data, segmentation model, returns predictions '''
@@ -52,7 +53,6 @@ def PredictSegmentation(views_data, model, verbose=False, start=time()):
     masks = []
 
     # predict on each frame:
-    # print('predicting w apical model')
     for index, dicom in views_data.iterrows():
         
         try:
@@ -62,12 +62,12 @@ def PredictSegmentation(views_data, model, verbose=False, start=time()):
 
             # predict view:
             if model == 'A4C':
-                with global_vars.graph.as_default():
-                    prediction = global_vars.a4c_seg_model.predict(frames, verbose=0)
+                with models.graph.as_default():
+                    prediction = models.a4c_segmentation_model.predict(frames, verbose=0)
 
             if model =='A2C':
-                with global_vars.graph.as_default():
-                    prediction = global_vars.a2c_seg_model.predict(frames, verbose=0)
+                with models.graph.as_default():
+                    prediction = models.a2c_segmentation_model.predict(frames, verbose=0)
 
             # create mask object:
             mask = {
@@ -85,11 +85,9 @@ def PredictSegmentation(views_data, model, verbose=False, start=time()):
             # append mask:
             masks.append(mask)
         
-        except:
-            pass
-
-    # print('predicting w apical model took : ', time() - start_time, 'seconds')
-
+        except Exception as error:
+            print('[ERROR]: %s' %error)
+            
     # handle case where no views of given type have been found:   
     if views_data.empty:
         dicom = {'predicted_view' : None}
@@ -98,6 +96,7 @@ def PredictSegmentation(views_data, model, verbose=False, start=time()):
         print("[@ %7.2f s] [PredictSegmentation]: Predicted [%s] segmentation" %(time()-start, dicom['predicted_view']))
     
     return masks
+
 
 
 def post_process_single_apical_seg(mask):
@@ -124,10 +123,12 @@ def post_process_single_apical_seg(mask):
     # append data to list:
     return post_processing_object
 
+
+
 def ProcessSegmentationResults(masks, view, verbose=False, start=time()):
     
     ''' Accepts masks array, returns dataframe with post processing data '''
-
+    
     # predict on each frame:
     NUMBER_OF_THREADS = len(masks)
 
@@ -138,7 +139,7 @@ def ProcessSegmentationResults(masks, view, verbose=False, start=time()):
     else:
         post_processing_list = []
         
-    # covnert to dataframe:
+    # convert to dataframe:
     post_processing_data = pd.DataFrame(post_processing_list)
     post_processing_data.name = view + '_segmentation_data'
     

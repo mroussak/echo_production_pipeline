@@ -1,12 +1,11 @@
-import os
-from time import time
-import Tools.ProductionTools as tools
 import Components.Reports.ReportsFunctions as funcs
+import Tools.ProductionTools as tools
+from time import time
+import os
 
 
 
 def main(file_paths, verbose=False, start=time()):
-
 
     # Unpack files:
     views_data_file = file_paths['views_table']
@@ -28,11 +27,12 @@ def main(file_paths, verbose=False, start=time()):
     segmentation_psax_data = funcs.ParseSegmentationPSAXData(segmentation_psax_data, verbose, start)
     
     # Step 4, append data:
-    reports_data = tools.ConcatDataFrames(segmentation_apical_data, segmentation_psax_data, verbose, start)
+    reports_data = tools.ConcatDataFrames(segmentation_apical_data, segmentation_psax_data, 'reports_data', verbose, start)
     
     # Step 5, build gifs, resize videos:
-    funcs.BuildGifs(views_data, verbose, start)
     #funcs.ResizeVideos(reports_data, verbose, start) # decided to not resize videos presently
+    funcs.BuildGifs(views_data, verbose, start)
+
     
     # Step 6, build json:
     reports_json = funcs.BuildJsonFromData(reports_data, verbose, start)

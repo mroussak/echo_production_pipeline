@@ -1,11 +1,11 @@
-import os
-import json
-import pandas as pd
-from time import time
-from Tools.EchoPipelineTools import load_video as LoadVideo
-from Tools.EchoPipelineTools import view_postprocessing as ViewsPostProcessing
 from Tools.EchoPipelineTools import seg_postprocessing_apical as SegmentationApicalPostProcessing 
 from Tools.EchoPipelineTools import seg_postprocessing_psax as SegmentationPSAXPostProcessing
+from Tools.EchoPipelineTools import view_postprocessing as ViewsPostProcessing
+from Tools.EchoPipelineTools import load_video as LoadVideo
+from time import time
+import pandas as pd
+import json
+import os
 
 
 
@@ -42,8 +42,6 @@ def ReadDataFromFile(file, verbose=False, start=time()):
     else:
         raise Exception("[ReadDataFromFile]: tried to read [%s], but file format not supported" %(file))
 
-
-
     if verbose:
         print("[@ %7.2f s] [ReadDataFromFile]: Read data from [%s]" %(time()-start, file))
             
@@ -74,7 +72,7 @@ def ExportDataToFile(data, export_file, verbose=False, start=time()):
     
     
     
-def JoinDataFrames(data1, data2, on_index, verbose=False, start=time()):
+def JoinDataFrames(data1, data2, on_index, new_name='unnamed_variable', verbose=False, start=time()):
     
     ''' Accepts two dataframes, returns data in joined datafame '''
     
@@ -100,25 +98,25 @@ def JoinDataFrames(data1, data2, on_index, verbose=False, start=time()):
     data = data.reset_index()
     
     # name new dataframe:
-    data.name = data1.name
+    data.name = new_name
     
     if verbose:
-        print("[@ %7.2f s] [JoinDataFrames]: Joined [%s] to [%s]" %(time()-start, data2.name, data1.name))
+        print("[@ %7.2f s] [JoinDataFrames]: Joined [%s] to [%s] as [%s]" %(time()-start, data2.name, data1.name, data.name))
     
     return data
     
 
     
-def ConcatDataFrames(data1, data2, verbose=False, start=time()):
+def ConcatDataFrames(data1, data2, new_name='unnamed_variable', verbose=False, start=time()):
 
     ''' Accepts two dataframes, returns concatenated dataframe '''
 
     data = pd.concat([data1, data2], sort=False)
     data = data.reset_index()
-    data.name = data1.name
+    data.name = new_name
     
     if verbose:
-        print("[@ %7.2f s] [ConcatDataFrames]: Concatenated [%s] to [%s]" %(time()-start, data2.name, data1.name))
+        print("[@ %7.2f s] [ConcatDataFrames]: Concatenated [%s] to [%s] as [%s]" %(time()-start, data2.name, data1.name, data.name))
         
     return data
 
@@ -128,10 +126,8 @@ def CreateDirectory(directory_name, verbose=False, start=time()):
     
     ''' Accepts directory name, creates directory if it does not exist '''
     
-    try:
+    if not os.path.exists(directory_name):
         os.makedirs(directory_name)
-    except:
-        pass
     
     if verbose:
         print("[@ %7.2f s] [CreateDirectory]: Created directory [%s]" %(time()-start, directory_name))

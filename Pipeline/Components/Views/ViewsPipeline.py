@@ -1,17 +1,15 @@
-import os
-from time import time
-import Tools.ProductionTools as tools
 import Components.Views.ViewsFunctions as funcs
+import Tools.ProductionTools as tools
+from time import time
+import os
 
 
 
 def main(file_paths, verbose=False, start=time()):
 
-
     # Unpack files:
     dicom_data_file = file_paths['dicoms_table']
     export_file = file_paths['views_table']
-    # model = file_paths['views_model']
     unique_views = ['A2C', 'A3C', 'A4C', 'A5C', 'PLAX', 'PSAX', 'PSAXA', 'RVIT', 'SUBA', 'SUBB', 'SUPA']
     
     # Step 1, initialize script:
@@ -30,7 +28,7 @@ def main(file_paths, verbose=False, start=time()):
     predictions = funcs.ProcessViewsPredictions(predictions, verbose, start)
     
     # Step 6, merge predictions to dicom_data:
-    dicom_data = tools.JoinDataFrames(dicom_data, predictions, "dicom_id", verbose, start)
+    dicom_data = tools.JoinDataFrames(dicom_data, predictions, "dicom_id", 'dicom_data', verbose, start)
 
     # Step 7, export data:
     tools.ExportDataToFile(dicom_data, export_file, verbose, start)
