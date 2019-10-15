@@ -25,14 +25,14 @@ def ReadDicoms(dicoms_directory, verbose=False, start=time()):
         pool.close()
 
     if verbose:
-        print("[@ %7.2f s] [ReadDicoms]: Read dicoms from [%s]" %(time()-start, dicoms_directory))
+        print("[@ %7.2f s] [ReadDicoms]: Read [%d] dicoms from [%s]" %(time()-start, len(dicoms), dicoms_directory))
     
     return dicoms
 
 
 
 def parse_single_dicom(counter, dicom, videos_directory):
-    
+
     try:
         # create dicom id:
         dicom_id = '%s_%02d' % (dicom.PatientID, counter)
@@ -118,9 +118,9 @@ def ParseDicoms(dicoms, videos_directory, verbose=False, start=time()):
 
     dicom_data, pixel_array_data = zip(*multi_proc_output)
 
-    # # converrt list data to dataframe:
-    # dicom_data = pd.DataFrame(dicom_data)
-    # dicom_data.name = 'dicom_data'
+    # convert list data to dataframe:
+    dicom_data = pd.DataFrame(dicom_data)
+    dicom_data.name = 'dicom_data'
     # pixel_array_data = pd.DataFrame(pixel_array_data)
     # pixel_array_data.name = 'pixel_array_data'
 
@@ -171,6 +171,7 @@ def build_single_video(dicom):
 
         # convert each frame to jpeg:
         for counter2, frame in enumerate(dicom['pixel_array']):
+            
             # name new image:
             image_name = '%s%d.jpg' % (dicom['path_to_dicom_jpeg'], counter2)
 
@@ -197,26 +198,3 @@ def BuildVideos(pixel_array_data, verbose=False, start=time()):
 
 
 
-def build_single_gif(dicom):
-    # build directories to store gifs:
-    tools.CreateDirectory(dicom['paths']['path_to_dicom_gif'])
-
-    # load video:
-    video = tools.LoadVideo(dicom['paths']['path_to_dicom_jpeg'], normalize=False, img_type='jpg', image_dim=None)
-
-    # create gifs:
-    imageio.mimsave(dicom['paths']['path_to_dicom_gif'] + dicom['dicom_id'] + '.gif', video)
-
-
-    
-def BuildGifs(dicom_data, verbose=False, start=time()):
-    
-    ''' Accepts dicom data, build gifs '''
-    
-    NUMBER_OF_THREADS = len(dicom_data)
-
-    with Pool(NUMBER_OF_THREADS) as pool:
-        pool.map(build_single_gif, dicom_data)
-       
-    if verbose:
-        print("[@ %7.2f s] [BuildGifs]: Built [%d] gifs" %(time()-start, len(dicom_data)))

@@ -1,14 +1,12 @@
-import os
-import yaml
-import numpy as np
-import pandas as pd
-from time import time
+import Components.Models.ModelsPipeline as models
 import Tools.ProductionTools as tools
-import keras.models as km
-import tensorflow as tf
-import importlib
 from multiprocessing import Pool
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+from time import time
+import pandas as pd
+import numpy as np
+import importlib
+import yaml
+import os
 
 
 
@@ -45,55 +43,16 @@ def ParseViewsData(views_data, view, videos_directory, verbose=False, start=time
         
     return views_data
     
-  
-
-def PrepSegmentationModel(configuration_file, verbose=False, start=time()):
-
-    ''' Accepts configuration_file, returns segmentation_metrics '''
     
-    # open and read file:
-    with open(configuration_file, 'r') as tfile:
-        file_str = tfile.read()
-    config = yaml.load(file_str)#yaml.load(file_str, Loader=yaml.FullLoader)
-    
-    # pull metrics:
-    tpr_loss = importlib.import_module(config['loss']).tpr_loss_coefficient(smooth=0)
-    dice_loss = importlib.import_module(config['loss']).dice_loss_coefficient(smooth=0)
-    iou_metric_coeff = importlib.import_module(config['metrics']).iou_metric_coeff(0.05, 0.04)
-    tpr_metric_coeff = importlib.import_module(config['metrics']).tpr_metric_coeff(0.05, 0.04)
-    fpr_metric_coeff = importlib.import_module(config['metrics']).fpr_metric_coeff(0.05, 0.04)
 
-    # pack metrics:
-    segmentation_metrics = {
-        'dice_coefficient' : dice_loss, 
-        'iou' : iou_metric_coeff, 
-        'tpr' : tpr_metric_coeff, 
-        'fpr' : fpr_metric_coeff,
-    }
-
-    if verbose:
-        print("[@ %7.2f s] [PrepSegmentationModel]: Prepped segmentation model" %(time()-start))
-    
-    return segmentation_metrics
-
-
-
-def PredictSegmentation(views_data, model, metrics, verbose=False, start=time()):
+def PredictSegmentation(views_data, verbose=False, start=time()):
     
     ''' Accepts views data, segmentation model, returns predictions '''
     
     # initialize variables:
     masks = []
-    
-    # load model:
-    # print('loading psax model')
-    start_time = time()
-    model = km.load_model(model, custom_objects = metrics)
-    # print('loading psax model took : ', time()-start_time, 'seconds')
 
     # predict on each frame:
-    # print('predicting w psax model')
-    # start_time = time()
     for index, dicom in views_data.iterrows():
         
         try:
@@ -102,7 +61,8 @@ def PredictSegmentation(views_data, model, metrics, verbose=False, start=time())
             frames = frames.reshape(frames.shape + (1,))
 
             # predict segmentation:
-            prediction = model.predict(frames, verbose=0)
+            with models.graph.as_default():
+                prediction = models.psax_segmentation_model.predict(frames, verbose=0)
 
             # create mask object:
             mask = {
@@ -123,8 +83,6 @@ def PredictSegmentation(views_data, model, metrics, verbose=False, start=time())
         except Exception as e:
             print(e)
 
-    # print('predicting w psax model took : ', time() - start_time, 'seconds')
-        
     # handle case where no views of given type have been found:   
     if views_data.empty:
         dicom = {'predicted_view' : None}

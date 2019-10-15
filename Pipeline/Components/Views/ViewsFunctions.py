@@ -1,16 +1,12 @@
-import os
-import cv2
+import Components.Models.ModelsPipeline as models
+import Tools.ProductionTools as tools
+from multiprocessing import Pool
+from itertools import repeat
 from time import time
 import pandas as pd
 import numpy as np
-import tensorflow as tf
-import keras.models as km
-import Tools.ProductionTools as tools
-import tensorflow as tf
-from multiprocessing import Pool
-from itertools import repeat
-
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+import cv2
+import os
 
 
 
@@ -31,28 +27,23 @@ def ParseDicomData(dicom_data, verbose=False, start=time()):
     return dicom_data
 
 
-def PredictViews(dicom_data, model, verbose=False, start=time()):
+
+def PredictViews(dicom_data, verbose=False, start=time()):
     ''' Accepts dicom data, model, returns predictions as dataframe '''
 
     # initialize variables:
     predictions = []
 
-    # load model:
-    # print('loading views model')
-    # start_time = time()
-    model = km.load_model(model)
-    # print('loading views model took : ', time()-start_time, 'seconds')
-
     # predict on each frame:
-    # print('predicting w views model')
-    # start_time = time()
     for index, dicom in dicom_data.iterrows():
+
         # load videos:
         frames = tools.LoadVideo(dicom['paths']['path_to_dicom_jpeg'], img_type='jpg', normalize='frame')
         frames = frames.reshape(frames.shape + (1,))
 
         # predict view:
-        prediction = model.predict(frames, verbose=0)
+        with models.graph.as_default():
+            prediction = models.views_model.predict(frames, verbose=0)
 
         # build prediction object:
         prediction_object = {
@@ -61,14 +52,16 @@ def PredictViews(dicom_data, model, verbose=False, start=time()):
         }
 
         predictions.append(prediction_object)
-    # print('predicting w views model took : ', time() - start_time, 'seconds')
-
+        
     if verbose:
         print("[@ %7.2f s] [PredictView]: Predicted views on [%d] videos" % (time() - start, len(predictions)))
 
     return predictions
 
+
+
 def post_process_single_view(prediction):
+    
     # post processing:
     prediction = tools.ViewsPostProcessing(prediction)
 
@@ -81,6 +74,7 @@ def post_process_single_view(prediction):
     }
 
     return post_processing_object
+
 
 
 def ProcessViewsPredictions(predictions, verbose=False, start=time()):
