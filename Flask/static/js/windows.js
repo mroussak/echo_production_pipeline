@@ -1,4 +1,5 @@
 // Load the left window gif views
+
 $(function() {
     var i = 0;
     $.each(jsonObject, function(key, value) {
@@ -6,8 +7,9 @@ $(function() {
         $.each(currObj['dicoms'], function(key, value) {
             var dicomObj = value;
             i++;
-            document.getElementById('thumbnails').innerHTML += '<section><div class="gif-div draggable"><img class="gif-img draggable" id="' + dicomObj['dicom_id'] + '" src="' + dicomObj['path_to_dicom_gif'] + '"></div><div class="controls"><a class="waves-effect waves-light btn analysis-button modal-trigger" href="#modal1">Analyze</a></div><h3 class="view">' + currObj['view'] + '</h3></section>';
-            var image = '<img class="analysis-img" src="' + dicomObj['path_to_dicom_gif'] + '">"';
+            document.getElementById('thumbnails').innerHTML += '<section><div title="Drag and drop me in one of the panes to the right" class="gif-div draggable"><img class="gif-img draggable" id="' + dicomObj['dicom_id'] + '" src="' + dicomObj['paths']['path_to_dicom_gif'] + '"></div><div class="controls"></div><h3 class="view">' + currObj['view'] + '</h3></section>';
+            var image = '<img class="analysis-img" src="' + dicomObj['paths']['path_to_dicom_gif'] + '">"';
+//           old button  <a class="waves-effect waves-light btn analysis-button modal-trigger" href="#modal1">Analyze</a>
             return dicomObj;
         });
     });
@@ -60,19 +62,19 @@ function displayConsole(draggedDicomId){
     var reportControls = setViewControls(draggedDicomId, getJsonDetail(draggedDicomId, 'predicted_view'));
     var html = `
 <div class="split-display left">
-    <p class="meta-text-left">Frame <span class="${draggedDicomId}">1</span>/${ getJsonDetail(draggedDicomId, 'number_of_frames') }</p>
-    <p class="meta-text-center"></p>
+    <p class="meta-text-left">Frame <span class="${draggedDicomId}">1</span>/${ getJsonDetail(draggedDicomId, 'config', 'number_of_frames') }</p>
+    <p class="meta-text-center">${draggedDicomId}</p>
     <p class="meta-text-right">${ getJsonDetail(draggedDicomId, 'predicted_view') }</p>
     <div class="analysis-div">
-        <img class="analysis-img ${draggedDicomId}" src="${ getJsonDetail(draggedDicomId, 'path_to_dicom_jpeg', 0) }" data-id="${draggedDicomId}" img-analysis1">
+    <img class="analysis-img ${draggedDicomId}" src="${ getJsonDetail(draggedDicomId, 'paths', 'path_to_dicom_jpeg', 0) }" data-id="${draggedDicomId}" img-analysis1">
     </div>
 </div>
 <div class="split-display right">
-    <p class="meta-text-left">Frame <span class="${draggedDicomId}">1</span>/${ getJsonDetail(draggedDicomId, 'number_of_frames') }</p>
-    <p class="meta-text-center"></p>
+    <p class="meta-text-left">Frame <span class="${draggedDicomId}">1</span>/${ getJsonDetail(draggedDicomId, 'config', 'number_of_frames') }</p>
+    <p class="meta-text-center">${draggedDicomId}</p>
     <p class="meta-text-right">${ getJsonDetail(draggedDicomId, 'predicted_view') }</p>
     <div class="analysis-div">
-        <img class="analysis-img ${draggedDicomId}" data-directory="path_to_simpsons_jpeg" src="${ getJsonDetail(draggedDicomId, 'path_to_simpsons_jpeg', 0) }" data-id="${draggedDicomId}" img-analysis1">
+        <img class="analysis-img ${draggedDicomId}" data-directory="${ getDefaultDataDirectory(getJsonDetail(draggedDicomId, 'predicted_view'))}" src="${ getJsonDetail(draggedDicomId, 'paths', getDefaultDataDirectory(getJsonDetail(draggedDicomId, 'predicted_view')), 0) }" data-id="${draggedDicomId}" img-analysis1">
     </div>
 </div>
 <div class="report controls">
@@ -89,7 +91,7 @@ function changeImage(dir, dicomID, panel_direction) {
     var second_directory = img.attr("data-directory");
 
     //assign primary directory
-    image_directory = panel_direction == 'left' ? getJsonDetail(dicomID, 'path_to_dicom_jpeg') : getJsonDetail(dicomID, second_directory);
+    image_directory = panel_direction == 'left' ? getJsonDetail(dicomID, 'paths', 'path_to_dicom_jpeg') : getJsonDetail(dicomID, 'paths', second_directory);
     
 //     getJsonDetail(dicomID, 'path_to_simpsons_jpeg');
     
@@ -125,7 +127,7 @@ function play_clip() {
             var dicomID = $(this).attr('data-id');
             changeImage(1, dicomID, 'right') //left <- show Prev image
         });
-    }, 40);
+    }, 40); // sets the play clip interval in miliseconds
     return play;
 }
 
@@ -148,3 +150,12 @@ document.onkeydown = (e) => {
         });
     }
 }
+
+setInterval(function() {
+    new Tippy('.report-button',{
+        position:'top',
+        animation:'perspective',
+        interactive:'true'
+    });
+    console.log('1');
+}, 1000);

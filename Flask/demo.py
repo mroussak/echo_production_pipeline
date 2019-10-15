@@ -5,21 +5,19 @@ app = Flask(__name__)
 app.secret_key = 'icardioai'
         
 # Script imports:
-import global_vars
 import os
 import sys
 import json
-import yaml
-import importlib
 from pprint import pprint
 from time import time, sleep
 import subprocess
 
-# # Pipeline imports:
-sys.path.insert(1, '/sandbox/echo_production_pipeline/Pipeline')
-import ProductionPipeline as pl
-
+# Pipeline imports:
+sys.path.insert(1, '/internal_drive/echo_production_pipeline/Pipeline')
+#import ProductionPipeline as pl
 #import Tools.ProductionTools as tools
+
+
 
 # Accepts file path, deletes all files in file path:
 def DeleteFilesInPath(file_path, verbose=False, start=time()):
@@ -66,7 +64,7 @@ verbose = True
 start = time()   
 file_paths = {
     'upload_directory' : '/internal_drive/Dicoms/',
-    'dicoms_directory' : '/internal_drive/echo_production_pipeline/',
+    'dicoms_directory' : '/ineternal_drive/echo_production_pipeline/',
     'status_file' : '/internal_drive/echo_production_pipeline/Flask/static/status.txt',
 }
 
@@ -117,22 +115,23 @@ def home():
 def loader():
     print('route to loader')
     # execute backend pipeline:
+    command = ['python3 -u /internal_drive/echo_production_pipeline/Pipeline/ProductionPipeline.py > ' + file_paths['status_file']]
 
-    pl.main()
-
-    # command = ['python3 -u /sandbox/echo_production_pipeline/Pipeline/ProductionPipeline.py > ' + file_paths['status_file']]
-
-    # proc = subprocess.Popen(
-    #     command,
-    #     shell=True,
-    #     stdout=subprocess.PIPE
-    # )
-
+    proc = subprocess.Popen(
+        command,             
+        shell=True,
+        stdout=subprocess.PIPE
+    )
     print('end of loader')
     return render_template('loader.html')
     
 
-
+@app.route('/demo')
+def demo_page():
+    
+    return render_template('demo.html')
+    
+    
 @app.route('/results')
 def app_page():
     
@@ -178,14 +177,15 @@ def get_file(req_path):
         return send_file(req_path)
     
     return render_template('app.html')
+
+
    
 # Main: 
 if __name__ == "__main__":
     
     # Intialize script:
     #tools.InitializeScript(os.path.basename(__file__), verbose, start)
-    # Initialize global variables
-    global_vars.init()
+    
     # Run app:
-    app.run()
+    app.run(ssl_context='adhoc', debug=True)
     

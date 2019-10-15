@@ -1,22 +1,49 @@
-<keras.engine.training.Model object at 0x7f700dfd6160>
- * Serving Flask app "demo" (lazy loading)
- * Environment: production
-   WARNING: Do not use the development server in a production environment.
-   Use a production WSGI server instead.
- * Debug mode: off
-[get_file]: requested path [/images/bg.jpg] not found
-route to loader
 |__
 [DicomsPipeline.py]___
-reading dicoms
-[@   95.59 s] [ReadDicoms]: Read dicoms from [/internal_drive/Dicoms/]
-parsing dicoms
-[@   96.66 s] [ParseDicoms]: Parsed [11] dicoms
-building videos
-[@   98.02 s] [BuildVideos]: Built [11] videos
-exporting dicoms
-[@   98.09 s] [ExportDataToFile]: Exported [dicom_data] to [/internal_drive/Tables/DicomsTable.pickle]
+[@    0.04 s] [ReadDicoms]: Read dicoms from [/internal_drive//Demo Dicoms/]
+[@    0.36 s] [ParseDicoms]: Parsed [3] dicoms
+[@    1.10 s] [BuildVideos]: Built [3] videos
+[@    1.17 s] [ExportDataToFile]: Exported [dicom_data] to [/internal_drive/Tables/DicomsTable.pickle]
 |__
 [ViewsPipeline.py]___
-[@   98.09 s] [ReadDataFromFile]: Read data from [/internal_drive/Tables/DicomsTable.pickle]
-[@   98.09 s] [ParseDicomData]: Parsed dicom_data
+[@    1.18 s] [ReadDataFromFile]: Read data from [/internal_drive/Tables/DicomsTable.pickle]
+[@    1.18 s] [ParseDicomData]: Parsed dicom_data
+[@   68.28 s] [PredictView]: Predicted views on [3] videos
+[@   68.54 s] [ProcessViewPredictions]: Processed predictions
+[@   68.55 s] [JoinDataFrames]: Joined [views_post_processing_data] to [dicom_data]
+[@   68.55 s] [ExportDataToFile]: Exported [dicom_data] to [/internal_drive/Tables/ViewsTable.pickle]
+|__
+[SegmentationApicalPipeline.py]___
+[@   68.55 s] [ReadDataFromFile]: Read data from [/internal_drive/Tables/ViewsTable.pickle]
+[@   68.55 s] [ParseViewsData]: Parsed views_data
+[@   68.55 s] [ParseViewsData]: Parsed views_data
+[@   68.56 s] [PrepSegmentationModel]: Prepped segmentation model
+[@   94.72 s] [PredictSegmentation]: Predicted [A4C] segmentation
+[@  118.93 s] [PredictSegmentation]: Predicted [A2C] segmentation
+[@  121.43 s] [ProcessSegmentationResults]: Processed [A4C] segmentation results
+[@  123.73 s] [ProcessSegmentationResults]: Processed [A2C] segmentation results
+[@  123.74 s] [JoinDataFrames]: Joined [A4C_segmentation_data] to [A4C_views_data]
+[@  123.74 s] [JoinDataFrames]: Joined [A2C_segmentation_data] to [A2C_views_data]
+[@  123.74 s] [ConcatDataFrames]: Concatenated [A2C_views_data] to [A4C_views_data]
+[@  123.75 s] [ExportDataToFile]: Exported [A4C_views_data] to [/internal_drive/Tables/SegmentationApicalTable.pickle]
+|__
+[SegmentationPSAXPipeline.py]___
+[@  123.75 s] [ReadDataFromFile]: Read data from [/internal_drive/Tables/ViewsTable.pickle]
+[@  123.75 s] [ParseViewsData]: Parsed views_data
+[@  123.75 s] [PrepSegmentationModel]: Prepped segmentation model
+[@  153.00 s] [PredictSegmentation]: Predicted [PSAX] segmentation
+[@  155.51 s] [ProcessSegmentationResults]: Processed [PSAX] segmentation results
+[@  155.51 s] [JoinDataFrames]: Joined [PSAX_segmentation_data] to [PSAX_views_data]
+[@  155.52 s] [ExportDataToFile]: Exported [PSAX_views_data] to [/internal_drive/Tables/SegmentationPSAXTable.pickle]
+|__
+[ReportsPipeline.py]___
+[@  155.52 s] [ReadDataFromFile]: Read data from [/internal_drive/Tables/ViewsTable.pickle]
+[@  155.52 s] [ReadDataFromFile]: Read data from [/internal_drive/Tables/SegmentationApicalTable.pickle]
+[@  155.52 s] [ReadDataFromFile]: Read data from [/internal_drive/Tables/SegmentationPSAXTable.pickle]
+[@  155.52 s] [ParseSegmentationApicalData]: Parsed segmentation_data
+[@  155.52 s] [ParseSegmentationPSAXData]: Parsed segmentation_data
+[@  155.53 s] [ConcatDataFrames]: Concatenated [segmentation_psax_data] to [segmentation_apical_data]
+[@  156.93 s] [BuildGifs]: Built [3] gifs
+[@  156.94 s] [BuildJsonFromData]: Built json
+[@  156.94 s] [ExportDataToFile]: Exported [json_object] to [/internal_drive/echo_production_pipeline/Flask/static/demo.json]
+Done
