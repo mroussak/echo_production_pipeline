@@ -5,68 +5,22 @@ app = Flask(__name__)
 app.secret_key = 'icardioai'
         
 # Script imports:
-import os
-import sys
-import json
-from pprint import pprint
+import Components.FileHandler as files
+import Components.Security as security
+import Components.Sessions as sessions
+import Components.Users as users
 from time import time, sleep
+from pprint import pprint
 import subprocess
+import json
+import sys
+import os
 
 # Pipeline imports:
-sys.path.insert(1, '/internal_drive/echo_production_pipeline/Pipeline')
-#import ProductionPipeline as pl
-#import Tools.ProductionTools as tools
-
-
-
-# Accepts file path, deletes all files in file path:
-def DeleteFilesInPath(file_path, verbose=False, start=time()):
-    
-    file_list = os.listdir(file_path)
-    
-    for file in file_list:
-        os.remove(file_path + file)
-    
-    if verbose:
-        print('[@ %7.2f s] [DeleteFilesInPath]: cleared  [%s]' %(time()-start, file_path))
-
-        
-        
-# Accepts list of files, returns message, status:
-def CheckForDicoms(files, verbose=False, start=time()):
-
-    # no files are submitted:
-    if len(files) == 0:
-        message = 'No files submitted'
-        status = -1
-        return message, status
-
-    # file other than dicom submitted:
-    for file in files:
-        if file.filename[-3:] != 'dcm':
-            message = '[%s] is not a dicom' %(file.filename)
-            status = -2
-            return message, status
-    
-    # file list okay:
-    message = 'Reading dicoms'
-    status = 1
-
-    if verbose:
-        print('[@ %7.2f s] [CheckForDicoms]: Verified file list' %(time()-start))
-
-    return message, status
-
-
-
-# Variables:
-verbose = True
-start = time()   
-file_paths = {
-    'upload_directory' : '/internal_drive/Dicoms/',
-    'dicoms_directory' : '/ineternal_drive/echo_production_pipeline/',
-    'status_file' : '/internal_drive/echo_production_pipeline/Flask/static/status.txt',
-}
+sys.path.insert(0, '/internal_drive/echo_production_pipeline/Pipeline')
+from Components.Models import ModelsPipeline
+import Tools.ProductionTools as tools
+import ProductionPipeline
 
 
 
@@ -75,10 +29,23 @@ file_paths = {
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
    
+    # variables:
+    verbose = True
+   
     # default message:
     message = "Drag and drop or click to select your set of Dicoms to analyze."
-    #DeleteFilesInPath(file_paths['upload_directory'], verbose, start)
-
+    
+    # TODO
+    # get user and session details: 
+    #user_directory = users.GetUserID(None, verbose)
+    #session_directory = sessions.GetSessionID(None, verbose)
+    user_directory = 'UserID1'
+    session_directory = 'SessionID1'
+    
+    # build directories:
+    root_directory = files.BuildRootDirectory(user_directory, session_directory, verbose)
+    files.BuildDirectoryTree(root_directory, verbose)
+    
     # execute on post method:
     if request.method == 'POST':
         
@@ -92,44 +59,56 @@ def upload():
 #         if (status == -1) or (status == -2):
 #             return render_template('uploader.html', message=message)
         
-#         # delete existing files in upload folder:
         print('here')
-#        DeleteFilesInPath(file_paths['upload_directory'], verbose, start)
         
         # upload new files:
-        file.save(os.path.join(file_paths['upload_directory'], file.filename))
+        upload_directory = root_directory + '/Dicoms/'
+        file.save(os.path.join(upload_directory, file.filename))
         
-        print('[upload]: saved [%s] to [%s]' %(file.filename, file_paths['upload_directory']))
+        print('[upload]: saved [%s] to [%s]' %(file.filename, upload_directory))
         
         return render_template('upload.html', message=message)
     
     return render_template('upload.html', message=message)
+
+
 
 # Info page
 @app.route('/')
 def home():
     return render_template('index.html')
 
+
+
 # Loader page:
 @app.route('/loader')
 def loader():
-    print('route to loader')
+    
+    print('[loader]: route to loader')
+    
+    # TODO
+    # get user and session details: 
+    #user_directory = users.GetUserID(None, verbose)
+    #session_directory = sessions.GetSessionID(None, verbose)
+    user_directory = 'UserID1'
+    session_directory = 'SessionID1'
+    
+    # Variables:
+    start = time()
+    
     # execute backend pipeline:
-    command = ['python3 -u /internal_drive/echo_production_pipeline/Pipeline/ProductionPipeline.py > ' + file_paths['status_file']]
-
-    proc = subprocess.Popen(
-        command,             
-        shell=True,
-        stdout=subprocess.PIPE
-    )
-    print('end of loader')
+    ProductionPipeline.main(user_id = user_directory, session_id = session_directory, start = start)
+    
+    print('[loader]: end of loader')
     return render_template('loader.html')
     
+
 
 @app.route('/demo')
 def demo_page():
     
     return render_template('demo.html')
+    
     
     
 @app.route('/results')
@@ -183,9 +162,20 @@ def get_file(req_path):
 # Main: 
 if __name__ == "__main__":
     
+    # Variables:
+    verbose = True
+    start = time()   
+    file_paths = {
+        'status_file' : '/internal_drive/echo_production_pipeline/Flask/static/status.txt',
+    }
+
     # Intialize script:
-    #tools.InitializeScript(os.path.basename(__file__), verbose, start)
+    tools.InitializeScript(os.path.basename(__file__), verbose, start)
     
-    # Run app:
-    app.run(ssl_context='adhoc', debug=True)
+    # Load models:
+    ModelsPipeline.main(start=time())
+    
+    # Launch app:
+    #app.run(ssl_context='adhoc', debug=True, use_reloader=False)
+    app.run(debug=True, use_reloader=False)
     
