@@ -11,7 +11,7 @@ import os
 
 
 
-def main(start=time()):
+def main(user_id='UserID1', session='SessionID1', start=time()):
 
     # Variables:
     kwargs = {
@@ -25,11 +25,11 @@ def main(start=time()):
 
     # Directory tree:
     production_directory =  '/internal_drive/'
-    user_directory = '/internal_drive/Users/UserID1/'
-    session_directory = '/Sessions/SessionID1/'
+    directory = '/internal_drive/Users/' + user_id + '/'
+    session_directory = '/Sessions/' + session_id' + '/'
     file_paths = {
-        #'dicoms_directory' : user_directory + session_directory + 'Dicoms/',
-        'dicoms_directory' : production_directory + 'Dicoms_Anon/9/',
+        'dicoms_directory' : user_directory + session_directory + 'Dicoms/',
+        #'dicoms_directory' : production_directory + 'Dicoms_Anon/9/',
         'dicoms_videos_directory' : user_directory + session_directory + 'Videos/Dicoms/',
         'videos_directory' : user_directory + session_directory + 'Videos/',
         'dicoms_table' : user_directory + session_directory + 'Tables/DicomsTable.pickle',
@@ -58,12 +58,14 @@ def main(start=time()):
 
 
 
+# Execute as standalone pipeline:
 if __name__ == "__main__":
     
     # Step 1, load models if not already loaded:
     ModelsPipeline.main(start=time())
     
     # Step 2, execute pipeline:
-    main(start=time())
+    main(user_id='UserID1', session='SessionID1', start=time())
+
     
     
