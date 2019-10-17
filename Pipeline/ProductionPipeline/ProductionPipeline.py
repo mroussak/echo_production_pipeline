@@ -26,7 +26,7 @@ def main(user_id='UserID1', session='SessionID1', start=time()):
     # Directory tree:
     production_directory =  '/internal_drive/'
     user_directory = '/internal_drive/Users/' + user_id + '/'
-    session_directory = '/Sessions/' + session_id' + '/'
+    session_directory = '/Sessions/' + session_id + '/'
     file_paths = {
         'dicoms_directory' : user_directory + session_directory + 'Dicoms/',
         #'dicoms_directory' : production_directory + 'Dicoms_Anon/9/',

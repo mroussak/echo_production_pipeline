@@ -29,20 +29,45 @@ def GetManufacturerDetails(dicom, verbose=False, start=time()):
     
     # initialize variables:
     manufacturer_details = {
-        'model' : None,
-        'name' : None,
+        'manufacturer' : None,
+        'manufacturer_model_name' : None,
     } 
     
+    # try accessing data using numeric keys:
+    try: 
+        manufacturer_details['manufacturer'] = dicom[0x8,0x70].value
+        manufacturer_details['manufacturer_model_name'] = dicom[0x8,0x1090].value
+    
+    except KeyError as error:
+        key_error = error
+    
+    else:
+        if verbose:
+            print('[@ %7.2f s] [GetManufacturerDetails]: Retreived manufacturer details from dicom' %(time()-start))
+        
+        return manufacturer_details
+
+    # try accessing data using object attributes:
     try:
-        manufacturer_details['name'] = dicom[0x8,0x70].value
-        manufacturer_details['model'] = dicom[0x8,0x1090].value
+        manufacturer_details['manufacturer'] = dicom.Manufacturer 
+        manufacturer_details['manufacturer_model_name'] = dicom.ManufacturerModelName
     
-    except Exception as error:
-        print('[WARNING] in [GetManufacturerDetails]: Unable to retreive manufacturer details, this may cause issues in future versions')
-        print(error)
-    
+    except AttributeError as error:
+        attribute_error = error
+
+    else:
+        if verbose:
+            print('[@ %7.2f s] [GetManufacturerDetails]: Retreived manufacturer details from dicom' %(time()-start))
+        
+        return manufacturer_details
+        
+    # print record of warning:
+    print('[WARNING] in [GetManufacturerDetails]: Unable to retreive manufacturer details, this may cause issues in future versions')
+    print('KeyError: %s' %key_error)
+    print('AttributeError: %s' %attribute_error)
+        
     if verbose:
-        print('[@ %7.2f s] [GetManufacturerDetails]: Retreived manufacturer details from dicom' %(time()-start))
+        print('[@ %7.2f s] [GetManufacturerDetails]: Unable to retreive manufacturer details from dicom' %(time()-start))
     
     return manufacturer_details
     
@@ -62,10 +87,10 @@ def GetImageSizeDetails(dicom, verbose=False, start=time()):
     }
         
     try:
-        image_size_details['physical_units_x_direction'] = dicom[0x18,0x6024].value
-        image_size_details['physical_units_y_direction'] = dicom[0x18,0x6026].value
-        image_size_details['physical_delta_x'] = dicom[0x18,0x602C].value
-        image_size_details['physical_delta_y'] = dicom[0x18,0x602E].value
+        #image_size_details['physical_units_x_direction'] = dicom[0x18,0x6024].value
+        #image_size_details['physical_units_y_direction'] = dicom[0x18,0x6026].value
+        image_size_details['physical_delta_x'] = dicom[0x18,0x602c].value
+        image_size_details['physical_delta_y'] = dicom[0x18,0x602e].value
         
     except Exception as error:
         raise(Exception('[ERROR] in [GetImageSizeDetails]: Cannot retreive size of image(s) in dicom'))

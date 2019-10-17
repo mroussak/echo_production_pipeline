@@ -12,6 +12,7 @@ def main(verbose=False, start=time()):
         }
     dicom_file_path = 'test'
     dicom_file_path = '/internal_drive/Users/UserID1/Sessions/SessionID1/Dicoms/IM16'
+    dicom_file_path = '/internal_drive/Dicoms/20161110145727_20161110_150250_0000.dcm'
     
     # Step 1, read dicom file:
     dicom = funcs.ReadDicomFile(dicom_file_path, **kwargs)
