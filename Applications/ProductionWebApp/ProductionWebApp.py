@@ -17,7 +17,7 @@ import sys
 import os
 
 # Pipeline imports:
-sys.path.insert(0, '/internal_drive/echo_production_pipeline/Pipeline')
+sys.path.insert(0, '/internal_drive/echo_production_pipeline/Pipeline/ProductionPipeline/')
 from Components.Models import ModelsPipeline
 import Tools.ProductionTools as tools
 import ProductionPipeline
@@ -160,6 +160,7 @@ def get_file(req_path):
 
    
 # Main: 
+#if True:
 if __name__ == "__main__":
     
     # Variables:
