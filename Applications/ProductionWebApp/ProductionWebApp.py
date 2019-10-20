@@ -160,23 +160,22 @@ def get_file(req_path):
 
    
 # Main: 
-#if True:
-if __name__ == "__main__":
-    
-    # Variables:
-    verbose = True
-    start = time()   
-    file_paths = {
-        'status_file' : '/internal_drive/echo_production_pipeline/Flask/static/status.txt',
-    }
 
-    # Intialize script:
-    tools.InitializeScript(os.path.basename(__file__), verbose, start)
-    
-    # Load models:
-    ModelsPipeline.main(start=time())
-    
+# Variables:
+verbose = True
+start = time()   
+file_paths = {
+    'status_file' : '/internal_drive/echo_production_pipeline/Flask/static/status.txt',
+}
+
+# Intialize script:
+tools.InitializeScript(os.path.basename(__file__), verbose, start)
+
+# Load models:
+ModelsPipeline.main(start=time())
+
+# Dev functions:
+if __name__ == "__main__":
+
     # Launch app:
-    #app.run(ssl_context='adhoc', debug=True, use_reloader=False)
     app.run(debug=True, use_reloader=False)
-    

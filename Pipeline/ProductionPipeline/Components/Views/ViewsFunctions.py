@@ -19,7 +19,7 @@ def ParseDicomData(dicom_data, verbose=False, start=time()):
     dicom_data.name = 'dicom_data'
 
     if len(dicom_data) == 0:
-        raise(ValueError('No standard views found'))
+        raise(ValueError('[ERROR] in [ParseDicomData]: No standard views found'))
     
     if verbose:
         print("[@ %7.2f s] [ParseDicomData]: Parsed dicom_data" %(time()-start))
