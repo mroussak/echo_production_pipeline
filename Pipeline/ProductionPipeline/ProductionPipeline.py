@@ -1,3 +1,4 @@
+# Script imports:
 from Components.SegmentationApical import SegmentationApicalPipeline
 from Components.SegmentationPSAX import SegmentationPSAXPipeline
 from Components.Reports import ReportsPipeline
@@ -11,7 +12,7 @@ import os
 
 
 
-def main(user_id='UserID1', session='SessionID1', start=time()):
+def main(user_id='UserID1', session_id='SessionID1', start=time()):
 
     # Variables:
     kwargs = {
@@ -26,7 +27,7 @@ def main(user_id='UserID1', session='SessionID1', start=time()):
     # Directory tree:
     production_directory =  '/internal_drive/'
     user_directory = '/internal_drive/Users/' + user_id + '/'
-    session_directory = '/Sessions/' + session_id + '/'
+    session_directory = 'Sessions/' + session_id + '/'
     file_paths = {
         'dicoms_directory' : user_directory + session_directory + 'Dicoms/',
         #'dicoms_directory' : production_directory + 'Dicoms_Anon/9/',
@@ -62,9 +63,9 @@ def main(user_id='UserID1', session='SessionID1', start=time()):
 if __name__ == "__main__":
     
     # Step 1, load models if not already loaded:
-    ModelsPipeline.main(start=time())
+    #ModelsPipeline.main(start=time())
     
     # Step 2, execute pipeline:
-    main(user_id='UserID1', session='SessionID1', start=time())
+    main(user_id='UserID1', session_id='SessionID1', start=time())
     
     
