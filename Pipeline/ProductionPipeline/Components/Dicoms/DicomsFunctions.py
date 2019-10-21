@@ -102,6 +102,7 @@ def ParseDicoms(dicoms, videos_directory, verbose=False, start=time()):
 
     multi_proc_output = list(filter(None,multi_proc_output))
 
+    # raise error if no usable dicoms are found:
     try:
         dicom_data, pixel_array_data = zip(*multi_proc_output)
 
@@ -111,9 +112,7 @@ def ParseDicoms(dicoms, videos_directory, verbose=False, start=time()):
     # convert list data to dataframe:
     dicom_data = pd.DataFrame(dicom_data)
     dicom_data.name = 'dicom_data'
-    # pixel_array_data = pd.DataFrame(pixel_array_data)
-    # pixel_array_data.name = 'pixel_array_data'
-
+   
     if verbose:
         print("[@ %7.2f s] [ParseDicoms]: Parsed [%d] dicoms" %(time()-start, len(dicom_data)))    
     
