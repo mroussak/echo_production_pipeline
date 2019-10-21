@@ -39,6 +39,7 @@ $(function() {
     });
     $(".top").droppable({
         drop: function(event, ui) {
+            $(".top").html(displayLoader(draggedDicomId));
             $(".top").html(displayConsole(draggedDicomId));
             if (playing_clip_top != undefined){
                 clearInterval(playing_clip_top)
@@ -56,6 +57,28 @@ $(function() {
         }
     });
 });
+
+function displayLoader(draggedDicomId){
+    var html = `
+<div class="split-horizontal top img-analysis ui-droppable">
+    <div class="split-display">
+        <div ondrop="drop(event)" class="analysis-div">
+            <h2 class="title drop-me">Loading...</h2>
+        </div>
+    </div>
+    <div class="split-display right">
+        <div class="analysis-div">
+            <h2 class="title drop-me">Loading...</h2>
+        </div>
+    </div>
+    <div class="report controls">
+        <a class="btn report-button" style="margin:0px -4px 0px 0px" data-tooltipped="" data-original-title="Drag and drop me in one of the panes to the right">Loading Metrics</a>
+    </div>
+</div>
+    `;
+    defineImgIndex(draggedDicomId);
+    return html;
+}
 
 //display the html in each view panel
 function displayConsole(draggedDicomId){

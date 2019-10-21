@@ -1,4 +1,5 @@
 # Flask imports:
+
 from flask import Flask, render_template, request, Response, redirect, flash
 from flask import jsonify, abort, send_file, url_for
 app = Flask(__name__)
@@ -21,8 +22,6 @@ sys.path.insert(0, '/internal_drive/echo_production_pipeline/Pipeline/Production
 from Components.Models import ModelsPipeline
 import Tools.ProductionTools as tools
 import ProductionPipeline
-
-
 
 # Landing page:
 @app.route('/app', methods=['GET', 'POST'])
@@ -174,8 +173,8 @@ tools.InitializeScript(os.path.basename(__file__), verbose, start)
 # Load models:
 ModelsPipeline.main(start=time())
 
-# Dev functions:
-if __name__ == "__main__":
-
-    # Launch app:
-    app.run(debug=True, use_reloader=False)
+# # Dev functions:
+# if __name__ == "__main__":
+#     os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+#     # Launch app:
+#     app.run(debug=True, use_reloader=False)

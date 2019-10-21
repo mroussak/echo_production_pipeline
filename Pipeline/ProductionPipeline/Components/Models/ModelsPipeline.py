@@ -4,7 +4,9 @@ import tensorflow as tf
 from time import time
 import os
 
-
+conf = tf.ConfigProto()
+conf.gpu_options.allow_growth=True
+session = tf.Session(config=conf)
 
 def main(start=time()):
 
