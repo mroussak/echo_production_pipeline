@@ -1,10 +1,7 @@
 import keras.models as km
-import tensorflow as tf
 from time import time
 import importlib
 import yaml
-
-
 
 def PrepSegmentationModel(configuration_file, verbose=False, start=time()):
 

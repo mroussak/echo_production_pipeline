@@ -22,8 +22,6 @@ from Components.Models import ModelsPipeline
 import Tools.ProductionTools as tools
 import ProductionPipeline
 
-
-
 # Landing page:
 @app.route('/app', methods=['GET', 'POST'])
 @app.route('/upload', methods=['GET', 'POST'])
@@ -176,6 +174,5 @@ ModelsPipeline.main(start=time())
 
 # Dev functions:
 if __name__ == "__main__":
-
     # Launch app:
     app.run(debug=True, use_reloader=False)

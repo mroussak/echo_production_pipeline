@@ -4,6 +4,8 @@
 //jsonObject = JSON.parse(jsonObject);
 var jsonObject;
 var file;
+var images = [];
+
 
 if (window.location.href.indexOf("demo") > -1) {
       file = 'demo';
@@ -62,6 +64,32 @@ function getJsonDetail(selectedDicomID, detail, type, i){
 return detailToReturn;
 }
 
+//preload images function
+function preload() {
+    for (var i = 0; i < arguments.length; i++) {
+        images[i] = new Image();
+        images[i].src = preload.arguments[i];
+    }
+}
+
+function defineImgIndex(DicomId){
+    var masterArray = [];
+    var a = getJsonDetail(DicomId, 'paths');
+    var index;
+    for (var obj in a){
+    	if(Array.isArray(a[obj])){
+    // 		for (index = 0; index < a[obj].length; ++index){
+    			masterArray = masterArray.concat(a[obj]);
+            // }
+		}
+    }
+    preload(masterArray)
+}
+    
+//preload image usage: 
+
+
+//update Json if needed
 function updateJsonDetail(selectedDicomID, newParameter, value){
     var detailToUpdate;
     $.each(jsonObject, function(key, value) {

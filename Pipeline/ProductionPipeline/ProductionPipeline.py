@@ -10,8 +10,6 @@ from time import time
 import sys
 import os
 
-
-
 def main(user_id='UserID1', session_id='SessionID1', start=time()):
 
     # Variables:
@@ -62,8 +60,11 @@ def main(user_id='UserID1', session_id='SessionID1', start=time()):
 # Execute as standalone pipeline:
 if __name__ == "__main__":
     
+    os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
+    os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+    
     # Step 1, load models if not already loaded:
-    #ModelsPipeline.main(start=time())
+    ModelsPipeline.main(start=time())
     
     # Step 2, execute pipeline:
     main(user_id='UserID1', session_id='SessionID1', start=time())

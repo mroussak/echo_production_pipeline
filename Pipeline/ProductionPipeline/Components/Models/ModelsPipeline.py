@@ -4,10 +4,8 @@ import tensorflow as tf
 from time import time
 import os
 
-
-
 def main(start=time()):
-
+    
     # Variables:
     global views_model 
     global a4c_segmentation_model
