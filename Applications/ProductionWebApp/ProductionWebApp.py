@@ -1,5 +1,4 @@
 # Flask imports:
-
 from flask import Flask, render_template, request, Response, redirect, flash
 from flask import jsonify, abort, send_file, url_for
 app = Flask(__name__)
@@ -173,8 +172,7 @@ tools.InitializeScript(os.path.basename(__file__), verbose, start)
 # Load models:
 ModelsPipeline.main(start=time())
 
-# # Dev functions:
-# if __name__ == "__main__":
-#     os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
-#     # Launch app:
-#     app.run(debug=True, use_reloader=False)
+# Dev functions:
+if __name__ == "__main__":
+    # Launch app:
+    app.run(debug=True, use_reloader=False)
