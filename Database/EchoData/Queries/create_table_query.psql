@@ -1,0 +1,10 @@
+CREATE TABLE ManuallyAddedViewsData(
+    object_id INT PRIMARY KEY,
+    guid INT,
+    path_to_dicom CHAR(50),
+    view CHAR(50),
+    subview CHAR(50),
+    user_id INT,
+    selection_time TIME,
+    time_stamp TIMESTAMPTZ,
+);

@@ -10,6 +10,8 @@ from time import time
 import sys
 import os
 
+
+
 def main(user_id='UserID1', session_id='SessionID1', start=time()):
 
     # Variables:
