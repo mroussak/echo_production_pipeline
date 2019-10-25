@@ -65,6 +65,7 @@ return detailToReturn;
 }
 
 //preload images function
+
 function preload() {
     for (var i = 0; i < arguments.length; i++) {
         images[i] = new Image();

@@ -175,4 +175,6 @@ ModelsPipeline.main(start=time())
 # Dev functions:
 if __name__ == "__main__":
     # Launch app:
+    os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
+    os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
     app.run(debug=True, use_reloader=False)
