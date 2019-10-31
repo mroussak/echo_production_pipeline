@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block content %}
+<body style="background-color: black">
+    <h3 class="loader typewriter" id="typewriter"></h3>
+    <div class="loader typewriter" id="typewriter2">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul class=flashes>
+            {% for message in messages %}
+            <br>
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    {% endwith %}
+    </div>
+    <!--<canvas id=c></canvas>-->
+    <main style="transform: translate(50%, 20%);width: 50%;">
+        <center>
+            <div class="container">
+                <div class="z-depth-1 grey lighten-4 row" style="display: inline-block; padding: 32px 48px 0px 48px; border: 1px solid #EEE;">
+                    <form class="col s12" method="post" style="padding: 0 1em 3em 1em;">
+                        <h4 class="card-title">iCardio.ai Registration</h4>
+                        <div class='row'>
+                            <div class='input-field col s12'>
+                                <i class="material-icons prefix">email</i>
+                                <input class='validate' type='email' name='email' id='email'>
+                                <label for='email'>Enter your email</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s6">
+                              <i class="material-icons prefix">account_circle</i>
+                              <input id="icon_prefix" name="name" type="text" class="validate">
+                              <label for="icon_prefix">Full Name</label>
+                            </div>
+                            <div class="input-field col s6">
+                              <i class="material-icons prefix">phone</i>
+                              <input id="icon_telephone" name="tel" type="tel" class="validate">
+                              <label for="icon_telephone">Telephone</label>
+                            </div>
+                          </div>
+                        <div class="row">
+                            <div class="input-field col s12">
+                              <i class="material-icons prefix">vpn_key</i>
+                              <input id="pass" name="pass" type="password" class="validate">
+                              <label for="pass">Password</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12">
+                              <i class="material-icons prefix">replay</i>
+                              <input id="repass" name="repass" type="password" class="validate">
+                              <label for="repass">Password</label>
+                                                              <span style="float:left" class="helper-text"></span>
+
+                            </div>
+                          </div>
+                        <br />
+                        <center>
+                            <div class='row'>
+                                <button type='submit' name='btn_login' class='col s12 btn btn-large waves-effect' style="cursor:pointer;background: red">Register</button>
+                            </div>
+                        </center>
+                    </form>
+                </div>
+            </div>
+            <h4 style="font-size: 14px; cursor:pointer;color: red"><a style="color: red; cursor:pointer" href="login">Or, login</a></h4>
+        </center>
+    </main>
+</body>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script>
+<script type="application/javascript" src="static/js/materialize.min.js"></script>
+<!--  <script src="static/js/network.js"></script>-->
+<script>
+    
+$('input[name=pass], input[name=repass]').keyup('change', function () {
+    var password   = $('input[name=pass]');
+    var repassword = $('input[name=repass]');
+        
+    password.val() != repassword.val() ? $('.helper-text').html('Passwords do not match.').css("color","red") : $('.helper-text').html('Okay.').css("color","green");
+});
+    
+    // set up text to print, each item in array is new line
+//var set = new Array(
+//"There are only 10 types of people in the world:", 
+//"Those who understand binary, and those who don't"
+//);
+var setData = "iCardio.ai User Registration"
+var iSpeed = 10; // time delay of print out
+var iIndex = 0; // start printing array at this posision
+var iArrLength = setData.length; // the length of the text array
+var iScrollAt = 20; // start scrolling up at this many lines
+var shouldChange = 1;
+var iTextPos = 0; // initialise text position
+var sContents = ''; // initialise contents variable
+var iRow; // initialise current row
+var shouldStop = 0;
+
+function typewriter()
+{
+ if(shouldChange == 1)
+ {
+	 iIndex = 0; 
+	 iArrLength = setData.length; 
+	 iScrollAt = 20; 
+	 shouldChange = 0;
+	 iTextPos = 0; 
+ }
+ if(shouldStop == 1)
+ return;
+
+ sContents = ' ';
+ iRow = Math.max(0, iIndex-iScrollAt);
+ var destination = document.getElementById("typewriter");
+ 
+// while ( iRow < iIndex ) {
+//  sContents += aText[iRow++] + '<br />';
+// }
+ destination.innerHTML = sContents + setData.substring(0, iTextPos) + "";
+ if ( iTextPos++ == iArrLength ) {
+  iTextPos = 0;
+  iIndex++;
+  shouldStop = 1;
+//  debugger;
+ // if ( iIndex != aText.length ) {
+   iArrLength = setData.length;
+   
+   //setTimeout("typewriter()", 500);
+   //}
+
+}
+}
+    setInterval(function() {
+     typewriter();
+	 }, 50);
+
+    
+</script>
+</html>
+{% endblock %}
