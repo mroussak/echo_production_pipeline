@@ -1,0 +1,10 @@
+UPDATE 
+    ManuallyAddedViewsData
+SET 
+    view = '{view}',
+    subview = '{subview}',
+    user_id = '{user_id}',
+    selection_time = '{selection_time}'::TIME,
+    time_stamp = '{time_stamp}'::TIMESTAMP
+WHERE 
+    object_id = {object_id};

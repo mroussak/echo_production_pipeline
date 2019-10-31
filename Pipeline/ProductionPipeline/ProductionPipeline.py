@@ -38,7 +38,6 @@ def main(user_id='UserID1', session_id='SessionID1', start=time()):
         'segmentation_apical_table' : user_directory + session_directory + 'Tables/SegmentationApicalTable.pickle',
         'segmentation_psax_table' : user_directory + session_directory + 'Tables/SegmentationPSAXTable.pickle',
         'reports' : user_directory + session_directory +'Reports/reports.json',
-        #'reports' : production_directory + 'echo_production_pipeline/Flask/static/reports.json',
     }
 
     # Step 1, dicoms pipeline:
@@ -62,13 +61,13 @@ def main(user_id='UserID1', session_id='SessionID1', start=time()):
 # Execute as standalone pipeline:
 if __name__ == "__main__":
     
-    os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
-    os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+    user_id = 'Demo'
+    session_id = 'Demo'
     
     # Step 1, load models if not already loaded:
     ModelsPipeline.main(start=time())
     
     # Step 2, execute pipeline:
-    main(user_id='UserID1', session_id='SessionID1', start=time())
+    main(user_id, session_id, start=time())
     
     

@@ -1,0 +1,6 @@
+UPDATE 
+    ManuallyAddedViewsData
+SET 
+    in_use = true
+WHERE 
+    object_id = {object_id};

@@ -7,6 +7,7 @@ import numpy as np
 import pydicom 
 import imageio
 import hashlib
+import ffmpeg
 import sys
 import cv2
 import os
@@ -47,6 +48,7 @@ def parse_single_dicom(counter, dicom, videos_directory):
     # name new directories:
     path_to_dicom_jpeg = '%s%s/Jpeg/' % (videos_directory, dicom_id)
     path_to_dicom_gif = '%s%s/Gif/' % (videos_directory, dicom_id)
+    path_to_dicom_webm = '%s%s/Webm/' % (videos_directory, dicom_id)
 
     # build dicom_object
     dicom_object = {
@@ -56,6 +58,7 @@ def parse_single_dicom(counter, dicom, videos_directory):
         'paths': {
             'path_to_dicom_jpeg': path_to_dicom_jpeg,
             'path_to_dicom_gif': path_to_dicom_gif,
+            'path_to_dicom_webm' : path_to_dicom_webm,
         },
         'config': {
             'manufacturer' : dicom['dicom']['manufacturer'],
@@ -74,6 +77,7 @@ def parse_single_dicom(counter, dicom, videos_directory):
         'dicom_id': dicom_id,
         'pixel_array': dicom['dicom']['pixel_data'],
         'path_to_dicom_jpeg': path_to_dicom_jpeg,
+        'path_to_dicom_webm': path_to_dicom_webm,
     }
 
     # return an empty object if dicom is unusable
@@ -135,6 +139,7 @@ def build_single_video(dicom):
     
     # build directories to store videos:
     tools.CreateDirectory(dicom['path_to_dicom_jpeg'])
+    tools.CreateDirectory(dicom['path_to_dicom_webm'])
 
     # check number of frames:
     if len(dicom['pixel_array'].shape) == 3:
@@ -162,7 +167,7 @@ def build_single_video(dicom):
         for counter2, frame in enumerate(dicom['pixel_array']):
             
             # name new image:
-            image_name = '%s%d.jpg' % (dicom['path_to_dicom_jpeg'], counter2)
+            image_name = '%s%s.jpg' % (dicom['path_to_dicom_jpeg'], str(counter2).zfill(4))
 
             # build jpeg file from dicom data:
             image = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)

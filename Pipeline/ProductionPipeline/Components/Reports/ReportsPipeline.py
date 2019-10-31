@@ -29,10 +29,9 @@ def main(file_paths, verbose=False, start=time()):
     # Step 4, append data:
     reports_data = tools.ConcatDataFrames(segmentation_apical_data, segmentation_psax_data, 'reports_data', verbose, start)
     
-    # Step 5, build gifs, resize videos:
-    #funcs.ResizeVideos(reports_data, verbose, start) # decided to not resize videos presently
+    # Step 5, build gifs, webms:
     funcs.BuildGifs(views_data, verbose, start)
-
+    funcs.BuildWebms(reports_data, verbose, start)
     
     # Step 6, build json:
     reports_json = funcs.BuildJsonFromData(reports_data, verbose, start)

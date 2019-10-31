@@ -1,14 +1,16 @@
-import cv2
-import ast
-import json
-import imageio
-import itertools
-import numpy as np
-import pandas as pd
+import Tools.ProductionTools as tools
+from multiprocessing import Pool
 from PIL import Image
 from time import time
-from multiprocessing import Pool
-import Tools.ProductionTools as tools
+import pandas as pd
+import numpy as np
+import itertools
+import imageio
+import ffmpeg
+import json
+import cv2
+import ast
+import os
 
 
 
@@ -25,15 +27,15 @@ def ParseViewsData(views_data, verbose=False, start=time()):
     # take two best views of each view type:
     for view in predicted_views:
             
-            # group by predicted view:
-            best_views_object = views_data.loc[views_data['predicted_view'] == view]
-            
-            # find two best views:
-            best_views_object = best_views_object.sort_values(by=['video_view_threshold'], ascending=False)
-            best_views_object = best_views_object.iloc[:2]
-            
-            # append to list:
-            best_views_list.append(best_views_object)
+        # group by predicted view:
+        best_views_object = views_data.loc[views_data['predicted_view'] == view]
+        
+        # find two best views:
+        best_views_object = best_views_object.sort_values(by=['video_view_threshold'], ascending=False)
+        best_views_object = best_views_object.iloc[:2]
+        
+        # append to list:
+        best_views_list.append(best_views_object)
             
     # convert to dataframe:
     best_views_data = pd.concat(best_views_list)
@@ -61,23 +63,22 @@ def ParseSegmentationApicalData(segmentation_data, verbose=False, start=time()):
         paths['path_to_dicom_gif'] += row['dicom_id'] + '.gif'
         paths['path_to_mask_gif'] += row['dicom_id'] + '.gif'
         paths['path_to_simpsons_gif'] += row['dicom_id'] + '.gif'
-            
-        # build file path list to jpegs:
-        dicom_jpegs = []
-        mask_jpegs = []
-        simpsons_jpegs = []
-        
-        for i in range(row['config']['number_of_frames']):
     
-            dicom_jpegs.append(paths['path_to_dicom_jpeg'] + str(i) + '.jpg')
-            mask_jpegs.append(paths['path_to_mask_jpeg'] + str(i) + '.jpg')
-            simpsons_jpegs.append(paths['path_to_simpsons_jpeg'] + str(i) + '.jpg')
+        # append webm file names to webm file path:
+        paths['path_to_dicom_webm'] += row['dicom_id'] + '.webm'
+        paths['path_to_mask_webm'] += row['dicom_id'] + '.webm'
+        paths['path_to_simpsons_webm'] += row['dicom_id'] + '.webm'
     
-        # update paths object:
-        paths['path_to_dicom_jpeg'] = dicom_jpegs
-        paths['path_to_mask_jpeg'] = mask_jpegs
-        paths['path_to_simpsons_jpeg'] = simpsons_jpegs
-    
+        # jpeg root directory:
+        paths['path_to_dicom_jpeg_root'] = paths['path_to_dicom_jpeg']
+        paths['path_to_mask_jpeg_root'] = paths['path_to_mask_jpeg']
+        paths['path_to_simpsons_jpeg_root'] = paths['path_to_simpsons_jpeg']
+
+        # update jpeg paths::
+        paths['path_to_dicom_jpeg'] = [paths['path_to_dicom_jpeg'] + file for file in os.listdir(paths['path_to_dicom_jpeg'])]
+        paths['path_to_mask_jpeg'] = [paths['path_to_mask_jpeg'] + file for file in os.listdir(paths['path_to_mask_jpeg'])]
+        paths['path_to_simpsons_jpeg'] = [paths['path_to_simpsons_jpeg'] + file for file in os.listdir(paths['path_to_simpsons_jpeg'])]
+
         # replace paths object in dataframe:
         segmentation_data.at[index, 'paths'] = paths
         
@@ -101,33 +102,32 @@ def ParseSegmentationPSAXData(segmentation_data, verbose=False, start=time()):
         # get paths object:
         paths = row['paths']
     
-        #  append gif file names to gif file paths:    
+        # append gif file names to gif file paths:    
         paths['path_to_dicom_gif'] += row['dicom_id'] + '.gif'
         paths['path_to_mask_gif'] += row['dicom_id'] + '.gif'
         paths['path_to_cylinder_gif'] += row['dicom_id'] + '.gif'
-            
-        # build file path list to jpegs:
-        dicom_jpegs = []
-        mask_jpegs = []
-        cylinder_jpegs = []
+    
+        # append webm file names to webm file path:
+        paths['path_to_dicom_webm'] += row['dicom_id'] + '.webm'
+        paths['path_to_mask_webm'] += row['dicom_id'] + '.webm'
+        paths['path_to_cylinder_webm'] += row['dicom_id'] + '.webm'
+    
+        # jpeg root directories:
+        paths['path_to_dicom_jpeg_root'] = paths['path_to_dicom_jpeg']
+        paths['path_to_mask_jpeg_root'] = paths['path_to_mask_jpeg']
+        paths['path_to_cylinder_jpeg_root'] = paths['path_to_cylinder_jpeg']
         
-        for i in range(row['config']['number_of_frames']):
-    
-            dicom_jpegs.append(paths['path_to_dicom_jpeg'] + str(i) + '.jpg')
-            mask_jpegs.append(paths['path_to_mask_jpeg'] + str(i) + '.jpg')
-            cylinder_jpegs.append(paths['path_to_cylinder_jpeg'] + str(i) + '.jpg')
-    
-        # update paths object:
-        paths['path_to_dicom_jpeg'] = dicom_jpegs
-        paths['path_to_mask_jpeg'] = mask_jpegs
-        paths['path_to_cylinder_jpeg'] = cylinder_jpegs
+        # update jpeg paths::
+        paths['path_to_dicom_jpeg'] = [paths['path_to_dicom_jpeg'] + file for file in os.listdir(paths['path_to_dicom_jpeg'])]
+        paths['path_to_mask_jpeg'] = [paths['path_to_mask_jpeg'] + file for file in os.listdir(paths['path_to_mask_jpeg'])]
+        paths['path_to_cylinder_jpeg'] = [paths['path_to_cylinder_jpeg'] + file for file in os.listdir(paths['path_to_cylinder_jpeg'])]
     
         # replace paths object in dataframe:
         segmentation_data.at[index, 'paths'] = paths
     
     # fill nans with 0s:    
     segmentation_data = segmentation_data.fillna(0)    
-    
+   
     segmentation_data.name = 'segmentation_psax_data'
     
     if verbose:
@@ -167,42 +167,101 @@ def BuildGifs(dicom_data, verbose=False, start=time()):
     if verbose:
         print("[@ %7.2f s] [BuildGifs]: Built [%d] gifs" %(time()-start, NUMBER_OF_THREADS))
         
+        
 
+def BuildSingleWebm(dicom):
         
-def ResizeVideos(data, verbose=False, start=time()):
-    
-    ''' Accepts data, rewrites videos with less pixels '''
-    
-    for index, row in data.iterrows():
-    
-        # get jpeg files:
-        dicom_jpegs = list(row['paths']['path_to_dicom_jpeg'])
-        mask_jpegs = list(row['paths']['path_to_mask_jpeg'])
+        ''' Accepts dicom, builds single webm file '''
         
-        if row['predicted_view'] == 'PSAX':
-            other_jpegs = list(row['paths']['path_to_cylinder_jpeg'])
-        else:
-            other_jpegs = list(row['paths']['path_to_simpsons_jpeg'])
-        
-        jpeg_files = dicom_jpegs + mask_jpegs + other_jpegs
-        
-        # resize each image:
         try:
-            for filepath in jpeg_files:
-                image = cv2.imread(filepath)
-                image = cv2.resize(image, None, fx=0.5, fy=0.5)
-                new_image = Image.fromarray(image)
-                new_image.save(filepath) 
-        except:
-            pass
+            
+            # unpack dicom:
+            input_files = dicom['input_files']
+            output_file = dicom['output_file']
+            
+            # ffmpeg parameters:
+            framerate = 30
+            output_options = {
+                "format": "webm",
+                "pix_fmt": "yuv420p",
+                "video_bitrate": 1000000,
+                # "-i": os.path.join(clean_dir, '%%01d.jpg')
+                # "crf": 10,
+            }
+      
+            # build webm:
+            (ffmpeg
+                .input(input_files, pattern_type="glob", framerate=framerate)
+                .output(output_file, **output_options)
+                .global_args('-loglevel', 'quiet', '-y')
+                .run()
+            )
+            
+        except Exception as error:
+            print('[ERROR] in [build_single_video]: [%s]' %error)
+
+
+
+def BuildWebms(dicom_data, verbose=False, start=time()):
+    
+    ''' Accepts dicom data, builds webms '''
+        
+    # create list of webms:
+    list_of_webms = []
+    
+    for index, dicom in dicom_data.iterrows():
+        
+        # general:
+        input_files = dicom['paths']['path_to_dicom_jpeg_root'] + '/*.jpg'
+        output_file = dicom['paths']['path_to_dicom_webm']
+        dicom_webm = {'input_files' : input_files, 'output_file' : output_file}
+        list_of_webms.append(dicom_webm)
+        
+        # a4c, a2c:
+        if dicom['predicted_view'] == 'A4C' or dicom['predicted_view'] == 'A2C':
+            
+            # masks:
+            input_files = dicom['paths']['path_to_mask_jpeg_root'] + '/*.jpg'
+            output_file = dicom['paths']['path_to_mask_webm']
+            mask_webm = {'input_files' : input_files, 'output_file' : output_file}
+            list_of_webms.append(mask_webm)
+            
+            # simpsons:
+            input_files = dicom['paths']['path_to_simpsons_jpeg_root'] + '/*.jpg'
+            output_file = dicom['paths']['path_to_simpsons_webm']
+            simpsons_webm = {'input_files' : input_files, 'output_file' : output_file}
+            list_of_webms.append(simpsons_webm)
+            
+        # psax:
+        if dicom['predicted_view'] == 'PSAX':
+            
+            # masks:
+            input_files = dicom['paths']['path_to_mask_jpeg_root'] + '/*.jpg'
+            output_file = dicom['paths']['path_to_mask_webm']
+            mask_webm = {'input_files' : input_files, 'output_file' : output_file}
+            list_of_webms.append(mask_webm)
+            
+            # cylinder:
+            input_files = dicom['paths']['path_to_cylinder_jpeg_root'] + '/*.jpg'
+            output_file = dicom['paths']['path_to_cylinder_webm']
+            cylinder_webm = {'input_files' : input_files, 'output_file' : output_file}
+            list_of_webms.append(cylinder_webm)
+        
+    # multiprocessing, build each webm file in its own thread:
+    NUMBER_OF_THREADS = len(list_of_webms)
+    
+    with Pool(NUMBER_OF_THREADS) as pool:
+        
+        # multiprocess:
+        total_vidoes = pool.map(BuildSingleWebm, list_of_webms)
         
     if verbose:
-        print("[@ %7.2f s] [ResizeVideos]: Resized videos" %(time()-start))
+        print("[@ %7.2f s] [BuildWebms]: Built [%d] webms" %(time()-start, NUMBER_OF_THREADS))
     
 
 
 def BuildJsonFromData(data, verbose=False, start=time()):
-    
+   
     ''' Accepts data, returns report as json '''
     
     # intialize variables:

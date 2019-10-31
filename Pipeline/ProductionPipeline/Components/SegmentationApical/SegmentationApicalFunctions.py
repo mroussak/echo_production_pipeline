@@ -27,10 +27,13 @@ def ParseViewsData(views_data, view, videos_directory, verbose=False, start=time
         paths = {
             'path_to_dicom_jpeg' : row['paths']['path_to_dicom_jpeg'],
             'path_to_dicom_gif' : row['paths']['path_to_dicom_gif'],
+            'path_to_dicom_webm' : row['paths']['path_to_dicom_webm'],
             'path_to_mask_jpeg' : videos_directory + 'SegmentationApical/SegmentationMasks/' + row['dicom_id'] + '/Jpeg/',
             'path_to_mask_gif' : videos_directory + 'SegmentationApical/SegmentationMasks/' + row['dicom_id'] + '/Gif/',
+            'path_to_mask_webm' : videos_directory + 'SegmentationApical/SegmentationMasks/' + row['dicom_id'] + '/Webm/',
             'path_to_simpsons_jpeg' : videos_directory + 'SegmentationApical/SimpsonsMethod/' + row['dicom_id'] + '/Jpeg/',
             'path_to_simpsons_gif' : videos_directory + 'SegmentationApical/SimpsonsMethod/' + row['dicom_id'] + '/Gif/',
+            'path_to_simpsons_webm' : videos_directory + 'SegmentationApical/SimpsonsMethod/' + row['dicom_id'] + '/Webm/',
         }
     
         views_data.at[index, 'paths'] = paths
@@ -78,8 +81,10 @@ def PredictSegmentation(views_data, model, verbose=False, start=time()):
                 'path_to_dicom_jpeg' : dicom['paths']['path_to_dicom_jpeg'],
                 'path_to_mask_jpeg' : dicom['paths']['path_to_mask_jpeg'],
                 'path_to_mask_gif' : dicom['paths']['path_to_mask_gif'],
+                'path_to_mask_webm' : dicom['paths']['path_to_mask_webm'],
                 'path_to_simpsons_jpeg' : dicom['paths']['path_to_simpsons_jpeg'],
                 'path_to_simpsons_gif' : dicom['paths']['path_to_simpsons_gif'],
+                'path_to_simpsons_webm' : dicom['paths']['path_to_simpsons_webm'],
             } 
 
             # append mask:
@@ -104,8 +109,10 @@ def post_process_single_apical_seg(mask):
     # create new directories:
     tools.CreateDirectory(mask['path_to_mask_jpeg'])
     tools.CreateDirectory(mask['path_to_mask_gif'])
+    tools.CreateDirectory(mask['path_to_mask_webm'])
     tools.CreateDirectory(mask['path_to_simpsons_jpeg'])
     tools.CreateDirectory(mask['path_to_simpsons_gif'])
+    tools.CreateDirectory(mask['path_to_simpsons_webm'])
 
     # collect post processing data:
     post_processing_metrics = tools.SegmentationApicalPostProcessing(mask)
@@ -147,5 +154,3 @@ def ProcessSegmentationResults(masks, view, verbose=False, start=time()):
         print("[@ %7.2f s] [ProcessSegmentationResults]: Processed [%s] segmentation results" %(time()-start, view))
     
     return post_processing_data
-        
-    

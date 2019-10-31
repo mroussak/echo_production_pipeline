@@ -1,0 +1,3 @@
+SELECT * FROM ManuallyAddedViewsData
+WHERE view is NULL AND in_use = false
+LIMIT 1;

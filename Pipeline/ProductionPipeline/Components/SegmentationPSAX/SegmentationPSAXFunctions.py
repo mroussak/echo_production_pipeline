@@ -27,10 +27,13 @@ def ParseViewsData(views_data, view, videos_directory, verbose=False, start=time
         paths = {
             'path_to_dicom_jpeg' : row['paths']['path_to_dicom_jpeg'],
             'path_to_dicom_gif' : row['paths']['path_to_dicom_gif'],
+            'path_to_dicom_webm' : row['paths']['path_to_dicom_webm'],
             'path_to_mask_jpeg' : videos_directory + 'SegmentationPSAX/SegmentationMasks/' + row['dicom_id'] + '/Jpeg/',
             'path_to_mask_gif' : videos_directory + 'SegmentationPSAX/SegmentationMasks/' + row['dicom_id'] + '/Gif/',
+            'path_to_mask_webm' : videos_directory + 'SegmentationPSAX/SegmentationMasks/' + row['dicom_id'] + '/Webm/',
             'path_to_cylinder_jpeg' : videos_directory + 'SegmentationPSAX/Cylinder/' + row['dicom_id'] + '/Jpeg/',
             'path_to_cylinder_gif' : videos_directory + 'SegmentationPSAX/Cylinder/' + row['dicom_id'] + '/Gif/',
+            'path_to_cylinder_webm' : videos_directory + 'SegmentationPSAX/Cylinder/' + row['dicom_id'] + '/Webm/',
         }
     
         views_data.at[index, 'paths'] = paths
@@ -73,8 +76,10 @@ def PredictSegmentation(views_data, verbose=False, start=time()):
                 'path_to_dicom_jpeg' : dicom['paths']['path_to_dicom_jpeg'],
                 'path_to_mask_jpeg' : dicom['paths']['path_to_mask_jpeg'],
                 'path_to_mask_gif' : dicom['paths']['path_to_mask_gif'],
+                'path_to_mask_webm' : dicom['paths']['path_to_mask_webm'],
                 'path_to_cylinder_jpeg' : dicom['paths']['path_to_cylinder_jpeg'],
                 'path_to_cylinder_gif' : dicom['paths']['path_to_cylinder_gif'],
+                'path_to_cylinder_webm' : dicom['paths']['path_to_cylinder_webm'],
             } 
             
             # append mask:
@@ -99,8 +104,10 @@ def post_process_single_psax_seg(mask):
     # create new directories:
     tools.CreateDirectory(mask['path_to_mask_jpeg'])
     tools.CreateDirectory(mask['path_to_mask_gif'])
+    tools.CreateDirectory(mask['path_to_mask_webm'])
     tools.CreateDirectory(mask['path_to_cylinder_jpeg'])
     tools.CreateDirectory(mask['path_to_cylinder_gif'])
+    tools.CreateDirectory(mask['path_to_cylinder_webm'])
 
     # collect post processing data:
     post_processing_metrics = tools.SegmentationPSAXPostProcessing(mask)
