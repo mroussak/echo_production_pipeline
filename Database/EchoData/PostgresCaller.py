@@ -38,6 +38,8 @@ if __name__ == '__main__':
         'alter_table' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/alter_table_query.psql',
         'select' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/select_query.psql',
         'insert' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/insert_query.psql',
+        'update' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/update_query.psql',
+        'clean' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/clean_query.psql',
         #'select' : r'/internal_drive/echo_production_pipeline/Database/EchoData/Queries/select_query.psql',
         #'insert' : r'/internal_drive/echo_production_pipeline/Database/EchoData/Queries/insert_query.psql',
     }
@@ -54,6 +56,8 @@ if __name__ == '__main__':
     #query_file = file_paths['alter_table']
     query_file = file_paths['select']
     #query_file = file_paths['insert']
+    #query_file = file_paths['update']
+    #query_file = file_paths['clean']
     
     #query_file = web_app_queries['SELECT_get_next_unlabeled_view']
     #query_file = web_app_queries['UPDATE_add_previous_object_id']
@@ -62,17 +66,26 @@ if __name__ == '__main__':
     #query_file = web_app_queries['UPDATE_set_view_to_not_in_use']
     
     parameters = {
-        'view' : 'A4C',
-        'subview' : 'A4C Subview',
-        'user_id' : 'daniel@icardio.ai',
-        'selection_time' : timedelta(seconds=20),
-        'time_stamp' : datetime.now(),
         'object_id' : 1,
+        'view' : None,
+        'subview' : None,
+        'quality' : None,
+        'user_id' : None,
+        'selection_time' : None,
+        'time_stamp' : None,
+        'previous_object_id' : None,
     }
-    parameters = {
-        'previous_object_id' : 0,
-        'object_id' : 1,
-    }
+    # parameters = {
+    #     'previous_object_id' : 0,
+    #     'object_id' : 1,
+    # }
     
     result = main(query_file, parameters, verbose=True, start=time())
-    print(result)
+    
+    try:
+        result_strings = result.select_dtypes(['object'])
+        result[result_strings.columns] = result_strings.apply(lambda x: x.str.strip())
+    
+        print(result)
+    except:
+        pass

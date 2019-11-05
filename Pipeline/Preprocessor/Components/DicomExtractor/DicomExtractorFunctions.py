@@ -229,8 +229,8 @@ def GetPixelArrayDataDetails(dicom, verbose=False, start=time()):
     try: 
         pixel_array_data_details = dicom.pixel_array
 
-    except AttributeError as error:
-        attribute_error = error
+    except (AttributeError, ValueError) as error:
+        attribute_or_value_error = error
         
     else:
         if verbose:
@@ -240,7 +240,7 @@ def GetPixelArrayDataDetails(dicom, verbose=False, start=time()):
     
   
     if verbose:
-       print(Exception('[ERROR] in [GetPixelArrayDataDetails]: Unable to retreive pixel data from dicom A:[%s]' %(attribute_error)))
+       print(Exception('[ERROR] in [GetPixelArrayDataDetails]: Unable to retreive pixel data from dicom A/V:[%s]' %(attribute_or_value_error)))
     
     return pixel_array_data_details
     

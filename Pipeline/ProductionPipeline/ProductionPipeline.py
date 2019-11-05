@@ -12,7 +12,7 @@ import os
 
 
 
-def main(user_id='UserID1', session_id='SessionID1', start=time()):
+def main(user_id='UserID1', session_id='SessionID1', verbose=False, start=time()):
 
     # Variables:
     kwargs = {
@@ -29,8 +29,8 @@ def main(user_id='UserID1', session_id='SessionID1', start=time()):
     user_directory = '/internal_drive/Users/' + user_id + '/'
     session_directory = 'Sessions/' + session_id + '/'
     file_paths = {
-        'dicoms_directory' : user_directory + session_directory + 'Dicoms/',
-        #'dicoms_directory' : production_directory + 'Dicoms_Anon/9/',
+        #'dicoms_directory' : user_directory + session_directory + 'Dicoms/',
+        'dicoms_directory' : production_directory + 'Dicoms_Anon/9/',
         'dicoms_videos_directory' : user_directory + session_directory + 'Videos/Dicoms/',
         'videos_directory' : user_directory + session_directory + 'Videos/',
         'dicoms_table' : user_directory + session_directory + 'Tables/DicomsTable.pickle',
@@ -62,12 +62,16 @@ def main(user_id='UserID1', session_id='SessionID1', start=time()):
 if __name__ == "__main__":
     
     user_id = 'Demo'
-    session_id = 'Demo'
+    session_id = 'Demo_Anon_9'
     
     # Step 1, load models if not already loaded:
     ModelsPipeline.main(start=time())
+
+    # Step 2, build directory structure if needed:
+    root_directory = tools.BuildRootDirectory(user_id, session_id)
+    tools.BuildDirectoryTree(root_directory)
     
-    # Step 2, execute pipeline:
+    # Step 3, execute pipeline:
     main(user_id, session_id, start=time())
-    
+
     

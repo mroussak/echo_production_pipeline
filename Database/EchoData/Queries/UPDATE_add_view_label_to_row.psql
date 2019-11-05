@@ -1,10 +1,11 @@
 UPDATE 
     ManuallyAddedViewsData
 SET 
-    view = '{view}',
-    subview = '{subview}',
-    user_id = '{user_id}',
-    selection_time = '{selection_time}'::TIME,
-    time_stamp = '{time_stamp}'::TIMESTAMP
+    view = TRIM('{view}'),
+    subview = TRIM('{subview}'),
+    user_id = TRIM('{user_id}'),
+    selection_time = '{selection_time}'::TIMESTAMP,
+    time_stamp = '{time_stamp}'::TIMESTAMP,
+    previous_object_id = '{previous_object_id}'
 WHERE 
     object_id = {object_id};

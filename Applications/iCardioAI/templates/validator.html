@@ -1,0 +1,183 @@
+ {% extends 'base.html' %}
+
+{% block title %}Validator{% endblock %}
+
+{% load static %}
+{% block content %}
+<body>
+    <!-- Modal Structure -->
+<div id="modal1" class="modal">
+<div class="modal-content">
+  <h4>Drag and Drop</h4>
+  <p>To analyze a view, just drag the view from the left navigation into the pane where you'd like to view it.</p>
+</div>
+<div class="modal-footer">
+  <a href="#!" class="modal-close waves-effect waves-green btn-flat">Got It</a>
+</div>
+</div>
+<div class="split-vertical-3 boxA left" id="thumbnails">
+    <h2 class="title">iCardio.ai Validation App</h2>
+    <section class="validator-section">
+        <div class="gif-div draggable">
+            <video loop autoplay type="video/webm" class="gif-img draggable" id="imageid" src={% static result.path_to_dicom_webm %}></video>
+        </div>
+        <div class="controls">
+        <!--<a class="waves-effect waves-light btn analysis-button modal-trigger" id="blurry" href="/validator">Can't</a>-->
+        </div>
+        <h3 class="view"></h3>
+    </section>
+</div>
+<div class="handler-2"></div>
+<div class="split-vertical-4 boxB right">
+<div class="validator-controls controls">
+    <h4>Choose the closest view</h4>
+    <div class="input-field col s12 m6">
+    <form method="post" style="display: inline-block">
+    {% csrf_token %}
+        <input type="hidden" class="back" value="{{ result.previous_object_id }}" name="previous" required>
+        {% if result.previous_object_id == None %}
+        <button class="btn waves-effect waves-light" id="back" type="submit" name="action" disabled><i class="material-icons left" style="background-color:transparent">keyboard_arrow_left</i>Previous Image</button>
+        {% else %}
+        <button class="btn waves-effect waves-light" id="back" type="submit" name="action"><i class="material-icons left" style="background-color:transparent">keyboard_arrow_left</i>Previous Image</button>
+        {% endif %}
+    </form>
+    <form method="post" style="display: inline-block">
+        {% csrf_token %}
+        <input type="hidden" class="view" value="{% if result.view %}{{ result.view }}{% endif %}" name="view" required>
+        <input type="hidden" class="subview" value="{% if result.subview %}{{ result.subview }}{% endif %}" name="subview" required>
+        <input type="hidden" class="quality" name="image_quality" value="good_quality" required>
+        <input type="hidden" class="object_id" name="object_id" value="{{ result.object_id }}" required>
+        <input type="hidden" class="user_id" name="user_id" value="{{ user.email }}" required>
+        <input type="hidden" class="selection_time" name="selection_time" value="" required>
+        <button class="btn waves-effect waves-light" onclick="preventDefault()" id="submit" type="submit" name="action" disabled="disabled"><i class="material-icons right" style="background-color:transparent">keyboard_arrow_right</i>Next Image</button>
+    </form>
+    </div>
+    <div class="input-field col s12 m6">
+        {% if result.view %}
+        <a class="btn waves-light selected" id="selection">{{ result.view }} Selected</a>
+        {% else %}
+        <a class="btn waves-light" id="selection" disabled>No views selected.</a>
+        {% endif %}
+        <button class="btn btn-flat selected" id="good_quality">Good image quality</button>
+        <button class="btn" id="bad_quality">Poor image quality</button>
+    </div>
+    <div class="input-field col s12 m6">
+        <p>Long Axis</p>
+        <a class="waves-light btn main" id="plax" view="PLAX">PLAX</a>
+        <div class="input-field col s12 m6 sub-options" id="plax_options" style="display:none;">
+            <a class="btn" view="PLAX">PLAX Paracardial</a>
+            <a class="btn" view="PLAX">PLAX Aortic Cusps</a>
+            <a class="btn" view="PLAX">PLAX Mitral Cusps</a>
+        </div>        
+        <a class="btn main" view="RVIT">RVIT</a>
+    </div>
+    <div class="input-field col s12 m6">  
+        <p>Short Axis</p>
+        <a class="btn main" view="PSAX" id="psax">PSAX</a>
+        <div class="input-field col s12 m6 sub-options" id="psax_options" style="display:none;">
+            <a class="btn" view="PSAX">PSAX Apex</a>
+            <a class="btn" view="PSAX">PSAX Papillary</a>
+            <a class="btn" view="PSAX">PSAX Mitral</a>
+        </div>
+        <a class="btn main" view="PSAXA" id="psaxa">PSAXA</a>
+        <div class="input-field col s12 m6 sub-options" id="psaxa_options" style="display:none;">
+            <a class="btn" view="PSAXA">PSAXA Zoomed Aorta</a>
+            <a class="btn" view="PSAXA">PSAX Pulminary</a>
+        </div>
+    </div>
+    <div class="input-field col s12 m6">
+        <p>Apical</p>
+        <a class="btn main" view="A4C" id="a4c">A4C</a>
+        <div class="input-field col s12 m6 sub-options" id="a4c_options" style="display:none;">
+            <a class="btn" view="A4C">A4C Zoomed LV</a>
+            <a class="btn" view="A4C">A4C Zoomed RV</a>
+            <a class="btn" view="A4C">A4C Zoomed Mitral</a>
+        </div>
+        <a class="btn main" view="A5C" id="a5c">A5C</a>
+        <div class="input-field col s12 m6 sub-options" id="a5c_options" style="display:none;">
+            <a class="btn" view="A5C">A5C Zoomed Aorta</a>
+        </div>
+        <a class="btn main" view="A2C" id="a2c">A2C</a>
+        <div class="input-field col s12 m6 sub-options" id="a2c_options" style="display:none;">
+            <a class="btn" view="A2C">A2C Zoomed Mitral</a>
+        </div>
+        <a class="btn main" view="A3C">A3C</a>
+    </div>
+    <div class="input-field col s12 m6">
+        <p>Subcostal</p>
+        <a class="btn main" view="SUBA">SUBCOSTAL</a>
+        <a class="btn main" view="SUBB">SUB IVC</a>
+        <a class="btn main" view="SUBC">SUB Short Axis</a>
+        <p>Suprasternal</p>
+    </div>
+    <div class="input-field col s12 m6">
+        <a class="btn main" view="SUPA">Suprasternal</a>
+    </div>
+    <div class="input-field col s12 m6">
+        <p>Misc</p>
+        <a class="btn main" view="Other">Other</a>
+        <a class="btn main" view="Noisy">Unclear Noisy</a>
+        <a class="btn main" view="Dark">Unclear Dark</a>
+    </div>
+</div>
+</div>
+</body>
+</html>
+<!-- jquery script -->
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script>
+<!-- jquery UI script -->
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js"></script>
+<!-- materialize js -->
+<script type="text/javascript" src="{% static '../static/js/materialize.min.js' %}"></script>
+<!-- scalable verticle divider -->
+<!--<script type="application/javascript" src="{% static '../static/js/divider.js' %}"></script>-->
+<!-- tools -->
+<!--<script type="application/javascript" src="{% static '../static/js/tools.js' %}"></script>-->
+<!-- image controllers -->
+<!--<script type="application/javascript" src="{% static '../static/js/windows.js' %}"></script>-->
+<script>
+$("a.main").click(function(){
+    $(".sub-options").css({display:"none"});
+});
+    
+$("a").click(function(){
+    var optionsid = $(this).attr("id");
+    $("#" + optionsid + "_options").css({display:"block"});
+    var selectedSubview = $(this).html();
+    var selectedView = $(this).attr("view")
+    $("a").removeClass("selected");
+    $(this).addClass("selected");
+    $("#selection").html(selectedSubview+" Selected").addClass("selected");
+    $(".subview").attr("value", selectedSubview);
+    $(".view").attr("value", selectedView);
+    $('#submit').removeAttr("disabled");  
+});
+    
+$("button").click(function(){
+    var selectedQuality = $(this).attr("id");
+    $("button").removeClass("selected btn-flat");
+    $(this).addClass("selected btn-flat");
+    $(".quality").attr("value", selectedQuality);
+});
+
+var startTime, endTime;
+
+$(function start() {
+    startTime = new Date();
+});
+
+function end() {
+  endTime = new Date();
+  var timeDiff = endTime - startTime; //in ms
+  // strip the ms
+  //timeDiff /= 1000;
+
+  // get seconds 
+  var miliseconds = Math.round(timeDiff);
+  console.log(miliseconds + " miliseconds");
+  $(".selection_time").attr("value", miliseconds);
+}
+    
+</script>
+{% endblock %}
+

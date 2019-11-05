@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block title %}Login Page{% endblock %}
+
+{% block content %}
+
+
+<body style="background-color: black">
+    <h3 class="loader typewriter" id="typewriter"></h3>
+    
+    <div class="loader typewriter" id="typewriter2">
+    </div>
+    
+    <!--<canvas id=c></canvas>-->
+    <main style="transform: translate(50%, 20%);width: 50%;">
+        <center>
+            <div style="max-width:420px" class="container">
+                <div class="z-depth-1 grey lighten-4 row" style="display: inline-block; padding: 32px 48px 0px 48px; border: 1px solid #EEE;">
+                    <form class="col s12" method="post" action='/login/' style="padding: 0 1em 3em 1em;">
+                        {% csrf_token %}
+                        {{ form.non_field_errors }}
+                        <h4 class="card-title">iCardio.ai Login</h4>
+                        <div class='row'>
+                            <div class='input-field col s12'>
+                                {{ form.username.errors }}
+                                <label for='{{ form.username.id_for_label }}'>Enter your email</label>
+                                {{ form.username }}
+                            </div>
+                        </div>
+                        <div class='row'>
+                            <div class='input-field col s12'>
+                                {{ form.password.errors }}
+                                <label for='{{ form.password.id_for_label }}'>Enter your password</label>
+                                {{ form.password }}
+                            </div>
+                            <label style='float: right;'>
+                                <a class='pink-text' href='#!'><b>Forgot Password?</b></a>
+                            </label>
+                        </div>
+
+                        <br />
+                        <center>
+                            <div class='row'>
+                                <button type='submit' name='btn_login' class='col s12 btn btn-large waves-effect' style="cursor:pointer;background: red">Login</button>
+                            </div>
+                        </center>
+                    </form>
+                </div>
+            </div>
+            <h4 style="font-size: 14px; cursor:pointer;color: red"><a style="color: red; cursor:pointer" href="{% url 'password_reset' %}">Reset password</a></h4>
+            <h4 style="font-size: 14px; cursor:pointer;color: red"><a style="color: red; cursor:pointer" href="{% url 'register' %}">Or, create an account</a></h4>
+        </center>
+    </main>
+</body>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script>
+{% load static %}
+<script type="application/javascript" src="{% static '../static/js/materialize.min.js' %}"></script>
+<!--  <script src="static/js/network.js"></script>-->
+<script>
+    
+    // set up text to print, each item in array is new line
+//var set = new Array(
+//"There are only 10 types of people in the world:", 
+//"Those who understand binary, and those who don't"
+//);
+var setData = "iCardio.ai User Login"
+var iSpeed = 10; // time delay of print out
+var iIndex = 0; // start printing array at this posision
+var iArrLength = setData.length; // the length of the text array
+var iScrollAt = 20; // start scrolling up at this many lines
+var shouldChange = 1;
+var iTextPos = 0; // initialise text position
+var sContents = ''; // initialise contents variable
+var iRow; // initialise current row
+var shouldStop = 0;
+
+function typewriter()
+{
+ if(shouldChange == 1)
+ {
+	 iIndex = 0; 
+	 iArrLength = setData.length; 
+	 iScrollAt = 20; 
+	 shouldChange = 0;
+	 iTextPos = 0; 
+ }
+ if(shouldStop == 1)
+ return;
+
+ sContents = ' ';
+ iRow = Math.max(0, iIndex-iScrollAt);
+ var destination = document.getElementById("typewriter");
+ 
+// while ( iRow < iIndex ) {
+//  sContents += aText[iRow++] + '<br />';
+// }
+ destination.innerHTML = sContents + setData.substring(0, iTextPos) + "";
+ if ( iTextPos++ == iArrLength ) {
+  iTextPos = 0;
+  iIndex++;
+  shouldStop = 1;
+//  debugger;
+ // if ( iIndex != aText.length ) {
+   iArrLength = setData.length;
+   
+   //setTimeout("typewriter()", 500);
+   //}
+
+}
+}
+    setInterval(function() {
+     typewriter();
+	 }, 50);
+
+    
+</script>
+</html>
+
+{% endblock %}

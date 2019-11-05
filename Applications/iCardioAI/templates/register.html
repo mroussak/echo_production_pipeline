@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign Up{% endblock %}
+
+{% block content %}
+{% load static %}
+<body style="background-color: black">
+    <h3 class="loader typewriter" id="typewriter"></h3>
+ <main style="transform: translate(50%, 20%);width: 50%;">
+        <center>
+            <div class="container">
+                <div class="z-depth-1 grey lighten-4 row" style="display: inline-block; padding: 32px 48px 0px 48px; border: 1px solid #EEE;">
+                    {% csrf_token %}
+                    <form class="col s12" method="post" style="padding: 0 1em 3em 1em;">
+                        {% csrf_token %}
+                        <h4 class="card-title">iCardio.ai Registration</h4>
+                        
+                        <div class='row'>
+                            <div class='input-field col s12'>
+                                <i class="material-icons prefix">email</i>
+                                {{ form.email.errors }}
+                                <label for='{{ form.email.id_for_label }}'>Enter your email</label>
+                                {{ form.email }}
+                            </div>
+                        
+                            <div class="row">
+                                <div class="input-field col s6">
+                                  <i class="material-icons prefix">account_circle</i>
+                                  {{ form.full_name.errors }}
+                                  <label for='{{ form.full_name.id_for_label }}'>Full Name</label>
+                                  {{ form.full_name }}
+                                </div>
+                            </div>
+                            
+                            <!-- <div class="row">-->
+                            <!--    <div class="input-field col s6">-->
+                            <!--      <i class="material-icons prefix">account_circle</i>-->
+                            <!--      {{ form.first_name.errors }}-->
+                            <!--      <label for='{{ form.first_name.id_for_label }}'>First Name</label>-->
+                            <!--      {{ form.first_name }}-->
+                            <!--    </div>-->
+                            <!--</div>-->
+                            
+                            <!--<div class="row">-->
+                            <!--    <div class="input-field col s6">-->
+                            <!--      <i class="material-icons prefix">account_circle</i>-->
+                            <!--      {{ form.last_name.errors }}-->
+                            <!--      <label for='{{ form.last_name.id_for_label }}'>Last Name</label>-->
+                            <!--      {{ form.last_name }}-->
+                            <!--    </div>-->
+                            <!--</div>-->
+                            
+                            <div class="input-field col s6">
+                                <i class="material-icons prefix">phone</i>
+                                {{ form.phone.errors }}
+                                <label for='{{ form.phone.id_for_label }}'>Telephone</label>
+                                {{ form.phone }}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class='input-field col s12'>
+                                <i class="material-icons prefix">vpn_key</i>
+                                {{ form.password1.errors }}
+                                <label for='{{ form.password.id_for_label }}'>Password</label>
+                                {{ form.password1 }}
+                            </div>
+                        </div>
+                        
+                        <!-- TEMP -->
+                        
+                        <div class="row">
+                            <div class='input-field col s12'>
+                                <i class="material-icons prefix">vpn_key</i>
+                                {{ form.password2.errors }}
+                                <label for='{{ form.password.id_for_label }}'>Password 2</label>
+                                {{ form.password2 }}
+                            </div>
+                        </div>
+                        
+                        <!-- END TEMP -->
+                        
+                        <!--<div class="row">-->
+                        <!--    <div class="input-field col s12">-->
+                        <!--        <i class="material-icons prefix">replay</i>-->
+                        <!--        <input id="repassword" name="repassword" type="password" class="validate">-->
+                        <!--        <label for="repassword">Password</label>-->
+                        <!--        <span style="float:left" class="helper-text"></span>-->
+                        <!--    </div>-->
+                        <!--</div>-->
+                           
+                        <br />
+                        <center>
+                            <div class='row'>
+                                <button type='submit' name='btn_login' class='col s12 btn btn-large waves-effect' style="cursor:pointer;background: red">Register</button>
+                            </div>
+                        </center>
+                     </form>
+                </div>
+            </div>
+            <h4 style="font-size: 14px; cursor:pointer;color: red"><a style="color: red; cursor:pointer" href="login">Or, login</a></h4>
+        </center>
+    </main>
+</body>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script>
+<script type="application/javascript" src="{% static '../static/js/materialize.min.js' %}"></script>
+<!--  <script src="static/js/network.js"></script>-->
+<script>
+    
+$('#password, #repassword').keyup('change', function () {
+    var password   = $('#password');
+    var repassword = $('#repassword');
+        
+    password.val() != repassword.val() ? $('.helper-text').html('Passwords do not match.').css("color","red") : $('.helper-text').html('Okay.').css("color","green");
+});
+    
+    // set up text to print, each item in array is new line
+//var set = new Array(
+//"There are only 10 types of people in the world:", 
+//"Those who understand binary, and those who don't"
+//);
+var setData = "iCardio.ai User Registration"
+var iSpeed = 10; // time delay of print out
+var iIndex = 0; // start printing array at this posision
+var iArrLength = setData.length; // the length of the text array
+var iScrollAt = 20; // start scrolling up at this many lines
+var shouldChange = 1;
+var iTextPos = 0; // initialise text position
+var sContents = ''; // initialise contents variable
+var iRow; // initialise current row
+var shouldStop = 0;
+
+function typewriter()
+{
+ if(shouldChange == 1)
+ {
+	 iIndex = 0; 
+	 iArrLength = setData.length; 
+	 iScrollAt = 20; 
+	 shouldChange = 0;
+	 iTextPos = 0; 
+ }
+ if(shouldStop == 1)
+ return;
+
+ sContents = ' ';
+ iRow = Math.max(0, iIndex-iScrollAt);
+ var destination = document.getElementById("typewriter");
+ 
+// while ( iRow < iIndex ) {
+//  sContents += aText[iRow++] + '<br />';
+// }
+ destination.innerHTML = sContents + setData.substring(0, iTextPos) + "";
+ if ( iTextPos++ == iArrLength ) {
+  iTextPos = 0;
+  iIndex++;
+  shouldStop = 1;
+//  debugger;
+ // if ( iIndex != aText.length ) {
+   iArrLength = setData.length;
+   
+   //setTimeout("typewriter()", 500);
+   //}
+
+}
+}
+    setInterval(function() {
+     typewriter();
+	 }, 50);
+
+    
+</script>
+</html>
+{% endblock %}

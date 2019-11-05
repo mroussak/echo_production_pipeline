@@ -1,2 +1,2 @@
 SELECT * FROM ManuallyAddedViewsData
-WHERE 
+WHERE previous_object_id={previous_object_id};

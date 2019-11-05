@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}Apps{% endblock %}
+
+{% load static %}
+
+{% block content %}
+<body style="background-color: black">
+    
+
+  <h3 class="loader typewriter" id="typewriter">username: {{user.username}}</h3>
+
+    <!--<canvas id=c></canvas>-->
+    <main style="transform: translate(50%, 20%);width: 50%;">
+        <center>
+            <div class="container">
+                <div class="z-depth-1 grey lighten-4 row" style="display: inline-block; padding: 32px 48px 0px 48px; border: 1px solid #EEE;">
+                    <div class="col s12" method="post" style="padding: 0 1em 3em 1em;">
+                        <h4 class="card-title">Menu</h4>
+                        <div class='row'>
+                            <div class='input-field col s12'>
+                                <a class='col s12 btn btn-large waves-effect' href="upload">Echo Analyzer</a>
+                            </div>
+                        </div>
+                        <div class='row'>
+                            <div class='input-field col s12'>
+                                <a class='col s12 btn btn-large waves-effect' href="{% url 'validator' %}">Views Validator</a>
+                            </div>
+                        </div>
+                        <div class='row'>
+                            <div class='input-field col s12'>
+                                <a class='col s12 btn btn-large waves-effect' href="modelperformance">Model Performance</a>
+                            </div>
+                        </div>
+                        <div class='row' style="visibility: hidden">
+                            <div class='input-field col s12'>
+                                <input class='validate' type='password' name='password' id='password' />
+<!--                                <label for='password'>Enter your password</label>-->
+                            </div>
+                            <label style='float: right;'>
+                                <a class='pink-text' href='#!'><b>Forgot Password?</b></a>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h4 style="font-size: 14px; cursor:pointer;color: red"><a style="color: red; cursor:pointer" href="{% url 'logout' %}">Logout</a></h4>
+        </center>
+    </main>
+</body>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script>
+<script type="application/javascript" src="{% static 'static/js/materialize.min.js' %}"></script>
+<!--  <script src="static/js/network.js"></script>-->
+<script>
+    
+    // set up text to print, each item in array is new line
+//var set = new Array(
+//"There are only 10 types of people in the world:", 
+//"Those who understand binary, and those who don't"
+//);
+{% if user.is_authenticated %}
+var setData = "Welcome " + {{ user.name }}
+{% endif %}
+var iSpeed = 10; // time delay of print out
+var iIndex = 0; // start printing array at this posision
+var iArrLength = setData.length; // the length of the text array
+var iScrollAt = 20; // start scrolling up at this many lines
+var shouldChange = 1;
+var iTextPos = 0; // initialise text position
+var sContents = ''; // initialise contents variable
+var iRow; // initialise current row
+var shouldStop = 0;
+
+function typewriter()
+{
+ if(shouldChange == 1)
+ {
+	 iIndex = 0; 
+	 iArrLength = setData.length; 
+	 iScrollAt = 20; 
+	 shouldChange = 0;
+	 iTextPos = 0; 
+ }
+ if(shouldStop == 1)
+ return;
+
+ sContents = ' ';
+ iRow = Math.max(0, iIndex-iScrollAt);
+ var destination = document.getElementById("typewriter");
+ 
+// while ( iRow < iIndex ) {
+//  sContents += aText[iRow++] + '<br />';
+// }
+ destination.innerHTML = sContents + setData.substring(0, iTextPos) + "";
+ if ( iTextPos++ == iArrLength ) {
+  iTextPos = 0;
+  iIndex++;
+  shouldStop = 1;
+//  debugger;
+ // if ( iIndex != aText.length ) {
+   iArrLength = setData.length;
+   
+   //setTimeout("typewriter()", 500);
+   //}
+
+}
+}
+    setInterval(function() {
+     typewriter();
+	 }, 50);
+
+    
+</script>
+</html>
+
+{% endblock %}
