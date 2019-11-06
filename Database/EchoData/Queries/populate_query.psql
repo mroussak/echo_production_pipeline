@@ -1,0 +1,23 @@
+INSERT INTO ManuallyAddedViewsData
+    (object_id, guid, path_to_dicom_webm)
+VALUES 
+    (0, 1, '../static/videos/vid.webm'), 
+    (1, 1, '../static/videos/vid.webm'),
+    (2, 1, '../static/videos/vid.webm'), 
+    (3, 1, '../static/videos/vid.webm'), 
+    (4, 1, '../static/videos/vid.webm'), 
+    (5, 1, '../static/videos/vid.webm'), 
+    (6, 1, '../static/videos/vid.webm'), 
+    (7, 1, '../static/videos/vid.webm'), 
+    (8, 1, '../static/videos/vid.webm'), 
+    (9, 1, '../static/videos/vid.webm'), 
+    (10, 1, '../static/videos/vid.webm'),
+    (11, 1, '../static/videos/vid.webm'), 
+    (12, 1, '../static/videos/vid.webm'), 
+    (13, 1, '../static/videos/vid.webm'), 
+    (14, 1, '../static/videos/vid.webm'), 
+    (15, 1, '../static/videos/vid.webm'), 
+    (16, 1, '../static/videos/vid.webm'), 
+    (17, 1, '../static/videos/vid.webm'), 
+    (18, 1, '../static/videos/vid.webm'), 
+    (19, 1, '../static/videos/vid.webm') 

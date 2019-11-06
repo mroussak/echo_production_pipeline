@@ -1,4 +1,4 @@
- {% extends 'base.html' %}
+{% extends 'base.html' %}
 
 {% block title %}Validator{% endblock %}
 
@@ -34,8 +34,9 @@
     <div class="input-field col s12 m6">
     <form method="post" style="display: inline-block">
     {% csrf_token %}
-        <input type="hidden" class="back" value="{{ result.previous_object_id }}" name="previous" required>
-        {% if result.previous_object_id == None %}
+        <input type="hidden" class="back" value="{{ result.previous_object_id }}" name="previous_object_id" required>
+        <input type="hidden" class="back" value="{{ result.object_id }}" name="object_id" required>
+        {% if not result.previous_object_id %}
         <button class="btn waves-effect waves-light" id="back" type="submit" name="action" disabled><i class="material-icons left" style="background-color:transparent">keyboard_arrow_left</i>Previous Image</button>
         {% else %}
         <button class="btn waves-effect waves-light" id="back" type="submit" name="action"><i class="material-icons left" style="background-color:transparent">keyboard_arrow_left</i>Previous Image</button>
@@ -45,11 +46,11 @@
         {% csrf_token %}
         <input type="hidden" class="view" value="{% if result.view %}{{ result.view }}{% endif %}" name="view" required>
         <input type="hidden" class="subview" value="{% if result.subview %}{{ result.subview }}{% endif %}" name="subview" required>
-        <input type="hidden" class="quality" name="image_quality" value="good_quality" required>
+        <input type="hidden" class="quality" name="image_quality" value="{% if result.subview %}{{ result.quality }}{% else %}good_quality{% endif %}" required>
         <input type="hidden" class="object_id" name="object_id" value="{{ result.object_id }}" required>
         <input type="hidden" class="user_id" name="user_id" value="{{ user.email }}" required>
         <input type="hidden" class="selection_time" name="selection_time" value="" required>
-        <button class="btn waves-effect waves-light" onclick="preventDefault()" id="submit" type="submit" name="action" disabled="disabled"><i class="material-icons right" style="background-color:transparent">keyboard_arrow_right</i>Next Image</button>
+        <button class="btn waves-effect waves-light" onclick="end()" id="submit" type="submit" name="action" disabled="disabled"><i class="material-icons right" style="background-color:transparent">keyboard_arrow_right</i>Next Image</button>
     </form>
     </div>
     <div class="input-field col s12 m6">
@@ -58,8 +59,8 @@
         {% else %}
         <a class="btn waves-light" id="selection" disabled>No views selected.</a>
         {% endif %}
-        <button class="btn btn-flat selected" id="good_quality">Good image quality</button>
-        <button class="btn" id="bad_quality">Poor image quality</button>
+        <button class="btn quality_choice" id="good_quality">Good image quality</button>
+        <button class="btn quality_choice" id="bad_quality">Poor image quality</button>
     </div>
     <div class="input-field col s12 m6">
         <p>Long Axis</p>
@@ -153,12 +154,19 @@ $("a").click(function(){
     $('#submit').removeAttr("disabled");  
 });
     
-$("button").click(function(){
+$(".quality_choice").click(function(){
     var selectedQuality = $(this).attr("id");
     $("button").removeClass("selected btn-flat");
     $(this).addClass("selected btn-flat");
     $(".quality").attr("value", selectedQuality);
 });
+
+var quality = $('.quality').attr("value");
+$('#'+quality).addClass("btn-flat selected");
+
+if ($('#selection').html() != "No views selected."){
+    $('#submit').removeAttr("disabled");  
+}
 
 var startTime, endTime;
 
@@ -176,8 +184,8 @@ function end() {
   var miliseconds = Math.round(timeDiff);
   console.log(miliseconds + " miliseconds");
   $(".selection_time").attr("value", miliseconds);
+  console.log()
 }
     
 </script>
 {% endblock %}
-

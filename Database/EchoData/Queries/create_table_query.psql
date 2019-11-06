@@ -1,10 +1,13 @@
 CREATE TABLE ManuallyAddedViewsData(
     object_id INT PRIMARY KEY,
+    previous_object_id INT,
     guid INT,
-    path_to_dicom CHAR(200),
-    view CHAR(50),
-    subview CHAR(50),
-    user_id INT,
-    selection_time TIME,
+    path_to_dicom_webm TEXT,
+    in_use BOOLEAN DEFAULT false,
+    view TEXT,
+    subview TEXT,
+    quality TEXT,
+    user_id TEXT,
+    selection_time TEXT,
     time_stamp TIMESTAMPTZ
 );
