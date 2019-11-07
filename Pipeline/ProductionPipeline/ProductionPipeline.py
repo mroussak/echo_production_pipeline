@@ -30,7 +30,7 @@ def main(user_id='UserID1', session_id='SessionID1', verbose=False, start=time()
     session_directory = 'Sessions/' + session_id + '/'
     file_paths = {
         #'dicoms_directory' : user_directory + session_directory + 'Dicoms/',
-        'dicoms_directory' : production_directory + 'Dicoms_Anon/9/',
+        'dicoms_directory' : production_directory + 'Dicoms_Anon/' + session_id + '/',
         'dicoms_videos_directory' : user_directory + session_directory + 'Videos/Dicoms/',
         'videos_directory' : user_directory + session_directory + 'Videos/',
         'dicoms_table' : user_directory + session_directory + 'Tables/DicomsTable.pickle',

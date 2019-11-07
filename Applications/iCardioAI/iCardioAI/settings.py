@@ -24,7 +24,7 @@ SECRET_KEY = '0xg#0%j*s)5bhslo(n6ht!!p8v_1!nj+y*ru!h3$6mdoxzer7w'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['ec2-52-32-106-96.us-west-2.compute.amazonaws.com', 'app.icardio.ai']
 
 
 # Application definition
@@ -123,7 +123,7 @@ USE_TZ = True
 
 
 
-STATIC_ROOT = ''
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 STATICFILES_DIRS = ( os.path.join('static'), )
 LOGIN_REDIRECT_URL = 'apps'
@@ -132,3 +132,4 @@ LOGOUT_REDIRECT_URL = 'login'
 
 EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
+CSRF_TRUSTED_ORIGINS = ['front.bluemix.net']

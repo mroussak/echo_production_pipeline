@@ -22,34 +22,14 @@
                                 <label for='{{ form.email.id_for_label }}'>Enter your email</label>
                                 {{ form.email }}
                             </div>
-                        
-                            <div class="row">
-                                <div class="input-field col s6">
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s6">
                                   <i class="material-icons prefix">account_circle</i>
                                   {{ form.full_name.errors }}
                                   <label for='{{ form.full_name.id_for_label }}'>Full Name</label>
                                   {{ form.full_name }}
                                 </div>
-                            </div>
-                            
-                            <!-- <div class="row">-->
-                            <!--    <div class="input-field col s6">-->
-                            <!--      <i class="material-icons prefix">account_circle</i>-->
-                            <!--      {{ form.first_name.errors }}-->
-                            <!--      <label for='{{ form.first_name.id_for_label }}'>First Name</label>-->
-                            <!--      {{ form.first_name }}-->
-                            <!--    </div>-->
-                            <!--</div>-->
-                            
-                            <!--<div class="row">-->
-                            <!--    <div class="input-field col s6">-->
-                            <!--      <i class="material-icons prefix">account_circle</i>-->
-                            <!--      {{ form.last_name.errors }}-->
-                            <!--      <label for='{{ form.last_name.id_for_label }}'>Last Name</label>-->
-                            <!--      {{ form.last_name }}-->
-                            <!--    </div>-->
-                            <!--</div>-->
-                            
                             <div class="input-field col s6">
                                 <i class="material-icons prefix">phone</i>
                                 {{ form.phone.errors }}
@@ -57,12 +37,11 @@
                                 {{ form.phone }}
                             </div>
                         </div>
-                        
                         <div class="row">
                             <div class='input-field col s12'>
                                 <i class="material-icons prefix">vpn_key</i>
                                 {{ form.password1.errors }}
-                                <label for='{{ form.password.id_for_label }}'>Password</label>
+                                <label for='{{ form.password1.id_for_label }}'>Password</label>
                                 {{ form.password1 }}
                             </div>
                         </div>
@@ -73,7 +52,7 @@
                             <div class='input-field col s12'>
                                 <i class="material-icons prefix">vpn_key</i>
                                 {{ form.password2.errors }}
-                                <label for='{{ form.password.id_for_label }}'>Password 2</label>
+                                <label for='{{ form.password2.id_for_label }}'>Password 2</label>
                                 {{ form.password2 }}
                             </div>
                         </div>
