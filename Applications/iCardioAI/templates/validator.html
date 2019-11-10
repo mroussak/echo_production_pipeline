@@ -19,7 +19,7 @@
     <h2 class="title">iCardio.ai Validation App</h2>
     <section class="validator-section">
         <div class="gif-div draggable">
-            <video loop autoplay type="video/webm" class="gif-img draggable" id="imageid" src={% static result.path_to_dicom_webm %}></video>
+            <video loop autoplay type="video/webm" class="gif-img draggable" id="imageid" src=/videos/{{result.path_to_dicom_webm}}></video>
         </div>
         <div class="controls">
         <!--<a class="waves-effect waves-light btn analysis-button modal-trigger" id="blurry" href="/validator">Can't</a>-->
@@ -36,7 +36,7 @@
     {% csrf_token %}
         <input type="hidden" class="back" value="{{ result.previous_object_id }}" name="previous_object_id" required>
         <input type="hidden" class="back" value="{{ result.object_id }}" name="object_id" required>
-        {% if not result.previous_object_id %}
+        {% if result.previous_object_id == '-1' %}
         <button class="btn waves-effect waves-light" id="back" type="submit" name="action" disabled><i class="material-icons left" style="background-color:transparent">keyboard_arrow_left</i>Previous Image</button>
         {% else %}
         <button class="btn waves-effect waves-light" id="back" type="submit" name="action"><i class="material-icons left" style="background-color:transparent">keyboard_arrow_left</i>Previous Image</button>
@@ -50,7 +50,7 @@
         <input type="hidden" class="object_id" name="object_id" value="{{ result.object_id }}" required>
         <input type="hidden" class="user_id" name="user_id" value="{{ user.email }}" required>
         <input type="hidden" class="selection_time" name="selection_time" value="" required>
-        <button class="btn waves-effect waves-light" onclick="end()" id="submit" type="submit" name="action" disabled="disabled"><i class="material-icons right" style="background-color:transparent">keyboard_arrow_right</i>Next Image</button>
+        <button class="btn waves-effect waves-light" onclick="end()" id="submit" type="submit" name="action" disabled="disabled"><i class="material-icons right" style="background-color:transparent">keyboard_arrow_right</i>New Random Image</button>
     </form>
     </div>
     <div class="input-field col s12 m6">

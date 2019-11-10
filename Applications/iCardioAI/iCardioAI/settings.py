@@ -22,17 +22,19 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '0xg#0%j*s)5bhslo(n6ht!!p8v_1!nj+y*ru!h3$6mdoxzer7w'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+#DEBUG = True
 
+#ALLOWED_HOSTS = ['ec2-52-32-106-96.us-west-2.compute.amazonaws.com', 'app.icardio.ai', '*']
 ALLOWED_HOSTS = ['ec2-52-32-106-96.us-west-2.compute.amazonaws.com', 'app.icardio.ai']
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'datavalidation.apps.DatavalidationConfig',
-    'apps.apps.AppsConfig',
-    'accounts.apps.AccountsConfig',
+    'Accounts.apps.AccountsConfig',
+    'Applications.apps.ApplicationsConfig',
+    'EchoAnalyzer.apps.EchoanalyzerConfig',
+    'ViewsLabeler.apps.ViewslabelerConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -123,13 +125,24 @@ USE_TZ = True
 
 
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+#STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static_temp')
 STATIC_URL = '/static/'
 STATICFILES_DIRS = ( os.path.join('static'), )
 LOGIN_REDIRECT_URL = 'apps'
 LOGOUT_REDIRECT_URL = 'login'
 
-
-EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
-EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
 CSRF_TRUSTED_ORIGINS = ['front.bluemix.net']
+
+# EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST      = 'smtp.gmail.com'
+EMAIL_HOST_PASSWORD = 'hellohi123'
+EMAIL_HOST_USER = 'daniel@icardio.ai'
+EMAIL_PORT      = 587
+EMAIL_USE_TLS   = True
+DEFAULT_FROM_EMAIL  = 'daniel@icardio.ai'
+SERVER_EMAIL = 'daniel@icardio.ai'
+USE_X_FORWARDED_HOST = True

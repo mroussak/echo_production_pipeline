@@ -1,3 +1,0 @@
-UPDATE ManuallyAddedViewsData 
-SET 
-    path_to_dicom_webm = '../static/videos/vid.webm';

@@ -59,10 +59,10 @@ def QueryDatabase(database_dictionary, database_query, verbose=False, start=time
         # close cursor:
         cursor.close()
         
-    except psycopg2.DatabaseError as error:
+    except Exception as error:
         
         # handle exceptions:
-        print('[ERROR] in [QueryDatabase]: Database error: %s' %error)
+        raise('[ERROR] in [QueryDatabase] with query [%s]: Database error: %s' %(database_query, error))
 
     finally:
         

@@ -2,6 +2,48 @@ from time import time
 
 
 
+def GetKeyWordArgs():
+    
+    ''' key word argument builder '''
+    
+    kwargs = {
+        'vebrose' : True,
+        'start' : time(),
+    }
+
+    return kwargs
+
+
+
+def time_it(verbose=False):
+    
+    ''' time_it decorator, used to time execution time of functions '''
+    
+    def decorator(function):
+        
+        def wrapper(*args, **kwargs):
+        
+            # start timer:
+            start = time()
+            
+            # execute function:
+            result = function(*args, **kwargs)
+            
+            # terminate timer:
+            end = time()
+            
+            # print execution time when verbose is true:
+            if verbose==True:
+                print("Execution time [%7.2f s] for [%s]" %(end-start, function.__name__))
+        
+            return result
+        
+        return wrapper
+    
+    return decorator
+    
+
+
 def QueryType(query, verbose=False, start=time()):
     
     ''' Accepts query, returns query type as string '''

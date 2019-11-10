@@ -34,29 +34,23 @@ def main(query_file, parameters, verbose=False, start=time()):
 if __name__ == '__main__':
 
     file_paths = {
-        'create_table' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/create_table_query.psql',
-        'alter_table' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/alter_table_query.psql',
-        'select' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/select_query.psql',
-        'insert' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/insert_query.psql',
-        'update' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/update_query.psql',
-        'clean' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/clean_query.psql',
-        'table' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/table_query.psql',
-        'delete' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/delete_table_query.psql',
-        'populate' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/populate_query.psql',
+        'create_table' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/GeneralQueries/create_table_query.sql',
+        #'create_table' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/GeneralQueries/create_fact_table_query.sql',
+        'alter_table' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/GeneralQueries/alter_table_query.psql',
+        'select' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/GeneralQueries/select_query.sql',
+        'insert' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/GeneralQueries/insert_query.sql',
+        'update' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/GeneralQueries/update_query.sql',
+        'clean' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/GeneralQueries/clean_query.sql',
+        'table' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/GeneralQueries/table_query.sql',
+        'delete' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/GeneralQueries/delete_table_query.sql',
+        'populate' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/GeneralQueries/populate_query.sql',
+        'schema' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/GeneralQueries/select_schema_query.sql',
         #'select' : r'/internal_drive/echo_production_pipeline/Database/EchoData/Queries/select_query.psql',
         #'insert' : r'/internal_drive/echo_production_pipeline/Database/EchoData/Queries/insert_query.psql',
     }
-    
-    web_app_queries = {
-        'SELECT_get_next_unlabeled_view' : '/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/SELECT_get_next_unlabeled_view.psql',
-        'SELECT_get_previous_view' : '/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/SELECT_get_previous_view.psql',
-        'UPDATE_add_previous_object_id' : '/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/UPDATE_add_previous_object_id.psql',
-        'UPDATE_add_view_label_to_row' : '/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/UPDATE_add_view_label_to_row.psql',
-        'UPDATE_set_view_to_in_use' : '/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/UPDATE_set_view_to_in_use.psql',
-        'UPDATE_set_view_to_not_in_use' : '/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/UPDATE_set_view_to_not_in_use.psql',
-    }
 
-    query_file = file_paths['create_table']
+    #query_file = file_paths['create_table']
+    #query_file = file_paths['schema']
     #query_file = file_paths['alter_table']
     query_file = file_paths['select']
     #query_file = file_paths['insert']
@@ -65,12 +59,6 @@ if __name__ == '__main__':
     #query_file = file_paths['table']
     #query_file = file_paths['delete']
     #query_file = file_paths['populate']
-    
-    #query_file = web_app_queries['SELECT_get_next_unlabeled_view']
-    #query_file = web_app_queries['UPDATE_add_previous_object_id']
-    #query_file = web_app_queries['UPDATE_add_view_label_to_row']
-    #query_file = web_app_queries['UPDATE_set_view_to_in_use']
-    #query_file = web_app_queries['UPDATE_set_view_to_not_in_use']
     
     parameters = {
         'object_id' : 1,
@@ -94,6 +82,6 @@ if __name__ == '__main__':
         result_strings = result.select_dtypes(['object'])
         result[result_strings.columns] = result_strings.apply(lambda x: x.str.strip())
     
-        print(result)
+        print(result.iloc[0])    
     except:
         pass

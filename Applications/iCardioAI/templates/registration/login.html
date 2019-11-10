@@ -20,21 +20,21 @@
                         {% csrf_token %}
                         {{ form.non_field_errors }}
                         <h4 class="card-title">iCardio.ai Login</h4>
+                        <span>{{ form.username.errors }}</span>
+                        <span>{{ form.password.errors }}</span>
                         <div class='row'>
                             <div class='input-field col s12'>
-                                {{ form.username.errors }}
                                 <label for='{{ form.username.id_for_label }}'>Enter your email</label>
                                 {{ form.username }}
                             </div>
                         </div>
                         <div class='row'>
                             <div class='input-field col s12'>
-                                {{ form.password.errors }}
                                 <label for='{{ form.password.id_for_label }}'>Enter your password</label>
                                 {{ form.password }}
                             </div>
                             <label style='float: right;'>
-                                <a class='pink-text' href='#!'><b>Forgot Password?</b></a>
+                                <a class='pink-text' href="{% url 'password_reset' %}"><b>Forgot Password?</b></a>
                             </label>
                         </div>
 
@@ -47,7 +47,6 @@
                     </form>
                 </div>
             </div>
-            <h4 style="font-size: 14px; cursor:pointer;color: red"><a style="color: red; cursor:pointer" href="{% url 'password_reset' %}">Reset password</a></h4>
             <h4 style="font-size: 14px; cursor:pointer;color: red"><a style="color: red; cursor:pointer" href="{% url 'register' %}">Or, create an account</a></h4>
         </center>
     </main>

@@ -14,7 +14,11 @@
                     <form class="col s12" method="post" style="padding: 0 1em 3em 1em;">
                         {% csrf_token %}
                         <h4 class="card-title">iCardio.ai Registration</h4>
-                        
+                        <span>{{ form.non_field_errors }}</span>
+                        <span>{{ form.full_name.errors }}</span>
+                        <span>{{ form.phone.errors }}</span>
+                        <span>{{ form.password1.errors }} {{ form.password2.errors }}</span>
+
                         <div class='row'>
                             <div class='input-field col s12'>
                                 <i class="material-icons prefix">email</i>
@@ -26,13 +30,11 @@
                         <div class="row">
                             <div class="input-field col s6">
                                   <i class="material-icons prefix">account_circle</i>
-                                  {{ form.full_name.errors }}
                                   <label for='{{ form.full_name.id_for_label }}'>Full Name</label>
                                   {{ form.full_name }}
                                 </div>
                             <div class="input-field col s6">
                                 <i class="material-icons prefix">phone</i>
-                                {{ form.phone.errors }}
                                 <label for='{{ form.phone.id_for_label }}'>Telephone</label>
                                 {{ form.phone }}
                             </div>
@@ -40,7 +42,6 @@
                         <div class="row">
                             <div class='input-field col s12'>
                                 <i class="material-icons prefix">vpn_key</i>
-                                {{ form.password1.errors }}
                                 <label for='{{ form.password1.id_for_label }}'>Password</label>
                                 {{ form.password1 }}
                             </div>
@@ -50,9 +51,8 @@
                         
                         <div class="row">
                             <div class='input-field col s12'>
-                                <i class="material-icons prefix">vpn_key</i>
-                                {{ form.password2.errors }}
-                                <label for='{{ form.password2.id_for_label }}'>Password 2</label>
+                                <i class="material-icons prefix">replay</i>
+                                <label for='{{ form.password2.id_for_label }}'>Re-enter Password</label>
                                 {{ form.password2 }}
                             </div>
                         </div>
@@ -77,7 +77,7 @@
                      </form>
                 </div>
             </div>
-            <h4 style="font-size: 14px; cursor:pointer;color: red"><a style="color: red; cursor:pointer" href="login">Or, login</a></h4>
+            <h4 style="font-size: 14px; cursor:pointer;color: red"><a style="color: red; cursor:pointer" href="{% url 'login' %}">Or, login</a></h4>
         </center>
     </main>
 </body>
@@ -86,9 +86,9 @@
 <!--  <script src="static/js/network.js"></script>-->
 <script>
     
-$('#password, #repassword').keyup('change', function () {
-    var password   = $('#password');
-    var repassword = $('#repassword');
+$('#password1, #password2').keyup('change', function () {
+    var password   = $('#password1');
+    var repassword = $('#password2');
         
     password.val() != repassword.val() ? $('.helper-text').html('Passwords do not match.').css("color","red") : $('.helper-text').html('Okay.').css("color","green");
 });

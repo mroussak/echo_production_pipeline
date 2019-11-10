@@ -7,13 +7,16 @@
     {% load static %}
     
     <title>iCardio.ai</title>
-    <link rel="icon" type="image/png" href="static/images/favicon-32x32.png" />
+    <link rel="icon" type="image/png" href="{% static '../static/images/favicon-32x32.png' %}" />
     <!--Import Google Icon Font-->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <!--Import materialize.css-->
     <link type="text/css" rel="stylesheet" href="{% static '../static/css/materialize.css' %}"  media="screen,projection" />
     <!--Import app.css-->
     <link type="text/css" rel="stylesheet" href="{% static '../static/css/app.css' %}" media="screen,projection" />
+    <!--Import filepond.css-->
+    <link type="text/css" rel="stylesheet" href="{% static '../static/css/filepond.css' %}" media="screen,projection" />
+    <!--Import tippy.css for demo tips-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tippy.js/0.3.0/tippy.css" />
     <!--Let browser know website is optimized for mobile-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

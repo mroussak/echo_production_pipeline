@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload Echo{% endblock %}
+
+{% load static %}
+
+{% block content %}
+<body style="background-color: black">
+  <h3 class="loader typewriter" id="typewriter"></h3>
+<canvas id=c></canvas>
+   <div id="commence" style="opacity: 1;width: 100%;height:100%;position: absolute;visibility: hidden;transition: 2s;opacity: 1;transition: opacity 1s ease-in-out;-moz-transition: opacity 1s ease-in-out;-webkit-transition: opacity 1s ease-in-out;"><a class="waves-effect waves-light btn analysis-button modal-trigger" href="/loader" style="transform: translate(0%, 480%);right: -25%;">Commence Processing</a></div>
+   <form action="#" method="post" enctype="multipart/form-data" style="transform: translate(50%, 100px);width: 50%;">
+    <div class="file-field input-field">
+<!--      <div class="btn analysis-button">-->
+<!--        <span>Upload Dicoms</span>-->
+        <input type="file" name="filepond" multiple>
+<!--      </div>-->
+<!--
+      <button class="btn-commence waves-effect waves-light analysis-button" type="submit" name="action">Commence Processing
+          <i class="material-icons right" style="background-color: red">bolt</i>
+      </button>
+-->
+    </div>
+  </form>
+</body>
+  <!-- Load FilePond library -->
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script>
+  <script src="{% static '../static/js/filepond.js' %}"></script>
+    <script src="https://unpkg.com/filepond-plugin-file-encode/dist/filepond-plugin-file-encode.js"></script>
+    <script src="{% static '../static/js/network.js' %}"></script>
+<script>
+const inputElement = document.querySelector('input[type="file"]');
+const pond = FilePond.create(inputElement, {
+//     onaddfilestart: (file) => { isLoadingCheck(); },
+    onprocessfiles: (files) => { isLoadingCheck(); }
+});
+
+function isLoadingCheck(){
+    let files = pond.getFiles();
+    console.log(files);
+    const isUploadPending = files.filter(file => file.status != 5).length > 0;
+    if (isUploadPending == false){
+        fetch('/upload',{
+            method: 'POST',
+            async: 'true',
+            data: {files},
+            reroute:true,
+        })
+        document.getElementById('commence').style.visibility="visible";
+    }
+//     var isLoading = pond.getFiles().filter(x=>x.status !== 5).length !== 0;
+//     if(isLoading) {
+//         $('#createCaseForm [type="submit"]').attr("disabled", "disabled");
+//     } else {
+//         $('#createCaseForm [type="submit"]').removeAttr("disabled");
+//     }
+}   
+FilePond.registerPlugin(
+    // encodes files as base64 (needed for regular form post)
+    FilePondPluginFileEncode
+);
+
+FilePond.setOptions({
+    server: {url:'/upload', method:'POST'},
+    withCredentials: true,
+    allowMultiple: true,
+    allowFileEncode: true,
+    name: "filePond",
+    instantUpload: true,
+});
+    
+    // set up text to print, each item in array is new line
+//var set = new Array(
+//"There are only 10 types of people in the world:", 
+//"Those who understand binary, and those who don't"
+//);
+var setData = "Drag and drop or click to select your set of Dicoms to analyze."
+var iSpeed = 10; // time delay of print out
+var iIndex = 0; // start printing array at this posision
+var iArrLength = setData.length; // the length of the text array
+var iScrollAt = 20; // start scrolling up at this many lines
+var shouldChange = 1;
+var iTextPos = 0; // initialise text position
+var sContents = ''; // initialise contents variable
+var iRow; // initialise current row
+var shouldStop = 0;
+
+function typewriter()
+{
+ if(shouldChange == 1)
+ {
+	 iIndex = 0; 
+	 iArrLength = setData.length; 
+	 iScrollAt = 20; 
+	 shouldChange = 0;
+	 iTextPos = 0; 
+ }
+ if(shouldStop == 1)
+ return;
+
+ sContents = ' ';
+ iRow = Math.max(0, iIndex-iScrollAt);
+ var destination = document.getElementById("typewriter");
+ 
+// while ( iRow < iIndex ) {
+//  sContents += aText[iRow++] + '<br />';
+// }
+ destination.innerHTML = sContents + setData.substring(0, iTextPos) + "";
+ if ( iTextPos++ == iArrLength ) {
+  iTextPos = 0;
+  iIndex++;
+  shouldStop = 1;
+//  debugger;
+ // if ( iIndex != aText.length ) {
+   iArrLength = setData.length;
+   
+   //setTimeout("typewriter()", 500);
+   //}
+
+}
+}
+    setInterval(function() {
+     typewriter();
+	 }, 50);
+
+    
+</script>
+</html>
+{% endblock %}

@@ -1,2 +1,0 @@
-ALTER TABLE ManuallyAddedViewsData
-ALTER COLUMN selection_time TYPE TIMESTAMPTZ USING selection_time::timestamp with time zone;
