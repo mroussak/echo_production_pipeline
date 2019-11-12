@@ -4,7 +4,7 @@ import tensorflow as tf
 from time import time
 import os
 
-def main(start=time()):
+def main(verbose=False, start=time()):
     
     # Variables:
     global views_model 
@@ -15,7 +15,7 @@ def main(start=time()):
     graph = tf.get_default_graph()
     verbose = True
     kwargs = {
-        'verbose' : True,
+        'verbose' : verbose,
         'start' : start,
     }
     

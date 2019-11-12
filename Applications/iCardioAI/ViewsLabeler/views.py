@@ -29,19 +29,21 @@ def DataValidation(request):
 
     # list of queries:
     web_app_queries = {
-        'SELECT_get_next_unlabeled_view' : '/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/SELECT_get_next_unlabeled_view.sql',
-        'SELECT_get_previous_view' : '/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/SELECT_get_previous_view.sql',
-        'UPDATE_add_previous_object_id' : '/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/UPDATE_add_previous_object_id.sql',
-        'UPDATE_add_view_label_to_row' : '/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/UPDATE_add_view_label_to_row.sql',
-        'UPDATE_set_view_to_in_use' : '/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/UPDATE_set_view_to_in_use.sql',
-        'UPDATE_set_view_to_not_in_use' : '/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/UPDATE_set_view_to_not_in_use.sql',
+        # 'SELECT_get_next_unlabeled_view' : '/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/SELECT_get_next_unlabeled_view.sql',
+        # 'SELECT_get_previous_view' : '/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/SELECT_get_previous_view.sql',
+        # 'UPDATE_add_previous_object_id' : '/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/UPDATE_add_previous_object_id.sql',
+        # 'UPDATE_add_view_label_to_row' : '/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/UPDATE_add_view_label_to_row.sql',
+        # 'UPDATE_set_view_to_in_use' : '/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/UPDATE_set_view_to_in_use.sql',
+        # 'UPDATE_set_view_to_not_in_use' : '/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/UPDATE_set_view_to_not_in_use.sql',
+        'SELECT_get_next_unlabeled_view' : '/internal_drive/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/SELECT_get_next_unlabeled_view.sql',
+        'SELECT_get_previous_view' : '/internal_drive/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/SELECT_get_previous_view.sql',
+        'UPDATE_add_previous_object_id' : '/internal_drive/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/UPDATE_add_previous_object_id.sql',
+        'UPDATE_add_view_label_to_row' : '/internal_drive/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/UPDATE_add_view_label_to_row.sql',
+        'UPDATE_set_view_to_in_use' : '/internal_drive/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/UPDATE_set_view_to_in_use.sql',
+        'UPDATE_set_view_to_not_in_use' : '/internal_drive/dsokol/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/UPDATE_set_view_to_not_in_use.sql',
     }
 
-    #query_file = web_app_queries['SELECT_get_next_unlabeled_view']
-    #query_file = web_app_queries['UPDATE_add_previous_object_id']
-    #query_file = web_app_queries['UPDATE_add_view_label_to_row']
-    #query_file = web_app_queries['UPDATE_set_view_to_in_use']
-    #query_file = web_app_queries['UPDATE_set_view_to_not_in_use']
+    
     
    
     if request.method == 'POST':

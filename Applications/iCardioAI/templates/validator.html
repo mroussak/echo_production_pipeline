@@ -17,7 +17,7 @@
 </div>
 <div class="split-vertical-3 boxA left" id="thumbnails">
     <h2 class="title">iCardio.ai Validation App</h2>
-    <section class="validator-section">
+    <section class="validator-section" style="border-bottom:none">
         <div class="gif-div draggable">
             <video loop autoplay type="video/webm" class="gif-img draggable" id="imageid" src=/videos/{{result.path_to_dicom_webm}}></video>
         </div>
@@ -26,6 +26,9 @@
         </div>
         <h3 class="view"></h3>
     </section>
+    <div>
+        <p style="color:white">Video ID: {{ result.object_id }}</p>
+    </div>
 </div>
 <div class="handler-2"></div>
 <div class="split-vertical-4 boxB right">

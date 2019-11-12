@@ -13,6 +13,7 @@
     <div class="file-field input-field">
 <!--      <div class="btn analysis-button">-->
 <!--        <span>Upload Dicoms</span>-->
+{% csrf_token %}
         <input type="file" name="filepond" multiple>
 <!--      </div>-->
 <!--
@@ -61,12 +62,22 @@ FilePond.registerPlugin(
 );
 
 FilePond.setOptions({
-    server: {url:'/upload', method:'POST'},
+    server: 
+        {
+            url:'/handle-upload/',
+            method:'POST',
+            process: {
+                headers: {
+                    'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val()
+                }
+            }
+        },
+
     withCredentials: true,
     allowMultiple: true,
     allowFileEncode: true,
     name: "filePond",
-    instantUpload: true,
+    instantUpload: true
 });
     
     // set up text to print, each item in array is new line

@@ -7,17 +7,24 @@ import psycopg2
 
 
 
-def ReadDatabaseQuery(query_file, parameters, verbose=False, start=time()):
+def ReadDatabaseQuery(query, parameters, verbose=False, start=time()):
         
     ''' Accepts query file, returns database query '''    
-        
+    
     # read query from file:
-    with open(query_file, 'r') as file:
-        database_query = file.read()
+    if query[0] == '/':
         
-    # add key words to query:
-    if parameters:
-        database_query = database_query.format(**parameters)
+        # read query from file:
+        with open(query, 'r') as file:
+            database_query = file.read()
+            
+        # add key words to query:
+        if parameters:
+            database_query = database_query.format(**parameters)
+    
+    # ready query from string:
+    else:
+        database_query = query
         
     if verbose:
         print('[@ %7.2f s] [ReadDatabaseQuery]: Read database query from [%s]' %(time()-start, query_file))
