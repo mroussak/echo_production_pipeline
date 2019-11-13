@@ -38,7 +38,7 @@ impulse behaviour:
 - pick( original node)
 
 -->
-</body><script src="{% static 'static/js/network.js' %}"></script>
+</body><script src="{% static '../static/js/network.js' %}"></script>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script>
 <script>
  $.ajaxSetup({
@@ -71,7 +71,7 @@ var iRow; // initialise current row
 
 // continously reads status.txt for updates: 
 function checkText() {
-    $.get('static/status.txt?_=' + new Date().getTime(), function(data) {
+    $.get('{% static "../static/Users/"%}{{user.username}}/Sessions/1/Reports/status.txt?_=' + new Date().getTime(), function(data) {
         
         // split status.txt by individual lines:
         var statusLines = data.split('\n')
@@ -106,6 +106,22 @@ function checkText() {
         }
     });    
 }
+
+$.ajax({
+    url: "/execute_pipeline/",
+    data: { 
+        user_id: "{{ user.email }}",
+        'csrfmiddlewaretoken': '{{ csrf_token }}',
+    },
+    cache: false,
+    type: "POST",
+    success: function(response) {
+    console.log('Sent request to commence processing.')
+    },
+    error: function(xhr) {
+    console.log('We clowned around.')
+    }
+});
     
     
     

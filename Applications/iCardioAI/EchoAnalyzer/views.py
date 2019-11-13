@@ -1,6 +1,7 @@
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render
-from time import time
+from time import time, sleep
 import json
 import sys
 
@@ -11,7 +12,9 @@ import Tools.ProductionTools as tools
 import ProductionPipeline
 
 
+
 # Create your views here.
+@login_required(login_url='/login/')
 def upload(request):
     session_id = '1'
     root_directory = tools.BuildRootDirectory(request.user.username, session_id)
@@ -32,9 +35,32 @@ def upload(request):
     
     
     
+@login_required(login_url='/login/')    
 def execute_pipeline(request):
     
-    user_id = request.user.username
-    session_id = '1'
+    if request.method=='POST':
     
-    ProductionPipeline.main(user_id, session_id, verbose=True, start=time())
+        user_id = request.POST.get('user_id', '')
+        session_id = '1'
+        
+        #ProductionPipeline.main(user_id, session_id, verbose=True, start=time())
+    
+    return render(request, template_name='loader.html')
+    
+    
+
+
+@login_required(login_url='/login/')
+def send_report(request):
+    
+    user_id = request.POST.get('user_id', '')
+    session_id = '1'
+        
+    reports_file_path = '/internal_drive/Users/daniel@icardio.ai/Sessions/1/Reports/reports.json'
+    
+    with open(reports_file_path) as json_file:
+        report = json.load(json_file)
+        
+    json_object = json.dumps(report)
+    
+    return render(request, "results.html", {'report_json': json_object})

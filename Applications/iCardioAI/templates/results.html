@@ -73,9 +73,12 @@
 <!-- materialize js -->
 <!-- <script type="text/javascript" src="static/js/materialize.js"></script> -->
 <!-- scalable verticle divider -->
-<script type="application/javascript" src="{% static 'static/js/divider.js' %}"></script>
+<script type="application/javascript" src="{% static '../static/js/divider.js' %}"></script>
 <!-- tools -->
-<script type="application/javascript" src="{% static 'static/js/tools.js' %}"></script>
+<script type="application/javascript" src="{% static '../static/js/tools.js' %}"></script>
 <!-- image controllers -->
-<script type="application/javascript" src="{% static 'static/js/windows.js' %}"></script>
+<script type="application/javascript" src="{% static '../static/js/windows.js' %}"></script>
+<script type="application/javascript">
+var jsonObject = JSON.parse('{{ report_json | escapejs }}');
+</script>
 {% endblock %}

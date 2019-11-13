@@ -16,10 +16,10 @@ if __name__ == '__main__':
         }
 
     # Step 1, DataParserPipeline:
-    #DataParserPipeline.main(file_paths)
+    DataParserPipeline.main(file_paths)
     
     # Step 2, WebmCompilerPipeline:
-    #WebmCompilerPipeline.main(file_paths)
+    WebmCompilerPipeline.main(file_paths)
     
     # Step 3, DataPopulatorPipeline:
     DataPopulatorPipeline.main(file_paths)

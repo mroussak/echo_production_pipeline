@@ -3,6 +3,8 @@ from time import time
 import importlib
 import yaml
 
+
+
 def PrepSegmentationModel(configuration_file, verbose=False, start=time()):
 
     ''' Accepts configuration_file, returns segmentation_metrics '''
@@ -33,6 +35,32 @@ def PrepSegmentationModel(configuration_file, verbose=False, start=time()):
     return segmentation_metrics
     
     
+
+def PrepPericardialAbnormalityModel(configuration_file, verbose=False, start=time()):
+
+    ''' Accepts configuration_file, returns pericardial_abnormality_metrics '''
+    
+    # open and read file:
+    with open(configuration_file, 'r') as tfile:
+        file_str = tfile.read()
+    config = yaml.load(file_str)  # yaml.load(file_str, Loader=yaml.FullLoader)
+
+    # pull metrics:
+    tpr_metric_coeff = importlib.import_module(config['metrics']).tpr_metric_coeff(0.05, 0.04)
+    fpr_metric_coeff = importlib.import_module(config['metrics']).fpr_metric_coeff(0.05, 0.04)
+
+    # pack metrics:
+    pericardial_abnormality_metrics = {
+        'tpr': tpr_metric_coeff,
+        'fpr': fpr_metric_coeff,
+    }
+
+    if verbose:
+        print('[@ %7.2f s] [PrepPericardialAbnormalityModel]: Prepped model using [%s]' %(time()-start, configuration_file))
+
+    return pericardial_abnormality_metrics
+
+
 
 def InitializeModel(model_file, model_configuration, verbose=False, start=time()):
 

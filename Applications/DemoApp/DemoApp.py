@@ -12,21 +12,42 @@ import ProductionPipeline
 # Main:
 if __name__ == "__main__":
     
+    
+    ''' Test new dicoms '''
+    
     # intialize variables:
     user_id = 'Demo'
-    session_ids = range(0,15)
+    session_id = 'Tests'
     
     # Step 1, load models if not already loaded:
     ModelsPipeline.main(start=time())
     
-    for session_id in session_ids:
+    # Step 2, build directory structure if needed:
+    root_directory = tools.BuildRootDirectory(user_id, session_id)
+    tools.BuildDirectoryTree(root_directory)
+    
+    # Step 3, execute pipeline:
+    ProductionPipeline.main(user_id, session_id, start=time())
+    
+    
         
-        # correct data type:
-        session_id = str(session_id)
+    ''' Run new models on demo data '''
+    
+    # # intialize variables:
+    # user_id = 'Demo'
+    # session_ids = range(0,15)
+    
+    # # Step 1, load models if not already loaded:
+    # ModelsPipeline.main(start=time())
+    
+    # for session_id in session_ids:
         
-        # Step 2, build directory structure if needed:
-        root_directory = tools.BuildRootDirectory(user_id, session_id)
-        tools.BuildDirectoryTree(root_directory)
+    #     # correct data type:
+    #     session_id = str(session_id)
         
-        # Step 3, execute pipeline:
-        ProductionPipeline.main(user_id, session_id, start=time())
+    #     # Step 2, build directory structure if needed:
+    #     root_directory = tools.BuildRootDirectory(user_id, session_id)
+    #     tools.BuildDirectoryTree(root_directory)
+        
+    #     # Step 3, execute pipeline:
+    #     ProductionPipeline.main(user_id, session_id, start=time())

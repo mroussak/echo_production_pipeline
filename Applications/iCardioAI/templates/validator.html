@@ -58,7 +58,7 @@
     </div>
     <div class="input-field col s12 m6">
         {% if result.view %}
-        <a class="btn waves-light selected" id="selection">{{ result.view }} Selected</a>
+        <a class="btn waves-light selected" id="selection">{{ result.subview }} Selected</a>
         {% else %}
         <a class="btn waves-light" id="selection" disabled>No views selected.</a>
         {% endif %}
@@ -70,7 +70,7 @@
         <a class="waves-light btn main" id="plax" view="PLAX">PLAX</a>
         <div class="input-field col s12 m6 sub-options" id="plax_options" style="display:none;">
             <a class="btn" view="PLAX">PLAX Paracardial</a>
-            <a class="btn" view="PLAX">PLAX Aortic Cusps</a>
+            <a class="btn" view="PLAX">LVOT</a>
             <a class="btn" view="PLAX">PLAX Mitral Cusps</a>
         </div>        
         <a class="btn main" view="RVIT">RVIT</a>

@@ -7,8 +7,8 @@ $(function() {
         $.each(currObj['dicoms'], function(key, value) {
             var dicomObj = value;
             i++;
-            document.getElementById('thumbnails').innerHTML += '<section><div title="Drag and drop me in one of the panes to the right" class="gif-div draggable"><img class="gif-img draggable" id="' + dicomObj['dicom_id'] + '" src="' + dicomObj['paths']['path_to_dicom_gif'] + '"></div><div class="controls"></div><h3 class="view">' + currObj['view'] + '</h3></section>';
-            var image = '<img class="analysis-img" src="' + dicomObj['paths']['path_to_dicom_gif'] + '">"';
+            document.getElementById('thumbnails').innerHTML += '<section><div title="Drag and drop me in one of the panes to the right" class="gif-div draggable"><img class="gif-img draggable" id="' + dicomObj['dicom_id'] + '" src="/static' + dicomObj['paths']['path_to_dicom_gif'] + '"></div><div class="controls"></div><h3 class="view">' + currObj['view'] + '</h3></section>';
+            var image = '<img class="analysis-img" src="../static' + dicomObj['paths']['path_to_dicom_gif'] + '">"';
 //           old button  <a class="waves-effect waves-light btn analysis-button modal-trigger" href="#modal1">Analyze</a>
             return dicomObj;
         });
