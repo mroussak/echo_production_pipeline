@@ -38,16 +38,15 @@ def main(user_id='UserID1', session_id='SessionID1', verbose=False, start=time()
     
     # System settings:
     #sys.stdout = open(user_directory + session_directory + 'Reports/status.txt', 'w')
-    sys.stdout = open('/sandbox/dsokol/echo_production_pipeline/Applications/iCardioAI/static/Users/daniel@icardio.ai/Sessions/1/Reports/status.txt', 'w')
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
     
     
 
     # Step 1, dicoms pipeline:
-    DicomsPipeline.main(file_paths, **kwargs)
+    #DicomsPipeline.main(file_paths, **kwargs)
 
     # Step 2, views pipeline:
-    ViewsPipeline.main(file_paths, **kwargs)
+    #ViewsPipeline.main(file_paths, **kwargs)
 
     # Step 3, model pipelines:
     SegmentationApicalPipeline.main(file_paths, **kwargs)

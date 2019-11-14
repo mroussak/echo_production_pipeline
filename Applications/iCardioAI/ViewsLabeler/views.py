@@ -40,7 +40,7 @@ def DataValidation(request):
         'UPDATE_add_previous_object_id' : '/internal_drive/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/UPDATE_add_previous_object_id.sql',
         'UPDATE_add_view_label_to_row' : '/internal_drive/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/UPDATE_add_view_label_to_row.sql',
         'UPDATE_set_view_to_in_use' : '/internal_drive/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/UPDATE_set_view_to_in_use.sql',
-        'UPDATE_set_view_to_not_in_use' : '/internal_drive/dsokol/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/UPDATE_set_view_to_not_in_use.sql',
+        'UPDATE_set_view_to_not_in_use' : '/internal_drive/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/UPDATE_set_view_to_not_in_use.sql',
     }
 
     

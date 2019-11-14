@@ -13,7 +13,8 @@ import cv2
 import os
 
 # Preprocessor imports:
-sys.path.insert(1, '/internal_drive/echo_production_pipeline/Pipeline/Preprocessor/')
+#sys.path.insert(1, '/internal_drive/echo_production_pipeline/Pipeline/Preprocessor/')
+sys.path.insert(1, '/sandbox/dsokol/echo_production_pipeline/Pipeline/Preprocessor/')
 import Preprocessor
 
 

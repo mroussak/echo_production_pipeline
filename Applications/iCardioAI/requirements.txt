@@ -283,3 +283,4 @@ zope.event==4.4
 zope.hookable==4.2.0
 zope.interface==4.6.0
 zope.proxy==4.3.2
+django-s3-storage

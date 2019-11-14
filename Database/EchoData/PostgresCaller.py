@@ -5,7 +5,7 @@ from time import time
 
 
 # Main:
-def main(query_file, parameters, verbose=False, start=time()):
+def main(query_file, parameters=None, verbose=False, start=time()):
     
     # Variables:
     database_dictionary = {

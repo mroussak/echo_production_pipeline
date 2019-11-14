@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render
 from time import time, sleep
+from EchoAnalyzer.models import File, Visit
 import json
 import sys
 
@@ -20,17 +21,15 @@ def upload(request):
     root_directory = tools.BuildRootDirectory(request.user.username, session_id)
     tools.BuildDirectoryTree(root_directory)
     print(request.FILES)
-    for count, x in enumerate(request.FILES.getlist("filePond")):
-        def process(f):
-            path = '/internal_drive/Users/{username}/Sessions/{session_id}/Dicoms/{count}'.format(
-                username=request.user.username,
-                session_id=session_id,
-                count=f.name
-            )
-            with open(path, 'wb+') as destination:
-                for chunk in f.chunks():
-                    destination.write(chunk) 
-        process(x)
+    
+    visit, created = Visit.objects.get_or_create(user=request.user, processed_at=None)
+   
+    File.objects.create(
+        file=request.FILES.get('filePond'),
+        user=request.user,
+        visit=visit
+    )
+
     return HttpResponse(json.dumps({'success': True}))
     
     
@@ -42,6 +41,8 @@ def execute_pipeline(request):
     
         user_id = request.POST.get('user_id', '')
         session_id = '1'
+        visit =  Visit.objects.get(user_id=request.user, processed_at=None)
+        # send the visit.id to the Production Pipeline
         
         #ProductionPipeline.main(user_id, session_id, verbose=True, start=time())
     

@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    'django_s3_storage',
 ]
 
 MIDDLEWARE = [
@@ -154,3 +156,14 @@ EMAIL_USE_TLS   = True
 DEFAULT_FROM_EMAIL  = 'daniel@icardio.ai'
 SERVER_EMAIL = 'daniel@icardio.ai'
 USE_X_FORWARDED_HOST = True
+
+DEFAULT_FILE_STORAGE  = 'django_s3_storage.storage.S3Storage'
+# The AWS region to connect to.
+AWS_REGION = "us-west-2"
+
+# The AWS access key to use.
+AWS_ACCESS_KEY_ID = "AKIA2QHJQORZR6P2Y25A"
+
+# The AWS secret access key to use.
+AWS_SECRET_ACCESS_KEY = "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"
+AWS_S3_BUCKET_NAME = "icardio"

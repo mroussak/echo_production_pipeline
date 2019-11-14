@@ -7,7 +7,7 @@ import psycopg2
 
 
 
-def ReadDatabaseQuery(query, parameters, verbose=False, start=time()):
+def ReadDatabaseQuery(query, parameters=None, verbose=False, start=time()):
         
     ''' Accepts query file, returns database query '''    
     

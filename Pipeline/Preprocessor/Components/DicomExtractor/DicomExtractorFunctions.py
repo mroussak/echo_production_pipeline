@@ -81,7 +81,48 @@ def GetImageSizeDetails(dicom, verbose=False, start=time()):
         'physical_units_x_direction' : None,
         'physical_units_y_direction' : None,
     }
+    
+    ''' Extraction method for:
+        'Sonoscanner', '''
+    
+    # try accessing data using numeric keys:
+    try: 
+        image_size_details['physical_units_x_direction'] = dicom[0x18,0x6024].value
+        image_size_details['physical_units_y_direction'] = dicom[0x18,0x6026].value
+        image_size_details['physical_delta_x'] = abs(dicom[0x18,0x602c].value)
+        image_size_details['physical_delta_y'] = abs(dicom[0x18,0x602e].value)
+    
+    except KeyError as error:
+        key_error = error
         
+    else:
+        if verbose:
+            print('[@ %7.2f s] [GetImageSizeDetails]: Retreived image size details from dicom using numeric keys' %(time()-start))
+            
+        return image_size_details
+
+    # try accessing data using object attributes:
+    try:
+	    image_size_details['physical_units_x_direction'] = dicom.PhysicalUnitsXDirection
+	    image_size_details['physical_units_y_direction'] = dicom.PhysicalUnitsYDirection
+	    image_size_details['physical_delta_x'] = abs(dicom.PhysicalDeltaX)
+	    image_size_details['physical_delta_y'] = abs(dicom.PhysicalDeltaY)
+        
+    except AttributeError as error:
+        attribute_error = error
+        
+    else:
+        if verbose:
+            print('[@ %7.2f s] [GetImageSizeDetails]: Retreived image size details from dicom using object attributes' %(time()-start))
+            
+        return image_size_details  
+        
+    ''' Extraction method for:
+        'Acuson Cypress', 'GE Healthcare LOGIQe',
+        'GE Healthcare Ultrasound Vivid iq', 'GE Healthcare Vivid i',
+        'GE Healthcare Vivide', 'GEMS Ultrasound Vivid i', 'MINDRAY M7', 'SIEMENS ACUSON P500',
+        'Teratech Corp. Terason Ultrasound Imaging System' '''
+    
     # try accessing data using numeric keys:
     try: 
         image_size_details['physical_units_x_direction'] = dicom[0x18,0x6011][0][0x18,0x6024].value
@@ -127,6 +168,54 @@ def GetDicomTypeDetails(dicom, verbose=False, start=time()):
     
     # initilaize varibles:
     dicom_type_details = None
+    
+    ''' Extraction method for:
+        'Sonoscanner', '''
+    
+    # try accessing data using numeric keys:
+    try: 
+        if (dicom[0x18, 0x6014].value == 1) or (dicom[0x18, 0x6014].value == 0) :
+            dicom_type_details = 'standard'
+        elif dicom[0x18, 0x6014].value == 2:
+            dicom_type_details = 'color'
+        else:
+            print(Exception('[ERROR] in [GetDicomTypeDetails]: Cannot determine dicom type'))
+            return dicom_type_details 
+
+    except KeyError as error:
+        key_error = error
+        
+    else:
+        if verbose:
+            print('[@ %7.2f s] [GetDicomTypeDetails]: Retreived dicom type details from dicom using numeric keys' %(time()-start))
+            
+        return dicom_type_details
+            
+    # try accessing data using object attributes:
+    try: 
+        if (dicom.RegionDataType == 1) or (dicom.RegionDataType == 0):
+            dicom_type_details = 'standard'
+        elif dicom.RegionDataType == 2:
+            dicom_type_details = 'color'
+        else:
+            print(Exception('[ERROR] in [GetDicomTypeDetails]: Cannot determine dicom type'))
+            return dicom_type_details
+        
+    except AttributeError as error:
+        attribute_error = error
+        
+    else:
+        if verbose:
+            print('[@ %7.2f s] [GetDicomTypeDetails]: Retreived dicom type details from dicom using object attributes' %(time()-start))
+            
+        return dicom_type_details
+            
+    
+    ''' Extraction method for:
+        'Acuson Cypress', 'GE Healthcare LOGIQe',
+        'GE Healthcare Ultrasound Vivid iq', 'GE Healthcare Vivid i',
+        'GE Healthcare Vivide', 'GEMS Ultrasound Vivid i', 'MINDRAY M7', 'SIEMENS ACUSON P500',
+        'Teratech Corp. Terason Ultrasound Imaging System' '''
     
     # check if dicom is neither standard nor color:
     if pydicom.tag.Tag((0x18,0x6011)) not in dicom.keys():
