@@ -162,8 +162,8 @@ DEFAULT_FILE_STORAGE  = 'django_s3_storage.storage.S3Storage'
 AWS_REGION = "us-west-2"
 
 # The AWS access key to use.
-AWS_ACCESS_KEY_ID = "AKIA2QHJQORZR6P2Y25A"
+AWS_ACCESS_KEY_ID
 
 # The AWS secret access key to use.
-AWS_SECRET_ACCESS_KEY = "Z5effkx1vAD7lr83wCEbA0TgB8iBdQq8NRh2cj67"
-AWS_S3_BUCKET_NAME = "icardio"
+AWS_SECRET_ACCESS_KEY 
+AWS_S3_BUCKET_NAME
