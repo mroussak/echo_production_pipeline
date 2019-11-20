@@ -4,11 +4,12 @@ $(function() {
     var i = 0;
     $.each(jsonObject, function(key, value) {
         var currObj = value;
+        
         $.each(currObj['dicoms'], function(key, value) {
             var dicomObj = value;
             i++;
-            document.getElementById('thumbnails').innerHTML += '<section><div title="Drag and drop me in one of the panes to the right" class="gif-div draggable"><img class="gif-img draggable" id="' + dicomObj['dicom_id'] + '" src="/static' + dicomObj['paths']['path_to_dicom_gif'] + '"></div><div class="controls"></div><h3 class="view">' + currObj['view'] + '</h3></section>';
-            var image = '<img class="analysis-img" src="../static' + dicomObj['paths']['path_to_dicom_gif'] + '">"';
+            document.getElementById('thumbnails').innerHTML += '<section><div title="Drag and drop me in one of the panes to the right" class="gif-div draggable"><img class="gif-img draggable" id="' + dicomObj['dicom_id'] + '" src="https://app.icardio.ai' + dicomObj['paths']['path_to_dicom_gif'] + '"></div><div class="controls"></div><h3 class="view">' + currObj['view'] + '</h3></section>';
+            var image = '<img class="analysis-img" src="https://app.icardio.ai/' +dicomObj['paths']['path_to_dicom_gif'] + '">"';
 //           old button  <a class="waves-effect waves-light btn analysis-button modal-trigger" href="#modal1">Analyze</a>
             return dicomObj;
         });
@@ -77,7 +78,7 @@ function displayConsole(draggedDicomId){
     <p class="meta-text-center">${draggedDicomId}</p>
     <p class="meta-text-right">${ getJsonDetail(draggedDicomId, 'predicted_view') }</p>
     <div class="analysis-div">
-        <img class="analysis-img ${draggedDicomId}" data-directory="${ getDefaultDataDirectory(getJsonDetail(draggedDicomId, 'predicted_view'))}" src="${ getJsonDetail(draggedDicomId, 'paths', getDefaultDataDirectory(getJsonDetail(draggedDicomId, 'predicted_view')), 0) }" data-id="${draggedDicomId}" img-analysis1">
+        <img class="analysis-img ${draggedDicomId}" data-directory="${ getDefaultDataDirectory(getJsonDetail(draggedDicomId, 'predicted_view'))}" src="https://app.icardio.ai${ getJsonDetail(draggedDicomId, 'paths', getDefaultDataDirectory(getJsonDetail(draggedDicomId, 'predicted_view')), 0) }" data-id="${draggedDicomId}" img-analysis1">
     </div>
 </div>
 <div class="report controls">
@@ -154,11 +155,11 @@ document.onkeydown = (e) => {
     }
 }
 
-setInterval(function() {
+/*setInterval(function() {
     new Tippy('.report-button',{
         position:'top',
         animation:'perspective',
         interactive:'true'
     });
     console.log('1');
-}, 1000);
+}, 1000);*/

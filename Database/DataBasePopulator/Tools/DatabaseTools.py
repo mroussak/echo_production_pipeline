@@ -34,8 +34,8 @@ def time_it(verbose=False, start=time()):
     
 
 
-def InitializeScript(script_name, verbose=False, start=time()):
-                
+def InitializeScript(script_name, verbose=kwargs['verbose'], start=kwargs['start']):
+
     ''' Accepts script_name, prints title of script '''
         
     if verbose:

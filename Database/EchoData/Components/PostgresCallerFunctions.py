@@ -27,7 +27,7 @@ def ReadDatabaseQuery(query, parameters=None, verbose=False, start=time()):
         database_query = query
         
     if verbose:
-        print('[@ %7.2f s] [ReadDatabaseQuery]: Read database query from [%s]' %(time()-start, query_file))
+        print('[@ %7.2f s] [ReadDatabaseQuery]: Read database query from [%s]' %(time()-start, query))
     
     return database_query
 

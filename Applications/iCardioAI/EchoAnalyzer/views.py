@@ -1,32 +1,40 @@
 from django.contrib.auth.decorators import login_required
+from EchoAnalyzer.models import File, Visit
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.urls import reverse
 from time import time, sleep
-from EchoAnalyzer.models import File, Visit
+from EchoAnalyzer.tasks import start_pipeline
 import json
-import sys
-
-# Pipeline imports:
-sys.path.insert(1, '/internal_drive/echo_production_pipeline/Pipeline/ProductionPipeline')
-from Components.Models import ModelsPipeline
-import Tools.ProductionTools as tools
-import ProductionPipeline
 
 
-
-# Create your views here.
 @login_required(login_url='/login/')
 def upload(request):
-    session_id = '1'
-    root_directory = tools.BuildRootDirectory(request.user.username, session_id)
-    tools.BuildDirectoryTree(root_directory)
-    print(request.FILES)
     
-    visit, created = Visit.objects.get_or_create(user=request.user, processed_at=None)
+    ''' Accepts request from /upload, creates visit object ''' 
+    
+    visit = Visit.objects.create(user=request.user, user_email=request.user.email)
+    
+    return render(request, 'upload.html', {'visit_id': visit.pk})
+
+
+
+@login_required(login_url='/login/')
+def handle_upload(request, pk):
+    
+    ''' Accepts request, visit.id as pk,, downloads files and saves them to visit object '''
+    
+    # debug:
+    print('[EchoAnalyzer.views.handle_upload]: retreived files [%s]' %request.FILES)
+    
+    # get visit object with given id:
+    visit = Visit.objects.get(pk=pk, user=request.user)
    
+    # create file objects and associate to visist:
     File.objects.create(
         file=request.FILES.get('filePond'),
         user=request.user,
+        user_email = request.user.email,
         visit=visit
     )
 
@@ -35,33 +43,46 @@ def upload(request):
     
     
 @login_required(login_url='/login/')    
-def execute_pipeline(request):
+def execute_pipeline(request, pk):
     
-    if request.method=='POST':
+    ''' Accepts visit_id as pk, executes production pipeline '''
     
-        user_id = request.POST.get('user_id', '')
-        session_id = '1'
-        visit =  Visit.objects.get(user_id=request.user, processed_at=None)
-        # send the visit.id to the Production Pipeline
+    # get visit object by id:
+    visit =  Visit.objects.get(pk=pk, user_id=request.user)
+    
+    # execute pipeline if not already started:
+    if not visit.started_processing_at:
+        file_list = list(visit.file_set.all().values_list('file', flat=True))
+        #import pdb; pdb.set_trace()
+        print(file_list)
+        start_pipeline.delay(request.user.username, str(visit.id), file_list, verbose=True)
+    
+    return render(request, 'loader.html', {'visit_id': visit.id})
+    
+
+
+@login_required(login_url='/login/')    
+def visit_status(request, pk):
+    
+    ''' Accepts request, visit.id as pk, returns status of pipeline '''
+    
+    # get visit object by id:
+    visit =  Visit.objects.get(pk=pk, user_id=request.user)
+    
+    # reroute user if pipeline is complete:
+    if visit.results and visit.processed_at:
+        return HttpResponse(json.dumps({'status':'done', 'url': reverse('results', kwargs={'pk': visit.pk})}), status=201, content_type='application/json')
         
-        #ProductionPipeline.main(user_id, session_id, verbose=True, start=time())
-    
-    return render(request, template_name='loader.html')
-    
+    return HttpResponse(json.dumps({'status': 'not-done', 'log': visit.log}), content_type='application/json')
     
 
 
 @login_required(login_url='/login/')
-def send_report(request):
+def send_report(request, pk):
     
-    user_id = request.POST.get('user_id', '')
-    session_id = '1'
-        
-    reports_file_path = '/internal_drive/Users/daniel@icardio.ai/Sessions/1/Reports/reports.json'
+    ''' Accepts request, visit.id as pk, returns result from pipeline as json object '''
     
-    with open(reports_file_path) as json_file:
-        report = json.load(json_file)
-        
-    json_object = json.dumps(report)
+    # get result object by id:
+    visit =  Visit.objects.get(pk=pk, user_id=request.user)
     
-    return render(request, "results.html", {'report_json': json_object})
+    return render(request, "results.html", {'report_json': json.dumps(visit.results), 'visit': visit})

@@ -1,5 +1,7 @@
 import Tools.ProductionTools as tools
-from multiprocessing import Pool
+from billiard import Pool
+#from multiprocessing import Pool
+from decouple import config
 from PIL import Image
 from time import time
 import pandas as pd
@@ -10,7 +12,12 @@ import ffmpeg
 import json
 import cv2
 import ast
+import sys
 import os
+
+# Database imports:
+sys.path.insert(1, config("BASE_DIR") + 'echo_production_pipeline/Database/EchoData/')
+import PostgresCaller
 
 
 
@@ -294,3 +301,21 @@ def BuildJsonFromData(data, verbose=False, start=time()):
     
     
     
+def ExportDataToPostgres(reports_json, visit_id, query_file, verbose, start):
+    
+    ''' Accepts report as json, writes to database '''
+    
+    # parse json:
+    reports_json = str(reports_json)
+    reports_json = reports_json.replace("'",'"').replace('None','null').replace('True','true').replace('False','false')
+    
+    parameters = {
+        'visit_id' : int(visit_id),
+        'reports_json' : reports_json,
+    }
+    
+    PostgresCaller.main(query_file, parameters)
+    
+    if verbose:
+        print('[@ %7.2f s] [ExportDataToPostgres]: Exported json to postgres to visist with id [%s]' %(time()-start, visit_id))
+        

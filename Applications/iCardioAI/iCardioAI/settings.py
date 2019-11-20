@@ -21,13 +21,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '0xg#0%j*s)5bhslo(n6ht!!p8v_1!nj+y*ru!h3$6mdoxzer7w'
+SECRET_KEY = config("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', cast=bool)
 
-
-ALLOWED_HOSTS = ['ec2-52-32-106-96.us-west-2.compute.amazonaws.com', 'app.icardio.ai', '*']
+ALLOWED_HOSTS =config("ALLOWED_HOSTS", cast=Csv())
 #ALLOWED_HOSTS = ['ec2-52-32-106-96.us-west-2.compute.amazonaws.com', 'app.icardio.ai']
 
 
@@ -45,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
+    'django_celery_results',
     'django_s3_storage',
 ]
 
@@ -79,7 +79,10 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'iCardioAI.wsgi.application'
+CELERY_RESULT_BACKEND = 'django-db'
 
+CELERY_CACHE_BACKEND = 'django-cache'
+CELERY_BROKER_URL = 'redis://celery-broker2-001.0hmmgx.0001.usw2.cache.amazonaws.com:6379/0'
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
@@ -148,10 +151,10 @@ CSRF_TRUSTED_ORIGINS = ['front.bluemix.net']
 
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST      = 'smtp.gmail.com'
-EMAIL_HOST_PASSWORD = 'hellohi123'
-EMAIL_HOST_USER = 'daniel@icardio.ai'
-EMAIL_PORT      = 587
+EMAIL_HOST      = config('EMAIL_HOST')
+EMAIL_HOST_PASSWORD = config("EMAIL_PASS")
+EMAIL_HOST_USER = config('EMAIL_USER')
+EMAIL_PORT      = config('EMAIL_PORT', cast=int)
 EMAIL_USE_TLS   = True
 DEFAULT_FROM_EMAIL  = 'daniel@icardio.ai'
 SERVER_EMAIL = 'daniel@icardio.ai'
@@ -162,8 +165,8 @@ DEFAULT_FILE_STORAGE  = 'django_s3_storage.storage.S3Storage'
 AWS_REGION = "us-west-2"
 
 # The AWS access key to use.
-AWS_ACCESS_KEY_ID
+AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID")
 
 # The AWS secret access key to use.
-AWS_SECRET_ACCESS_KEY 
-AWS_S3_BUCKET_NAME
+AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
+AWS_S3_BUCKET_NAME = config('AWS_S3_BUCKET_NAME')

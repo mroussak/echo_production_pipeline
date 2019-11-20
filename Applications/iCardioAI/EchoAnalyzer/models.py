@@ -2,6 +2,7 @@ import os
 import hashlib
 from functools import partial
 from django.db import models
+from django.contrib.postgres.fields import JSONField
 
 # Create your models here.
 
@@ -25,13 +26,18 @@ def upload_to(instance, filename):
     
 class Visit(models.Model):
      user = models.ForeignKey('auth.user', on_delete=models.SET_NULL, null=True)
-     processed_at = models.DateTimeField(null=True)
+     user_email = models.TextField(null=True, blank=True)
+     processed_at = models.DateTimeField(null=True, blank=True)
      created_at = models.DateTimeField(auto_now_add=True)
+     started_processing_at = models.DateTimeField(null=True, blank=True)
+     results = JSONField(null=True, blank=True)
+     log = models.TextField(null=True, blank=True)
     
 
 class File(models.Model):
     file = models.FileField(upload_to=upload_to)
     user = models.ForeignKey('auth.user', on_delete=models.SET_NULL, null=True)
+    user_email = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     processed_at = models.DateTimeField(null=True)
     visit = models.ForeignKey(Visit, on_delete=models.SET_NULL, null=True)

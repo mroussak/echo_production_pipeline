@@ -2,10 +2,17 @@ from Tools.EchoPipelineTools import seg_postprocessing_apical as SegmentationApi
 from Tools.EchoPipelineTools import seg_postprocessing_psax as SegmentationPSAXPostProcessing
 from Tools.EchoPipelineTools import view_postprocessing as ViewsPostProcessing
 from Tools.EchoPipelineTools import load_video as LoadVideo
+from datetime import datetime
+from decouple import config
 from time import time
 import pandas as pd
 import json
+import sys
 import os
+
+# Database imports:
+sys.path.insert(1, config("BASE_DIR") + 'echo_production_pipeline/Database/EchoData/')
+import PostgresCaller
 
 
 
@@ -14,17 +21,41 @@ def InitializeScript(script_name, verbose=False, start=time()):
     ''' Accepts script_name, prints title of script '''
         
     if verbose:
-        print("|__")
+        print()
         print("[%s]___" %(script_name))
         
     
 
-def TerminateScript():
+def CommencePipeline(visit_id, query_file, verbose=False, start=time()):
+    
+    ''' Accepts visit_id, query_file, commences pipeline '''
+    
+    parameters = {
+        'visit_id' : int(visit_id),
+        'started_processing_at_time' : datetime.now()
+    }
+    
+    PostgresCaller.main(query_file, parameters)
+    
+    if verbose:
+        print('[@ %7.2f s] [CommencePipeline]: Commenced pipeline' %(time()-start))
+        
+        
+
+def TerminatePipeline(visit_id, query_file, verbose=False, start=time()):
                 
-    ''' Prints termination message '''
+    ''' Accepts visist id, query file, terminates pipeline '''
         
-    print('Done')
+    parameters = {
+        'visit_id' : int(visit_id),
+        'processed_at_time' : datetime.now()
+    }
         
+    PostgresCaller.main(query_file, parameters)
+        
+    if verbose:
+        print('[@ %7.2f s] [TerminatePipeline]: Terminated pipeline' %(time()-start))
+    
         
         
 def ReadDataFromFile(file, verbose=False, start=time()):

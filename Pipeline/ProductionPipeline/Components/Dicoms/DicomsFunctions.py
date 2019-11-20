@@ -1,5 +1,7 @@
 import Tools.ProductionTools as tools
-from multiprocessing import Pool
+from billiard import Pool
+#from multiprocessing import Pool
+from decouple import config
 from PIL import Image
 from time import time
 import pandas as pd
@@ -13,8 +15,7 @@ import cv2
 import os
 
 # Preprocessor imports:
-#sys.path.insert(1, '/internal_drive/echo_production_pipeline/Pipeline/Preprocessor/')
-sys.path.insert(1, '/sandbox/dsokol/echo_production_pipeline/Pipeline/Preprocessor/')
+sys.path.insert(1, config("BASE_DIR")  + 'echo_production_pipeline/Pipeline/Preprocessor/')
 import Preprocessor
 
 

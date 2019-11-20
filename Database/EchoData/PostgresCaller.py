@@ -49,10 +49,15 @@ if __name__ == '__main__':
         #'insert' : r'/internal_drive/echo_production_pipeline/Database/EchoData/Queries/insert_query.psql',
     }
 
+    pipeline_paths = {
+        'visits' : '/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/PipelineQueries/select_visits.sql',
+        'files' : '/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/PipelineQueries/select_files.sql',
+    }
+
     #query_file = file_paths['create_table']
-    #query_file = file_paths['schema']
+    query_file = file_paths['schema']
     #query_file = file_paths['alter_table']
-    query_file = file_paths['select']
+    #query_file = file_paths['select']
     #query_file = file_paths['insert']
     #query_file = file_paths['update']
     #query_file = file_paths['clean']
@@ -60,28 +65,34 @@ if __name__ == '__main__':
     #query_file = file_paths['delete']
     #query_file = file_paths['populate']
     
-    parameters = {
-        'object_id' : 1,
-        'view' : None,
-        'subview' : None,
-        'quality' : None,
-        'user_id' : None,
-        'selection_time' : None,
-        'time_stamp' : None,
-        'previous_object_id' : None,
-    }
+    query_file = pipeline_paths['files']
+    query_file = pipeline_paths['visits']
+    
+    parameters = None
     # parameters = {
-    #     'previous_object_id' : 0,
     #     'object_id' : 1,
+    #     'view' : None,
+    #     'subview' : None,
+    #     'quality' : None,
+    #     'user_id' : None,
+    #     'selection_time' : None,
+    #     'time_stamp' : None,
+    #     'previous_object_id' : None,
     # }
+    parameters = {
+        'user_id' : 'joseph@icardio.ai',
+    }
+    
+    query_file = '/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/SELECT_get_total_labels.sql'
     
     result = main(query_file, parameters, verbose=True, start=time())
-    print(result)
+    print(int(result.iloc[0]))
+    #print(result.iloc[4]) 
     
-    try:
-        result_strings = result.select_dtypes(['object'])
-        result[result_strings.columns] = result_strings.apply(lambda x: x.str.strip())
+    # try:
+    #     result_strings = result.select_dtypes(['object'])
+    #     result[result_strings.columns] = result_strings.apply(lambda x: x.str.strip())
     
-        print(result.iloc[0])    
-    except:
-        pass
+    #     print(result.iloc[-1])    
+    # except:
+    #     pass

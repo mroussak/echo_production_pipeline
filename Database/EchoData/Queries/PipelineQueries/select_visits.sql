@@ -1,0 +1,1 @@
+SELECT * FROM "EchoAnalyzer_visit";

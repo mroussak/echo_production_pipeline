@@ -5,13 +5,14 @@ import os
 
 
 
-def main(file_paths, verbose=False, start=time()):
+def main(file_paths, query_files, visit_id, verbose=False, start=time()):
 
     # Unpack files:
     views_data_file = file_paths['views_table']
     segmentation_apical_data_file = file_paths['segmentation_apical_table']
     segmentation_psax_data_file = file_paths['segmentation_psax_table']
     export_file = file_paths['reports']
+    set_report_json_field = query_files['set_report_json_field']
     
     # Step 1, initialize script:
     tools.InitializeScript(os.path.basename(__file__), verbose, start)
@@ -37,4 +38,5 @@ def main(file_paths, verbose=False, start=time()):
     reports_json = funcs.BuildJsonFromData(reports_data, verbose, start)
     
     # Step 7, export json:
+    funcs.ExportDataToPostgres(reports_json, visit_id, set_report_json_field, verbose, start)
     tools.ExportDataToFile(reports_json, export_file, verbose, start)

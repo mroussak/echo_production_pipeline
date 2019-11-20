@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required
 import ViewsLabeler.ViewsLabelerFunctions as funcs
 from datetime import datetime, time, timedelta
 from django.shortcuts import render
+from decouple import config
 import sys
 import os
 
@@ -29,18 +30,13 @@ def DataValidation(request):
 
     # list of queries:
     web_app_queries = {
-        # 'SELECT_get_next_unlabeled_view' : '/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/SELECT_get_next_unlabeled_view.sql',
-        # 'SELECT_get_previous_view' : '/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/SELECT_get_previous_view.sql',
-        # 'UPDATE_add_previous_object_id' : '/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/UPDATE_add_previous_object_id.sql',
-        # 'UPDATE_add_view_label_to_row' : '/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/UPDATE_add_view_label_to_row.sql',
-        # 'UPDATE_set_view_to_in_use' : '/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/UPDATE_set_view_to_in_use.sql',
-        # 'UPDATE_set_view_to_not_in_use' : '/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/UPDATE_set_view_to_not_in_use.sql',
-        'SELECT_get_next_unlabeled_view' : '/internal_drive/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/SELECT_get_next_unlabeled_view.sql',
-        'SELECT_get_previous_view' : '/internal_drive/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/SELECT_get_previous_view.sql',
-        'UPDATE_add_previous_object_id' : '/internal_drive/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/UPDATE_add_previous_object_id.sql',
-        'UPDATE_add_view_label_to_row' : '/internal_drive/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/UPDATE_add_view_label_to_row.sql',
-        'UPDATE_set_view_to_in_use' : '/internal_drive/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/UPDATE_set_view_to_in_use.sql',
-        'UPDATE_set_view_to_not_in_use' : '/internal_drive/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/UPDATE_set_view_to_not_in_use.sql',
+        'SELECT_get_next_unlabeled_view' : config('BASE_DIR') + 'echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/SELECT_get_next_unlabeled_view.sql',
+        'SELECT_get_previous_view' : config('BASE_DIR') + 'echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/SELECT_get_previous_view.sql',
+        'SELECT_get_total_labels' : config('BASE_DIR') + 'echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/SELECT_get_total_labels.sql',
+        'UPDATE_add_previous_object_id' : config('BASE_DIR') + 'echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/UPDATE_add_previous_object_id.sql',
+        'UPDATE_add_view_label_to_row' : config('BASE_DIR') + 'echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/UPDATE_add_view_label_to_row.sql',
+        'UPDATE_set_view_to_in_use' : config('BASE_DIR') + 'echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/UPDATE_set_view_to_in_use.sql',
+        'UPDATE_set_view_to_not_in_use' : config('BASE_DIR') + 'echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/UPDATE_set_view_to_not_in_use.sql',
     }
 
     
@@ -65,6 +61,15 @@ def DataValidation(request):
             result = PostgresCaller.main(query_file, parameters, **kwargs)
             result = result.to_dict(orient='records')[0]
             result = {'result' : result}
+            
+            # get total label count:
+            count_query = web_app_queries['SELECT_get_total_labels']
+            count_parameters = {
+                'user_id' : request.user.email,
+            }
+            count_result = PostgresCaller.main(count_query, count_parameters, **kwargs)
+            count = int(count_result.iloc[0]) 
+            result['result']['count'] = count
             
             print()
             print('[POST]--[PREVIOUS]--[START]')
@@ -111,6 +116,15 @@ def DataValidation(request):
             result = {'result' : result}
             result['result']['previous_object_id'] = request.session['previous_object_id']
             
+            # get total label count:
+            count_query = web_app_queries['SELECT_get_total_labels']
+            count_parameters = {
+                'user_id' : request.user.email,
+            }
+            count_result = PostgresCaller.main(count_query, count_parameters, **kwargs)
+            count = int(count_result.iloc[0]) 
+            result['result']['count'] = count
+            
             print()
             print('[POST]--[NEXT]--[START]')
             print('[POST]--[NEXT]--[PARAMETERS] (database updated with these values)')
@@ -143,6 +157,15 @@ def DataValidation(request):
         result = result.to_dict(orient='records')[0]
         result = {'result' : result}
         result['result']['previous_object_id'] = request.session['previous_object_id']
+        
+        # get total label count:
+        count_query = web_app_queries['SELECT_get_total_labels']
+        count_parameters = {
+            'user_id' : request.user.email,
+        }
+        count_result = PostgresCaller.main(count_query, count_parameters, **kwargs)
+        count = int(count_result.iloc[0]) 
+        result['result']['count'] = count
        
         print()
         print('[GET]--[NEXT]--[START]')
