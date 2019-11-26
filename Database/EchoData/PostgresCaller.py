@@ -36,7 +36,7 @@ if __name__ == '__main__':
     file_paths = {
         'create_table' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/GeneralQueries/create_table_query.sql',
         #'create_table' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/GeneralQueries/create_fact_table_query.sql',
-        'alter_table' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/GeneralQueries/alter_table_query.psql',
+        'alter_table' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/GeneralQueries/alter_table_query.sql',
         'select' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/GeneralQueries/select_query.sql',
         'insert' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/GeneralQueries/insert_query.sql',
         'update' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/GeneralQueries/update_query.sql',
@@ -55,7 +55,7 @@ if __name__ == '__main__':
     }
 
     #query_file = file_paths['create_table']
-    query_file = file_paths['schema']
+    #query_file = file_paths['schema']
     #query_file = file_paths['alter_table']
     #query_file = file_paths['select']
     #query_file = file_paths['insert']
@@ -65,8 +65,8 @@ if __name__ == '__main__':
     #query_file = file_paths['delete']
     #query_file = file_paths['populate']
     
-    query_file = pipeline_paths['files']
-    query_file = pipeline_paths['visits']
+    # query_file = pipeline_paths['files']
+    # query_file = pipeline_paths['visits']
     
     parameters = None
     # parameters = {
@@ -79,14 +79,14 @@ if __name__ == '__main__':
     #     'time_stamp' : None,
     #     'previous_object_id' : None,
     # }
-    parameters = {
-        'user_id' : 'joseph@icardio.ai',
-    }
+    # parameters = {
+    #     'user_id' : 'joseph@icardio.ai',
+    # }
     
-    query_file = '/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/SELECT_get_total_labels.sql'
+    #query_file = '/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/WebAppQueries/SELECT_get_total_labels.sql'
     
     result = main(query_file, parameters, verbose=True, start=time())
-    print(int(result.iloc[0]))
+    #print(int(result.iloc[0]))
     #print(result.iloc[4]) 
     
     # try:

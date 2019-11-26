@@ -21,7 +21,7 @@ client = boto3.client(
 s3 = boto3.resource('s3')
 
 
-def main(user_id='UserID1', session_id='SessionID1', s3_files=[], verbose=False, start=time()):
+def main(user_id='UserID1', session_id='SessionID1', s3_files=[], verbose=False, start=time(), views_model=None, graph=None):
 
     # Variables:
     kwargs = {
@@ -64,7 +64,7 @@ def main(user_id='UserID1', session_id='SessionID1', s3_files=[], verbose=False,
         s3.Bucket(BUCKET_NAME).download_file(file, file_paths['dicoms_directory'] + file)
     
     # TODO: move models pipeline to its own task:
-    ModelsPipeline.main(**kwargs)
+   
     
     ### ENDTEMP ###
     ###############
@@ -77,7 +77,7 @@ def main(user_id='UserID1', session_id='SessionID1', s3_files=[], verbose=False,
     DicomsPipeline.main(file_paths, **kwargs)
 
     # Step 3, views pipeline:
-    ViewsPipeline.main(file_paths, **kwargs)
+    ViewsPipeline.main(file_paths, views_model=views_model, graph=graph, **kwargs)
 
     # Step 4, model pipelines:
     SegmentationApicalPipeline.main(file_paths, **kwargs)

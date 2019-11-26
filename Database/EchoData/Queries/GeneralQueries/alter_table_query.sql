@@ -1,2 +1,2 @@
-ALTER TABLE ManuallyAddedViewsData
-ALTER COLUMN object_id TYPE TEXT;
+ALTER TABLE Videos
+ADD COLUMN report_id TEXT;

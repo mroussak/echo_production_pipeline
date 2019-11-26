@@ -7,11 +7,8 @@ import sys
 import os
 
 # Database imports:
-#sys.path.insert(1, '/internal_drive/echo_production_pipeline/Database/EchoData/')
-sys.path.insert(1, '/sandbox/dsokol/echo_production_pipeline/Database/EchoData/')
+sys.path.insert(1, config('BASE_DIR') + 'echo_production_pipeline/Database/EchoData/')
 import PostgresCaller
-
-
 
 
 

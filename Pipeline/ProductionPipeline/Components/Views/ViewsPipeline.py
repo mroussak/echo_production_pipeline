@@ -5,7 +5,7 @@ import os
 
 
 
-def main(file_paths, verbose=False, start=time()):
+def main(file_paths, verbose=False, start=time(), views_model=None, graph=None):
 
     # Unpack files:
     dicom_data_file = file_paths['dicoms_table']
@@ -22,7 +22,7 @@ def main(file_paths, verbose=False, start=time()):
     dicom_data = funcs.ParseDicomData(dicom_data, verbose, start)
     
     # Step 4, predict view for each video:
-    predictions = funcs.PredictViews(dicom_data, verbose, start)
+    predictions = funcs.PredictViews(dicom_data, verbose, start, views_model, graph)
     
     # Step 5, process model results:
     predictions = funcs.ProcessViewsPredictions(predictions, verbose, start)

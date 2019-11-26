@@ -15,7 +15,7 @@ def GetKeyWordArgs():
 
 
 
-def time_it(verbose=False):
+def time_it(verbose=False, start=time()):
     
     ''' time_it decorator, used to time execution time of functions '''
     
