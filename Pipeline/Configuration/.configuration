@@ -1,0 +1,8 @@
+configuration = {
+    'monitor' : {
+        'monitor' : True,
+        'verbose' : True,
+        'arg_length' : 10,
+        'traceback_lines' : 3,
+    },
+}

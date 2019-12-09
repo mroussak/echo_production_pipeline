@@ -1,8 +1,5 @@
-CREATE TABLE Reports(
-    object_id TEXT PRIMARY KEY,
-    reports_directory TEXT,
-    visit_guid TEXT,
-    visit_date TEXT,
+CREATE TABLE ViewsVisibilityMatrix(
+    subview TEXT,
     left_ventricle TEXT,
     left_atrium TEXT,
     right_ventricle TEXT,
@@ -14,22 +11,41 @@ CREATE TABLE Reports(
     aortic_root TEXT,
     aortic_arch TEXT,
     pericardium TEXT,
-    pulmonary_artery TEXT,
-    ejection_fraction FLOAT,
-    left_ventricle_binary INT,
-    left_atrium_binary INT,
-    right_ventricle_binary INT,
-    right_atrium_binary INT,
-    aortic_valve_binary INT,
-    mitral_valve_binary INT,
-    pulmonic_valve_binary INT,
-    tricuspid_valve_binary INT,
-    aortic_root_binary INT,
-    aortic_arch_binary INT,
-    pericardium_binary INT,
-    pulmonary_artery_binary INT,
-    abnormality INT
+    pulmonary_artery TEXT
 );
+
+-- CREATE TABLE Reports(
+--     object_id TEXT PRIMARY KEY,
+--     reports_directory TEXT,
+--     visit_guid TEXT,
+--     visit_date TEXT,
+--     left_ventricle TEXT,
+--     left_atrium TEXT,
+--     right_ventricle TEXT,
+--     right_atrium TEXT,
+--     aortic_valve TEXT,
+--     mitral_valve TEXT,
+--     pulmonic_valve TEXT,
+--     tricuspid_valve TEXT,
+--     aortic_root TEXT,
+--     aortic_arch TEXT,
+--     pericardium TEXT,
+--     pulmonary_artery TEXT,
+--     ejection_fraction FLOAT,
+--     left_ventricle_binary INT,
+--     left_atrium_binary INT,
+--     right_ventricle_binary INT,
+--     right_atrium_binary INT,
+--     aortic_valve_binary INT,
+--     mitral_valve_binary INT,
+--     pulmonic_valve_binary INT,
+--     tricuspid_valve_binary INT,
+--     aortic_root_binary INT,
+--     aortic_arch_binary INT,
+--     pericardium_binary INT,
+--     pulmonary_artery_binary INT,
+--     abnormality INT
+-- );
 
 -- CREATE TABLE ManuallyAddedViewsData(
 --     object_id TEXT PRIMARY KEY,

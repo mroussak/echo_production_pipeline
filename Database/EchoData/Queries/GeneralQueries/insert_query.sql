@@ -1,9 +1,41 @@
-INSERT INTO ManuallyAddedViewsData(
-    object_id,
-    guid,
-    path_to_dicom_webm
-) VALUES (
-    9,
-    1,
-    '/internal_drive/Users/Demo/Sessions/Demo_Anon_0/Videos/Dicoms/3f12f1/Webm/3f12f1.webm'
-)
+INSERT INTO ViewsVisibilityMatrix(
+    subview,
+    left_ventricle,
+    left_atrium,
+    right_ventricle,
+    right_atrium,
+    aortic_valve,
+    mitral_valve,
+    pulmonic_valve,
+    tricuspid_valve,
+    aortic_root,
+    aortic_arch,
+    pericardium,
+    pulmonary_artery
+) VALUES 
+    ('PLAX Paricardial', 'visible', 'visible', 'visible', 'not visible', 'visible', 'visible', 'not visible', 'not visible', 'visible', 'not visible', 'visible', 'not visible' ),
+    ('PLAX', 'visible', 'visible', 'visible', 'not visible', 'visible', 'visible', 'not visible', 'not visible', 'visible', 'not visible', 'not visible', 'not visible' ),
+    ('PLAX Aortic Cusps', 'not visible', 'not visible', 'not visible', 'not visible', 'visible', 'not visible', 'not visible', 'not visible', 'visible', 'not visible', 'not visible', 'not visible' ),
+    ('PLAX Mitral Cusps', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible' ),
+    ('RVIT', 'not visible', 'not visible', 'not visible', 'visible', 'not visible', 'not visible', 'not visible', 'visible', 'not visible', 'not visible', 'not visible', 'not visible' ),
+    ('PSAX Apex', 'visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible' ),
+    ('PSAX Papillary', 'visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible' ),
+    ('PSAX Mitral', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible' ),
+    ('PSAXA', 'not visible', 'not visible', 'not visible', 'not visible', 'visible', 'not visible', 'not visible', 'visible', 'not visible', 'not visible', 'not visible', 'visible' ),
+    ('PSAXA Zoomed Aorta', 'not visible', 'not visible', 'not visible', 'not visible', 'visible', 'not visible', 'not visible', 'not visible', 'visible', 'not visible', 'not visible', 'not visible' ),
+    ('PSAXA Pulmonary', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'visible', 'not visible', 'not visible', 'not visible', 'not visible', 'visible' ),
+    ('PSAXA Zoomed Tricuspid', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'visible', 'not visible', 'not visible', 'not visible', 'not visible' ),
+    ('A4C', 'visible', 'visible', 'visible', 'visible', 'not visible', 'visible', 'not visible', 'visible', 'not visible', 'not visible', 'not visible', 'not visible' ),
+    ('A4C Zoomed LV', 'visible', 'not visible', 'not visible', 'not visible', 'not visible', 'visible', 'not visible', 'visible', 'not visible', 'not visible', 'not visible', 'not visible' ),
+    ('A4C Zoomed RV', 'not visible', 'not visible', 'visible', 'visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible' ),
+    ('A4C Zoomed Mitral', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible' ),
+    ('A5C', 'visible', 'visible', 'not visible', 'visible', 'visible', 'visible', 'not visible', 'visible', 'not visible', 'not visible', 'not visible', 'not visible' ),
+    ('A5C Zoomed Aorta', 'not visible', 'not visible', 'not visible', 'not visible', 'visible', 'not visible', 'not visible', 'not visible', 'visible', 'not visible', 'not visible', 'not visible' ),
+    ('A2C', 'visible', 'visible', 'not visible', 'not visible', 'not visible', 'visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible' ),
+    ('A2C Zoomed Mitral', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible' ),
+    ('A3C', 'visible', 'visible', 'not visible', 'not visible', 'visible', 'visible', 'not visible', 'not visible', 'visible', 'not visible', 'not visible', 'not visible' ),
+    ('A3C Zoomed Aorta', 'not visible', 'not visible', 'not visible', 'not visible', 'visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible' ),
+    ('SUBCOSTAL', 'visible', 'visible', 'visible', 'visible', 'visible', 'visible', 'not visible', 'visible', 'not visible', 'not visible', 'visible', 'not visible' ),
+    ('SUB IVC', 'not visible', 'not visible', 'not visible', 'visible', 'not visible', 'not visible', 'not visible', 'visible', 'not visible', 'not visible', 'visible', 'not visible' ),
+    ('SUB Short Axis', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'visible', 'not visible' ),
+    ('Suprasternal', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'not visible', 'visible', 'not visible', 'not visible' );

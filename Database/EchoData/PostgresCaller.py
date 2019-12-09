@@ -55,7 +55,7 @@ if __name__ == '__main__':
     }
 
     #query_file = file_paths['create_table']
-    #query_file = file_paths['schema']
+    query_file = file_paths['schema']
     #query_file = file_paths['alter_table']
     #query_file = file_paths['select']
     #query_file = file_paths['insert']
@@ -88,6 +88,7 @@ if __name__ == '__main__':
     result = main(query_file, parameters, verbose=True, start=time())
     #print(int(result.iloc[0]))
     #print(result.iloc[4]) 
+    print(result)
     
     # try:
     #     result_strings = result.select_dtypes(['object'])

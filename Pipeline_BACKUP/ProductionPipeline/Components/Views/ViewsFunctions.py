@@ -29,7 +29,7 @@ def ParseDicomData(dicom_data, verbose=False, start=time()):
 
 
 
-def PredictViews(dicom_data, verbose=False, start=time(), views_model=None, graph=None):
+def PredictViews(dicom_data, verbose=False, start=time()):
     ''' Accepts dicom data, model, returns predictions as dataframe '''
 
     # initialize variables:
@@ -43,8 +43,8 @@ def PredictViews(dicom_data, verbose=False, start=time(), views_model=None, grap
         frames = frames.reshape(frames.shape + (1,))
 
         # predict view:
-        with graph.as_default():
-            prediction = views_model.predict(frames, verbose=0)
+        with models.graph.as_default():
+            prediction = models.views_model.predict(frames, verbose=0)
 
         # build prediction object:
         prediction_object = {

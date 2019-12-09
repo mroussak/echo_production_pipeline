@@ -43,12 +43,9 @@ def main(verbose=False, start=time()):
     
     # Step 3, intialize models:
     views_model = funcs.InitializeModel(file_paths['views_model'], None, **kwargs)
-    #a2c_segmentation_model = funcs.InitializeModel(file_paths['a2c_segmenation_model'], apical_configuration, **kwargs)
-    #a4c_segmentation_model = funcs.InitializeModel(file_paths['a4c_segmenation_model'], apical_configuration, **kwargs)
-    #psax_segmentation_model = funcs.InitializeModel(file_paths['psax_segmentation_model'], psax_configuration, **kwargs)
-    return (views_model, graph)
-   # return views_model, a2c_segmentation_model, a4c_segmentation_model, psax_segmentation_model
-    #return psax_segmentation_model
+    a2c_segmentation_model = funcs.InitializeModel(file_paths['a2c_segmenation_model'], apical_configuration, **kwargs)
+    a4c_segmentation_model = funcs.InitializeModel(file_paths['a4c_segmenation_model'], apical_configuration, **kwargs)
+    psax_segmentation_model = funcs.InitializeModel(file_paths['psax_segmentation_model'], psax_configuration, **kwargs)
     #suba_pericardial_abnormality_model = funcs.InitializeModel(file_paths['suba_pericardial_abnormality_model'], suba_configuration, **kwargs)
 
 
