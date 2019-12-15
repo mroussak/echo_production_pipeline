@@ -1,17 +1,24 @@
+from Components.Handlers.Handlers import Initializer, Terminator
 from Components.Reports.ReportsPipeline import ReportsPipeline
 from Components.Dicoms.DicomsPipeline import DicomsPipeline
-from Components.Initializer.Initializer import Initializer
 from Components.Views.ViewsPipeline import ViewsPipeline
 from Components.Media.MediaPipeline import MediaPipeline
 from decouple import config
 import multiprocessing
-import sys
+import json
 
 
 
-def ProductionPipeline(user_id, visit_id, dicom_id):
+def ProductionPipeline(input_dictionary):
     
-    BASE_DIR = '/internal_drive/Users/' + str(user_id) + '/Visits/' + str(visit_id) + '/Dicoms/' + str(dicom_id) + '/'
+    # unpack input dictionary:
+    user_id = input_dictionary['user_id']
+    visit_id = input_dictionary['visit_id']
+    file_id = input_dictionary['file_id']
+    dicom_id = input_dictionary['dicom_id']
+    file_name = input_dictionary['file_name']
+    
+    BASE_DIR = '/WebAppData/Users/' + str(user_id) + '/Visits/' + str(visit_id) + '/Dicoms/' + str(file_id) + '/'
     DATA_DIR = BASE_DIR + 'Data/'
     DICOMS_DIR = BASE_DIR + 'Dicoms/'
     MEDIA_DIR = BASE_DIR + 'Media/'
@@ -22,7 +29,9 @@ def ProductionPipeline(user_id, visit_id, dicom_id):
         # ids:
         'user_id' : user_id,
         'visit_id' : visit_id,
+        'file_id' : file_id,
         'dicom_id' : dicom_id,
+        'file_name' : file_name,
         
         # roots:
         'BASE_DIR' : BASE_DIR,
@@ -53,7 +62,7 @@ def ProductionPipeline(user_id, visit_id, dicom_id):
     # Redirect output to log file:
     
     # Step 1) Initializer:
-    Initializer(file_paths, log=False)
+    Initializer(file_paths)
     
     # Step 1) Dicom Pipeline:
     DicomsPipeline(file_paths)
@@ -67,11 +76,26 @@ def ProductionPipeline(user_id, visit_id, dicom_id):
     # Step 4) Reports Pipeline:
     ReportsPipeline(file_paths)
 
+    # Step 5) Terminator:
+    Terminator()
+
+    with open(file_paths['reports_json'], 'r') as file:
+        result = json.load(file)
+
+    return result
+
 
 if __name__ == '__main__':    
 
     s3_files = ['test1', 'test2', 'test3', 'test4', 'test5']
 
-    for dicom_id in s3_files[0:1]:
-        ProductionPipeline('daniel@icardio.ai', 1, dicom_id)
+    for dicom_id in s3_files:
+        
+        input_data = {
+            'user_id' : 'daniel@icardio.ai',
+            'visit_id' : 2,
+            'dicom_id' : dicom_id
+        }
+        
+        ProductionPipeline(input_data)
         

@@ -1,32 +1,92 @@
-from __future__ import absolute_import, unicode_literals
-import os
+from EchoAnalyzer.models import File, Visit
+from WebTools.Tools import PrintTitle
+from django.http import HttpResponse
+from django.shortcuts import render
+from multiprocessing import Pool
+from django.urls import reverse
+from datetime import datetime, timezone
+from time import time, sleep
+import traceback
+import json
 import sys
-from celery import shared_task
-from decouple import config
 
-from time import time
-sys.path.insert(1, config('BASE_DIR') + 'echo_production_pipeline/Pipeline/ProductionPipeline')
-
-from Components.Models import ModelsPipeline
-import Tools.ProductionTools as tools
-import ProductionPipeline
-
-
-try:
-    # next line will raise exception in django, but will work fine in celery
-    is_worker = os.environ['celery_worker']  
-    ret = ModelsPipeline.main(verbose=True, start=time())
-    print(ret)
-except Exception as exc:
-    # django code will catch exception that celery_worker doesn't exist and print it here
-    print(exc)
+sys.path.insert(1, '/echo_pipeline/Pipeline/')
+from ProductionPipeline import ProductionPipeline
 
 
 
-@shared_task
-def start_pipeline(username, visit_id, file_list=[], verbose=True, start=None):
-    if not start:
-        start = time()
-    root_directory = tools.BuildRootDirectory(username, str(visit_id))
-    tools.BuildDirectoryTree(root_directory)
-    ProductionPipeline.main(username, str(visit_id), s3_files=file_list, verbose=verbose, start=start, views_model=ret[0], graph=ret[1])
+def ProcessVisit(user_id, visit_id):
+
+    ''' Accepts a user_id, visit_id, processes all files for that visit + user '''
+    
+    PrintTitle('EchoAnalyzer.tasks.ProcessVisit')
+    
+    visit = Visit.objects.get(pk=visit_id)
+    
+    # set start processing time:
+    visit.started_processing_at = datetime.now(timezone.utc)
+    visit.save()
+    
+    # get list of files associated to visit:
+    file_list = list(visit.file_set.all().values_list('id', flat=True))
+    
+    # get number of threads:
+    number_of_threads = len(file_list)
+    
+    # create pool:
+    pool = Pool(number_of_threads)
+    
+    # set up array for multiprocessing:
+    multiprocess_input = []
+
+    # file pipeline preprocessing:
+    for file_id in file_list:
+        
+        # get file object:
+        file = File.objects.get(pk=file_id)
+        file_name = file.file_name
+        dicom_id = file.dicom_id
+        
+        # set start processing time:
+        file.started_processing_at = datetime.now(timezone.utc)
+        file.save()
+    
+        input_point = {'user_id':user_id, 'visit_id':visit_id, 'file_id':file_id, 'dicom_id':dicom_id, 'file_name':file_name}
+        
+        print('[EchoAnalyzer.tasks.ProcessVisit]: input [%s]' %input_point)
+
+        multiprocess_input.append(input_point)
+    
+    # multiprocess:
+    result_json_list = pool.map(ProductionPipeline, multiprocess_input)
+    
+    # file pipeline post processing:
+    for file_id in file_list:
+        
+        # get file object:
+        file = File.objects.get(pk=file_id)
+        
+        # set finish processing time, log:
+        file.finished_processing_at = datetime.now(timezone.utc)
+        
+        # get log:
+        for result_json in result_json_list:
+            
+            if result_json['file_id'] == file.id: 
+        
+                with open(result_json['reports']['log'], 'r') as log:
+                    file.log = log.read()
+        
+        file.save()
+    
+    # pack result list as json:
+    result_json = {'result' : result_json_list}
+    
+    # set completed processing time and save results:
+    
+    visit.finished_processing_at = datetime.now(timezone.utc)
+    visit.results = result_json
+    visit.save()
+    
+    
+    return result_json

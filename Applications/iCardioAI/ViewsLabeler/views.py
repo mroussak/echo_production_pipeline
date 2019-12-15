@@ -2,13 +2,14 @@ from django.contrib.auth.decorators import login_required
 import ViewsLabeler.ViewsLabelerFunctions as funcs
 from datetime import datetime, time, timedelta
 from django.shortcuts import render
+from WebTools.Tools import PrintTitle
 from decouple import config
 import sys
 import os
 
 # Database imports:
-sys.path.insert(1, config('BASE_DIR') + 'echo_production_pipeline/Database/EchoData/')
-import PostgresCaller
+sys.path.insert(1, 'echo_pipeline/Database/EchoData/')
+#import PostgresCaller
 
 
 

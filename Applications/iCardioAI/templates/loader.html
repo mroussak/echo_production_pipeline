@@ -41,103 +41,53 @@ impulse behaviour:
 </body><script src="{% static '../static/js/network.js' %}"></script>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script>
 <script>
- $.ajaxSetup({
-    cache: false,
-    async: false
-});
-
-
-    
-var setData = "Retrieving status.";
-var newData ;
-
-
-// set up text to print, each item in array is new line
-var iSpeed = 20; // time delay of print out
-var iIndex = 0; // start printing array at this posision
-var iScrollAt = 20; // start scrolling up at this many lines
-
-var iTextPos = 0; // initialise text position
-var sContents = ''; // initialise contents variable
-var iRow; // initialise current row
-
-function checkStatus() {
-    $.get('{%url "visit_status" pk=visit_id %}',function(response) {
-        if (response.status == 'done') {
-            return window.location.href = response.url;
-        }
-        else {
-            console.log(response)
-            setTimeout(checkStatus, 5000);
-            setData = response.log;
-            typewriter()
-        }
-    })
-}
-checkStatus();
-/*
-// continously reads status.txt for updates: 
-function checkText() {
-    $.get('{% static "../static/Users/"%}{{user.username}}/Sessions/1/Reports/status.txt?_=' + new Date().getTime(), function(data) {
-        
-        // split status.txt by individual lines:
-        var statusLines = data.split('\n')
-        
-        // if status.txt is empty, do nothing, else, parse data:
-       
-        else {
-            
-            // get secont to last line of status.txt:
-            newData = statusLines[statusLines.length-2]
-            console.log('newData: ' + newData)
-            
-        }
-        
-        if (newData == 'Done') {
-            window.location.replace('/results')
-        }
-        
-        if (setData == newData){
-            
-            return;
-        } 
-        else {
-            var str = newData;
-            setData = newData;
-            console.log('setData: ' + setData)
-            //typewriter(str);
-            typewriter();
-            shouldChange = 1;
-            if(setData != undefined){
-            }
-        }
-    });    
-}
-
 $.ajax({
-    url: "/execute_pipeline/",
-    data: { 
-        user_id: "{{ user.email }}",
-        'csrfmiddlewaretoken': '{{ csrf_token }}',
+    url : "{% url 'execute_pipeline' %}",
+    type : 'POST',
+    data : {
+        'visit_id' : '{{visit_id}}',
+        'csrfmiddlewaretoken' : '{{ csrf_token }}'
     },
-    cache: false,
-    type: "POST",
-    success: function(response) {
-    console.log('Sent request to commence processing.')
+    dataType    :'json',
+    success : function(data) { 
+        console.log("Executing processing pipeline.")
+        console.log(data)
     },
-    error: function(xhr) {
-    console.log('We clowned around.')
+    error : function(request,error)
+    {
+        alert("Request: "+JSON.stringify(request));
     }
 });
-    */
+
+setInterval(function(){ 
+    console.log('Checking status of processing progess')
+    $.ajax({
+        url : "{% url 'check_visit_status' %}",
+        type : 'POST',
+        cache : false,
+        data : {
+            'visit_id' : '{{visit_id}}',
+            'csrfmiddlewaretoken' : '{{ csrf_token }}'
+        },
+        dataType    :'json',
+        success : function(data) { 
+            console.log(data.message)
+            if (data.success == true){
+                console.log("Navigating to presentation page.")
+                window.location.href = "{% url 'results' visit_id=visit_id %}"; 
+            }
+            
+        },
+        error : function(request,error)
+        {
+            alert("Request: "+JSON.stringify(request));
+        }
+    });
+}, 5000);
     
+var setData = "Retrieving status.";
+var newData;
     
-    
-// set up text to print, each item in array is new line
-//var set = new Array(
-//"There are only 10 types of people in the world:", 
-//"Those who understand binary, and those who don't"
-//);
 var iSpeed = 10; // time delay of print out
 var iIndex = 0; // start printing array at this posision
 var iArrLength = setData.length; // the length of the text array
@@ -147,44 +97,10 @@ var iTextPos = 0; // initialise text position
 var sContents = ''; // initialise contents variable
 var iRow; // initialise current row
 var shouldStop = 0;
-
-// function typewriter() {
-//     if(shouldChange == 1) {
-//         iIndex = 0; 
-//         iArrLength = setData.length; 
-//         iScrollAt = 20; 
-//         shouldChange = 0;
-//         iTextPos = 0; 
-//     }
-//     if(shouldStop == 1) return;
-
-//     sContents = ' ';
-//     iRow = Math.max(0, iIndex-iScrollAt);
-//     console.log('test')
-//     var destination = document.getElementById("typewriter");
-//     destination.innerHTML = sContents + setData.substring(0, iTextPos) + "";
-
-//     if (iTextPos++ == iArrLength) {
-//     iTextPos = 0;
-//     iIndex++;
-//     shouldStop = 1;
-//     iArrLength = setData.length;
-//     }
-// }
-
-   
-    
-    
-
-var iSpeed = 100; // time delay of print out
-var iIndex = 0; // start printing array at this posision
-var iArrLength = setData.length; // the length of the text array
-var iScrollAt = 20; // start scrolling up at this many lines
  
-var iTextPos = 0; // initialise text position
-var sContents = ''; // initialise contents variable
-var iRow; // initialise current row
- 
+
+// continously reads status.txt for updates: 
+
 function typewriter()
 {
  sContents =  ' ';
@@ -203,28 +119,6 @@ function typewriter()
   setTimeout("typewriter()", iSpeed);
  }
 }
-
-// function typewriter(str) {
-    
-//     var destination = document.getElementById("typewriter");
-//     var i = 0
-    
-//     if (i<str.length) {
-    
-//         console.log('i: ' + i)
-//         var partial_str = str.substring(0, i);
-//         console.log('partial_str: ' + partial_str)
- 
-//         destination.innerHTML = partial_str;
-//         i++;
-//         setTimeout("typewriter()", iSpeed);
-        
-//     }
-    
-//     setTimeout("typewriter()", 500);
-// } 
-    
-    
   
 
 </script></html>

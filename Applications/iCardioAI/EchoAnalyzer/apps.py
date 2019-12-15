@@ -4,8 +4,7 @@ import os
 from decouple import config
 # Pipeline imports:
 
-sys.path.insert(1, config("BASE_DIR") + 'echo_production_pipeline/Pipeline/ProductionPipeline')
-from Components.Models import ModelsPipeline
+sys.path.insert(1, '/echo_pipeline/Pipeline/')
 import ProductionPipeline
 
 

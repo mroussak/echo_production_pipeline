@@ -1,0 +1,18 @@
+{% block title %}Upload Echo{% endblock %}
+{% load static %}
+{% block content %}
+<body>
+{% for result in results.result %}
+    <table>
+        <tr> User ID: {{ result.user_id }} </tr> </br> 
+        <tr> Visit ID: {{ result.visit_id }} </tr> </br> 
+        <tr> File ID: {{ result.file_id }} </tr> </br>
+        <tr> Dicom ID: {{ result.dicom_id }} </tr> </br>
+        <tr> Filename: {{ result.file_name }} </tr> </br>
+        <tr> Predicted View: {{ result.view.predicted_view }} </tr> </br>
+        <tr> Model Type: {{ result.view.model_type }} </tr> </br>
+    </table>
+    <video type="video/mp4" loop="" controls="true" width="360px" height="480px" autoplay="" class="analysis-img fb614a" src="{{result.media.webm}}" data-id="fb614a"> </video> </br>
+{% endfor %}  
+</body>
+{% endblock %}

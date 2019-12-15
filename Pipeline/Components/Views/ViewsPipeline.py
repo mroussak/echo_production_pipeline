@@ -15,10 +15,12 @@ def ViewsPipeline(file_paths):
     dicom = funcs.GetDicomData(dicom_data_destination)
     
     # Step 2, get prediction:
-    prediction = funcs.GetPrediction(dicom)
+    #prediction = funcs.GetPrediction(dicom)
+    prediction = funcs.GetPredictionVideoLevel(dicom)
     
     # Step 3, parse prediction:
-    parsed_prediction = funcs.ParsePrediction(dicom_id, prediction)
+    #parsed_prediction = funcs.ParsePrediction(dicom_id, prediction)
+    parsed_prediction = funcs.ParsePredictionVideoLevel(dicom_id, prediction)
     
     # Step 4, export prediction:
     funcs.ExportPrediction(parsed_prediction, view_data_destination)

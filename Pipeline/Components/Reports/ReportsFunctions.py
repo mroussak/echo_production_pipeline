@@ -19,30 +19,24 @@ def GetData(data_file_path):
 @tools.monitor()
 def BuildReportJson(file_paths, dicom_data, view_data):
     
+    ''' Accepts data as dictionaries, returns compiled json '''
+    
+    # drop unused key, values:
+    if dicom_data is not None:
+        del dicom_data['pixel_data']
+    
+    # build report json:
     report_json = {
         'user_id' : file_paths['user_id'],
         'visit_id' : file_paths['visit_id'],
+        'file_id' : file_paths['file_id'],
         'dicom_id' : file_paths['dicom_id'],
-        'view' : {
-            'dicom_id' : view_data['dicom_id'],
-            'predicted_view' : view_data['predicted_view'], 
-            'frame_view_threshold' : view_data['frame_view_threshold'], 
-            'video_view_threshold' : view_data['video_view_threshold'],
-            'usable_view' :view_data['usable_view'],
-        },
-        'dicom' : {
-            'dicom_id' : dicom_data['dicom_id'],
-            'manufacturer' : dicom_data['manufacturer'],
-            'manufacturer_model_name' : dicom_data['manufacturer_model_name'],
-            'physical_units_x_direction' : dicom_data['physical_units_x_direction'],
-            'physical_units_y_direction' : dicom_data['physical_units_y_direction'],
-            'physical_delta_x' : dicom_data['physical_delta_x'],
-            'physical_delta_y' : dicom_data['physical_delta_y'],
-            'dicom_type' : dicom_data['dicom_type'],
-            'number_of_frames' : dicom_data['number_of_frames'],
-        },
+        'file_name' : file_paths['file_name'],
+        'view' : view_data,
+        'dicom' : dicom_data,
         'media' : {
             'mp4' : file_paths['dicom_mp4'],
+            'webm' : file_paths['dicom_webm'],
         },
         'reports' : {
             'log' : file_paths['log_file'],
@@ -55,6 +49,8 @@ def BuildReportJson(file_paths, dicom_data, view_data):
 
 @tools.monitor()
 def ExportReportJson(report_json, report_destination):
+    
+    ''' Accepts report_json, root destination, saves report_json as json in destination '''
     
     with open(report_destination, 'w') as json_file:
         json.dump(report_json, json_file)

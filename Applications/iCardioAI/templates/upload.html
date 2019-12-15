@@ -1,16 +1,17 @@
 {% extends 'base.html' %}
-
 {% block title %}Upload Echo{% endblock %}
-
 {% load static %}
-
 {% block content %}
+
 <body style="background-color: black">
-  <h3 class="loader typewriter" id="typewriter"></h3>
-<canvas id=c></canvas>
-   <form action="#" method="post" enctype="multipart/form-data" style="transform: translate(50%, 100px);width: 50%;">
-   <div id="commence" style="opacity: 1;width: 100%;height:100%;position: absolute;visibility: hidden;transition: 2s;opacity: 1;transition: opacity 1s ease-in-out;-moz-transition: opacity 1s ease-in-out;-webkit-transition: opacity 1s ease-in-out;"><a class="waves-effect waves-light btn analysis-button modal-trigger" href="{% url 'loader' pk=visit_id %}" style="transform: translate(0%, 480%);right: -25%;">Commence Processing</a></div>
-    <div class="file-field input-field">
+     <h3 class="loader typewriter" id="typewriter"></h3>
+        <canvas id=c></canvas>
+            <form action="#" method="post" id="upload" enctype="multipart/form-data" style="transform: translate(50%, 100px);width: 50%;">
+                <div id="commence" style="opacity: 1;width: 100%;height:100%;position: absolute;visibility: hidden;transition: 2s;opacity: 1;transition: opacity 1s ease-in-out;-moz-transition: opacity 1s ease-in-out;-webkit-transition: opacity 1s ease-in-out;">
+                    <a class="waves-effect waves-light btn analysis-button modal-trigger" href="{% url 'loader' visit_id=visit_id %}" style="transform: translate(0%, 480%);right: -25%;">Commence Processing</a>
+                    <!--<button class="waves-effect waves-light btn analysis-button modal-trigger" id="loader" style="transform: translate(0%, 480%);right: -25%;">Commence Processing</button>-->
+                    </div>
+                <div class="file-field input-field">
 <!--      <div class="btn analysis-button">-->
 <!--        <span>Upload Dicoms</span>-->
 {% csrf_token %}
@@ -30,6 +31,14 @@
     <script src="https://unpkg.com/filepond-plugin-file-encode/dist/filepond-plugin-file-encode.js"></script>
     <script src="{% static '../static/js/network.js' %}"></script>
 <script>
+
+console.log({{visit_id}})
+
+$('#commence').click(function(){
+    window.location.href = ""; 
+});
+
+
 const inputElement = document.querySelector('input[type="file"]');
 const pond = FilePond.create(inputElement, {
 //     onaddfilestart: (file) => { isLoadingCheck(); },
@@ -38,15 +47,19 @@ const pond = FilePond.create(inputElement, {
 
 function isLoadingCheck(){
     let files = pond.getFiles();
+    i = 1
     console.log(files);
     const isUploadPending = files.filter(file => file.status != 5).length > 0;
     if (isUploadPending == false){
-        fetch('/upload',{
-            method: 'POST',
-            async: 'true',
-            data: {files},
-            reroute:true,
-        })
+        // fetch('/upload/?test=' + i++,{
+        //     method: 'POST',
+        //     async: 'true',
+        //     data: {files},
+        //     reroute:false,
+        //     headers: {
+        //             'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val()
+        //         }
+        // })
         document.getElementById('commence').style.visibility="visible";
     }
 //     var isLoading = pond.getFiles().filter(x=>x.status !== 5).length !== 0;
@@ -64,11 +77,12 @@ FilePond.registerPlugin(
 FilePond.setOptions({
     server: 
         {
-            url:'{% url "handle-upload" pk=visit_id %}',
+            url:'{% url "handle-upload" visit_id=visit_id %}',
             method:'POST',
             process: {
                 headers: {
-                    'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val()
+                    'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val(),
+                    'visit_id' : {{visit_id}},
                 }
             }
         },

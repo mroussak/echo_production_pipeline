@@ -8,9 +8,11 @@ import traceback
 
 # Decorator tools:
 def monitor(
-    monitor=configuration['monitor']['monitor'],                    verbose=configuration['monitor']['verbose'], 
-    start=time(),                                                   arg_length=configuration['monitor']['arg_length'], 
-    traceback_lines=configuration['monitor']['traceback_lines']
+    monitor = configuration['monitor']['monitor'],                    
+    verbose = configuration['monitor']['verbose'], 
+    start = time(),                                                   
+    arg_length = configuration['monitor']['arg_length'], 
+    traceback_lines = configuration['monitor']['traceback_lines']
     ):
     
     ''' time_it decorator, used to time execution time of functions '''

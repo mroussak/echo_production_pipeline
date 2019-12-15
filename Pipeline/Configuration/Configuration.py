@@ -6,7 +6,10 @@ configuration = {
         'monitor' : True,
         'verbose' : True,
         #'start' : time(),
-        'arg_length' : 0,
+        'arg_length' : 10,
         'traceback_lines' : 3,
     },
+    'handlers' : {
+        'log' : True,
+    }
 }

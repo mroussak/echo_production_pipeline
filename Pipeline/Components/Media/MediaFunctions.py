@@ -68,6 +68,8 @@ def BuildMP4(dicom, destinaton):
     seconds = dicom['number_of_frames'] / FPS
     
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    #fourcc = cv2.VideoWriter_fourcc(*'H264')
+    #fourcc = 0x00000021
     video = cv2.VideoWriter(destinaton, fourcc, float(FPS), (width, height))
     
     for frame in dicom['pixel_data']:

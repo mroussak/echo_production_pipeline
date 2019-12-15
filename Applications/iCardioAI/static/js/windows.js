@@ -3,7 +3,7 @@
 $(function() {
     var i = 0;
     $.each(jsonObject, function(key, value) {
-        var currObj = value;
+        // var currObj = value;
         
         $.each(currObj['dicoms'], function(key, value) {
             var dicomObj = value;
