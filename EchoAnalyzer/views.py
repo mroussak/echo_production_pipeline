@@ -239,7 +239,7 @@ def LoadResultsPage(request, visit_id):
     
     ''' Accepts request to results/, checks if pipeline completed '''
     
-    PrintTitle('EchoAnalyzer.views.CheckVisitStatus')
+    PrintTitle('EchoAnalyzer.views.LoadResultsPage')
     
     try:
         
@@ -259,7 +259,6 @@ def LoadResultsPage(request, visit_id):
         internal_message = 'sent results for visit with id [%s]' %visit_id
         message = 'Results sent.'
         
-
     except Exception as error:
         
         results = 0
@@ -277,8 +276,8 @@ def LoadResultsPage(request, visit_id):
         'results' : results,
     }
 
-    print('[EchoAnalyzer.views.CheckVisitStatus]: Status [%d], Internal Message [%s], Message [%s]' %(status, internal_message, message))      
+    print('[EchoAnalyzer.views.LoadResultsPage]: Status [%d], Internal Message [%s], Message [%s]' %(status, internal_message, message))      
 
     return render(request, 'temp_results.html', context = result)
-    #return HttpResponse(json.dumps(result), content_type='application/json')
+    
     
