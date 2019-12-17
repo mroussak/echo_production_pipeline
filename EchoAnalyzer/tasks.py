@@ -10,8 +10,7 @@ import traceback
 import json
 import sys
 
-sys.path.insert(1, '/echo_pipeline/Pipeline/')
-from ProductionPipeline import ProductionPipeline
+from Pipeline.ProductionPipeline import ProductionPipeline
 
 
 
