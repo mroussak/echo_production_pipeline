@@ -13,12 +13,6 @@ import json
 import sys
 
 
-
-sys.path.insert(1, '/echo_pipeline/Pipeline/')
-from ProductionPipeline import ProductionPipeline
-
-
-
 @login_required(login_url='/login/')
 def LoadUploadPage(request):
     
