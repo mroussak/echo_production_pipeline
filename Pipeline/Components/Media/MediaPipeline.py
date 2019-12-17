@@ -1,6 +1,6 @@
-from Configuration.Configuration import configuration
-from Components.Media import MediaFunctions as funcs
-from Tools import Tools as tools
+from  Pipeline.Configuration.Configuration import configuration
+from  Pipeline.Components.Media import MediaFunctions as funcs
+from  Pipeline.Tools import Tools as tools
 
 
 

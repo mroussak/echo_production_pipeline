@@ -1,4 +1,4 @@
-from Components.Reports import ReportsFunctions as funcs
+from  Pipeline.Components.Reports import ReportsFunctions as funcs
 
 
 

@@ -1,4 +1,4 @@
-from Tools import Tools as tools
+from Pipeline.Tools import Tools as tools
 from decouple import config
 import numpy as np
 import pydicom 
@@ -26,7 +26,7 @@ manufacturer_groups = {
 
 
 
-@tools.monitor()
+@tools.monitor_me()
 def DownloadFileFromS3(s3_file_path, destination_directory):
 
     ''' Accepts file_path of dicom file in s3 bucket, downloads file locally for processing '''
@@ -48,7 +48,7 @@ def DownloadFileFromS3(s3_file_path, destination_directory):
 
 
 
-@tools.monitor()
+@tools.monitor_me()
 def ReadDicomFile(dicom_file_path):
     
     ''' Accepts dicom file path, returns dicom raises ERROR if file is not a dicom ".dcm" file '''
@@ -63,7 +63,7 @@ def ReadDicomFile(dicom_file_path):
 
 
 
-@tools.monitor()
+@tools.monitor_me()
 def GetManufacturerDetails(dicom):
     
     ''' Accepts a dicom object, returns manufacturer detials '''
@@ -87,7 +87,7 @@ def GetManufacturerDetails(dicom):
     
     
     
-@tools.monitor()
+@tools.monitor_me()
 def GetImageSizeDetails(dicom):
     
     ''' Accepts dicom object, returns image size details '''
@@ -118,7 +118,7 @@ def GetImageSizeDetails(dicom):
     
     
 
-@tools.monitor()
+@tools.monitor_me()
 def GetDicomTypeDetails(dicom):
     
     ''' Accepts dicom object, returns dicom type '''
@@ -144,7 +144,7 @@ def GetDicomTypeDetails(dicom):
     
     
     
-@tools.monitor()
+@tools.monitor_me()
 def GetNumberOfFramesDetails(dicom):
     
     ''' Accepts dicom object, returns number of frames in dicom '''
@@ -158,7 +158,7 @@ def GetNumberOfFramesDetails(dicom):
     
 
 
-@tools.monitor()
+@tools.monitor_me()
 def GetPixelArrayDataDetails(dicom):
     
     ''' Accepts dicom object, returns pixel array data details '''
@@ -172,7 +172,7 @@ def GetPixelArrayDataDetails(dicom):
     
     
 
-@tools.monitor()
+@tools.monitor_me()
 def CompileDicomDetails(dicom_id, manufacturer_details, image_size_details, dicom_type_details, number_of_frames_details, pixel_data_details):
     
     ''' Accepts dicom details, returns compiled dicom object '''
@@ -194,7 +194,7 @@ def CompileDicomDetails(dicom_id, manufacturer_details, image_size_details, dico
     
     
     
-@tools.monitor()
+@tools.monitor_me()
 def ExportDicom(dicom, destination):
     
     ''' Accepts dicom, destination, saves data in .pkl format '''

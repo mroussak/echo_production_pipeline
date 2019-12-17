@@ -4,8 +4,7 @@ import os
 from decouple import config
 # Pipeline imports:
 
-sys.path.insert(1, '/echo_pipeline/Pipeline/')
-import ProductionPipeline
+from Pipeline import ProductionPipeline
 
 
 

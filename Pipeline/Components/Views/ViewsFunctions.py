@@ -1,5 +1,6 @@
+from  Pipeline.Configuration.Configuration import configuration
 from sagemaker.tensorflow.serving import Predictor
-from Tools import Tools as tools
+from  Pipeline.Tools import Tools as tools
 from collections import Counter
 from decouple import config
 import numpy as np
@@ -12,7 +13,7 @@ import os
 
 
 
-@tools.monitor()
+@tools.monitor_me()
 def GetDicomData(dicom_data_file_path):
     
     ''' Accepts dicom data file path, returns dicom object '''
@@ -22,8 +23,9 @@ def GetDicomData(dicom_data_file_path):
     
     return dicom
     
+    
 
-@tools.monitor()    
+@tools.monitor_me()    
 def GetPrediction(dicom):
     
     ''' Accepts dicom, return prediction from model '''
@@ -44,59 +46,34 @@ def GetPrediction(dicom):
         # append to list:
         input_to_model.append(reduced_image)
     
-    # convert data to numpy array for further processing:
-    input_to_model = np.array(input_to_model)
+    # use frame model:
+    if configuration['models']['view_model_type'] == 'frame':
     
-    # reshape video to fit model requirements:
-    number_of_frames = input_to_model.shape[0]
-    means = input_to_model.reshape(number_of_frames, -1).mean(-1)
-    stds = input_to_model.reshape(number_of_frames, -1).std(-1)
-    input_to_model = input_to_model - means[:, np.newaxis, np.newaxis]
-    input_to_model = input_to_model / stds[:, np.newaxis, np.newaxis]
-    input_to_model = input_to_model.reshape(input_to_model.shape+(1,))
-    
-    input_to_model = pickle.dumps(input_to_model.astype('float16'))
-    
-    # get endpoint of model:
-    views_predictor = Predictor('tf-multi-model-endpoint', model_name='views_model', content_type='application/npy',serializer=None)
-    
-    # contact endpoint for prediction:
-    prediction = np.array(views_predictor.predict(input_to_model)['predictions'])
-    
-    return prediction
-    
-
-
-@tools.monitor()    
-def GetPredictionVideoLevel(dicom):
-    
-    ''' Accepts dicom, return prediction from model '''
-    
-    # intialize variables:
-    input_to_model = []
-    prediction = []
-    
-    # convert frames to grayscale and resize:
-    for frame in dicom['pixel_data']:
+        # convert data to numpy array for further processing:
+        input_to_model = np.array(input_to_model)
         
-        # convert frame to grayscale:
-        grayscale_image = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+        # reshape video to fit model requirements:
+        number_of_frames = input_to_model.shape[0]
+        means = input_to_model.reshape(number_of_frames, -1).mean(-1)
+        stds = input_to_model.reshape(number_of_frames, -1).std(-1)
+        input_to_model = input_to_model - means[:, np.newaxis, np.newaxis]
+        input_to_model = input_to_model / stds[:, np.newaxis, np.newaxis]
+        input_to_model = input_to_model.reshape(input_to_model.shape+(1,))
         
-        # reduce frame size:
-        reduced_image = cv2.resize(grayscale_image,(96*2,64*2))
+        input_to_model = pickle.dumps(input_to_model.astype('float16'))
         
-        # append to list:
-        input_to_model.append(reduced_image)
-    
-    # drop frames:
-    input_to_model = input_to_model[0:20]
-    
-    # convert data to numpy array for further processing:
-    input_to_model = np.array(input_to_model)
-    input_to_model = input_to_model.reshape(input_to_model.shape+(1,))
-    input_to_model = np.array([input_to_model.astype('float32')])
-    input_to_model = pickle.dumps(input_to_model)
-    
+    # use video model:
+    elif configuration['models']['view_model_type'] == 'video':
+        
+        # drop frames:
+        input_to_model = input_to_model[0:20]
+        
+        # convert data to numpy array for further processing:
+        input_to_model = np.array(input_to_model)
+        input_to_model = input_to_model.reshape(input_to_model.shape+(1,))
+        input_to_model = np.array([input_to_model.astype('float32')])
+        input_to_model = pickle.dumps(input_to_model)
+        
     # get endpoint of model:
     views_predictor = Predictor('tf-multi-model-endpoint', model_name='views_model_vid', content_type='application/npy', serializer=None)
     
@@ -105,85 +82,11 @@ def GetPredictionVideoLevel(dicom):
     
     return prediction
     
-    
 
-@tools.monitor()
+
+@tools.monitor_me()
 def ParsePrediction(dicom_id, predictions):
     
-    # intialize variables:
-    # unique_views = [
-    #     'A2C',                  'A2C Zoomed Mitral',        'A3C',                  'A3C Zoomed Aorta', 
-    #     'A4C',                  'A4C Zoomed LV',            'A4C Zoomed Mitral',    'A4C Zoomed RV',        
-    #     'A5C',                  'A5C Zoomed Aorta',         'PLAX',                 'PLAX Aortic Cusps',    
-    #     'PLAX Mitral Cusps',    'PLAX Paricardial',         'PSAX',                 'PSAX Apex',            
-    #     'PSAX Mitral',          'PSAX Papillary',           'PSAXA',                'PSAXA Pulminary',      
-    #     'PSAXA Zoomed Aorta',   'PSAXA Zoomed Tricuspid',   'RVIT',                 'SUB IVC',
-    #     'SUB Short Axis',       'SUBCOSTAL',                'Suprasternal',         'Unclear Dark',         
-    #     'Unclear Noisy',
-    # ]
-    unique_views = [
-        'A2C',                      'A2C Zoomed Mitral',        'A3C',                  'A3C Zoomed Aorta',
-        'A4C',                      'A4C Zoomed LV',            'A4C Zoomed Mitral',    'A4C Zoomed RV',
-        'A5C',                      'A5C Zoomed Aorta',         'PLAX',                 'PLAX Aortic Cusps',
-        'PLAX Mitral Cusps',        'PLAX Paricardial',         'PSAX Apex',            'PSAX Mitral', 
-        'PSAX Papillary',           'PSAXA',                    'PSAXA Pulmonary',      'PSAXA Zoomed Aorta',
-        'PSAXA Zoomed Tricuspid',   'RVIT',                     'SUB IVC',              'SUB Short Axis',           
-        'SUBCOSTAL',                'Suprasternal',
-    ]
-    max_confidences = []
-    view_predictions = []
-    
-    # find prediction of each frame:
-    for prediction in predictions:
-        
-        # get the value with the highest confidence and its index:
-        max_value = max(prediction)
-        max_value_index = np.argmax(prediction)
-        
-        # append the highest confidence to the list;
-        max_confidences.append(max_value)
-        
-        # get the predicted view and append to the list:
-        predicted_view = unique_views[max_value_index]
-        view_predictions.append(predicted_view)
-    
-    # get the view that was predicted most often:
-    most_common_view = Counter(view_predictions).most_common(1)[0][0]
-    
-    # calculate how many times the most common view was predicted as a perecent of total predictions:
-    most_common_view_probability = Counter(view_predictions).most_common(1)[0][1]/len(view_predictions)
-    
-    # get the probability of the most common view on each frame:
-    probs_winning_class = np.array(max_confidences)[np.where(np.array(view_predictions) == most_common_view)[0]]
-    
-    # calculate frame_view_threshold metric:
-    frame_view_threshold = np.std(probs_winning_class)/np.mean(probs_winning_class)
-    
-    # determine if view is usable:
-    if (most_common_view_probability>0.5) & (frame_view_threshold<0.1):
-        usable_view = True
-    
-    else:
-        usable_view = False
-    
-    result = {
-        'dicom_id' : dicom_id,
-        'predicted_view' : most_common_view, 
-        'frame_view_threshold' : frame_view_threshold, 
-        'video_view_threshold' : most_common_view_probability,
-        'usable_view' : usable_view,
-        'model_type' : 'subview frame',
-    }
-    
-    return result
-    
-    
-
-@tools.monitor()
-def ParsePredictionVideoLevel(dicom_id, predictions):
-    
-    ''' Accepts dicom_id, prediction, returns parsed prediction '''
-    
     unique_views = [
         'A2C',                      'A2C Zoomed Mitral',        'A3C',                  'A3C Zoomed Aorta',
         'A4C',                      'A4C Zoomed LV',            'A4C Zoomed Mitral',    'A4C Zoomed RV',
@@ -194,34 +97,84 @@ def ParsePredictionVideoLevel(dicom_id, predictions):
         'SUBCOSTAL',                'Suprasternal',
     ]
     
-    # get max confidence value, index:
-    max_confidence = max(predictions[0])
-    max_confidence_index = np.argmax(predictions[0])
+    # use frame model:
+    if configuration['models']['view_model_type'] == 'frame':
     
-    # determine view:
-    predicted_view = unique_views[max_confidence_index]
+        # intialize variables:
+        max_confidences = []
+        view_predictions = []
     
-    # determine if view is usable:
-    if max_confidence > 0.5:
-        usable_view = True
-    
-    else:
-        usable_view = False
-    
-    result = {
-        'dicom_id' : dicom_id,
-        'predicted_view' : predicted_view, 
-        'frame_view_threshold' : -1, 
-        'video_view_threshold' : max_confidence,
-        'usable_view' : usable_view,
-        'model_type' : 'subview video',
-    }
+        # find prediction of each frame:
+        for prediction in predictions:
+            
+            # get the value with the highest confidence and its index:
+            max_value = max(prediction)
+            max_value_index = np.argmax(prediction)
+            
+            # append the highest confidence to the list;
+            max_confidences.append(max_value)
+            
+            # get the predicted view and append to the list:
+            predicted_view = unique_views[max_value_index]
+            view_predictions.append(predicted_view)
+        
+        # get the view that was predicted most often:
+        most_common_view = Counter(view_predictions).most_common(1)[0][0]
+        
+        # calculate how many times the most common view was predicted as a perecent of total predictions:
+        most_common_view_probability = Counter(view_predictions).most_common(1)[0][1]/len(view_predictions)
+        
+        # get the probability of the most common view on each frame:
+        probs_winning_class = np.array(max_confidences)[np.where(np.array(view_predictions) == most_common_view)[0]]
+        
+        # calculate frame_view_threshold metric:
+        frame_view_threshold = np.std(probs_winning_class)/np.mean(probs_winning_class)
+        
+        # determine if view is usable:
+        if (most_common_view_probability>0.5) & (frame_view_threshold<0.1):
+            usable_view = True
+        
+        else:
+            usable_view = False
+        
+        result = {
+            'dicom_id' : dicom_id,
+            'predicted_view' : most_common_view, 
+            'frame_view_threshold' : frame_view_threshold, 
+            'video_view_threshold' : most_common_view_probability,
+            'usable_view' : usable_view,
+            'model_type' : 'subview frame',
+        }
+        
+    # use video model:
+    elif configuration['models']['view_model_type'] == 'video':
+        
+        # get max confidence value, index:
+        max_confidence = max(predictions[0])
+        max_confidence_index = np.argmax(predictions[0])
+        
+        # determine view:
+        predicted_view = unique_views[max_confidence_index]
+        
+        # determine if view is usable:
+        if max_confidence > 0.5:
+            usable_view = True
+        else:
+            usable_view = False
+        
+        result = {
+            'dicom_id' : dicom_id,
+            'predicted_view' : predicted_view, 
+            'video_view_threshold' : max_confidence,
+            'usable_view' : usable_view,
+            'model_type' : 'subview video',
+        }   
     
     return result
     
     
 
-@tools.monitor()
+@tools.monitor_me()
 def ExportPrediction(prediction, destination):
     
     ''' Accepts prediction, destination, saves data in .pkl format '''

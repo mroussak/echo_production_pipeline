@@ -1,10 +1,10 @@
-from Tools import Tools as tools
+from  Pipeline.Tools import Tools as tools
 import pickle
 import json
 
 
 
-@tools.monitor()
+@tools.monitor_me()
 def GetData(data_file_path):
     
     ''' Accepts dicom data file path, returns dicom object '''
@@ -16,7 +16,7 @@ def GetData(data_file_path):
     
 
 
-@tools.monitor()
+@tools.monitor_me()
 def BuildReportJson(file_paths, dicom_data, view_data):
     
     ''' Accepts data as dictionaries, returns compiled json '''
@@ -47,7 +47,7 @@ def BuildReportJson(file_paths, dicom_data, view_data):
     
     
 
-@tools.monitor()
+@tools.monitor_me()
 def ExportReportJson(report_json, report_destination):
     
     ''' Accepts report_json, root destination, saves report_json as json in destination '''

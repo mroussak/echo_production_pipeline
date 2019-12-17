@@ -1,6 +1,6 @@
-from Components.Dicoms import DicomsFunctions as funcs
-from Configuration.Configuration import configuration
-from Tools import Tools as tools
+from  Pipeline.Components.Dicoms import DicomsFunctions as funcs
+from  Pipeline.Configuration.Configuration import configuration
+from  Pipeline.Tools import Tools as tools
 
 
 

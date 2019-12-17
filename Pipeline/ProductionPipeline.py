@@ -1,8 +1,8 @@
-from Components.Handlers.Handlers import Initializer, Terminator
-from Components.Reports.ReportsPipeline import ReportsPipeline
-from Components.Dicoms.DicomsPipeline import DicomsPipeline
-from Components.Views.ViewsPipeline import ViewsPipeline
-from Components.Media.MediaPipeline import MediaPipeline
+from Pipeline.Components.Handlers.Handlers import Initializer, Terminator
+from Pipeline.Components.Reports.ReportsPipeline import ReportsPipeline
+from Pipeline.Components.Dicoms.DicomsPipeline import DicomsPipeline
+from Pipeline.Components.Views.ViewsPipeline import ViewsPipeline
+from Pipeline.Components.Media.MediaPipeline import MediaPipeline
 from decouple import config
 import multiprocessing
 import json
@@ -18,7 +18,7 @@ def ProductionPipeline(input_dictionary):
     dicom_id = input_dictionary['dicom_id']
     file_name = input_dictionary['file_name']
     
-    BASE_DIR = '/WebAppData/Users/' + str(user_id) + '/Visits/' + str(visit_id) + '/Dicoms/' + str(file_id) + '/'
+    BASE_DIR = '/WebAppData/Users/' + str(user_id) + '/Visits/' + str(visit_id) + '/Files/' + str(file_id) + '/'
     DATA_DIR = BASE_DIR + 'Data/'
     DICOMS_DIR = BASE_DIR + 'Dicoms/'
     MEDIA_DIR = BASE_DIR + 'Media/'

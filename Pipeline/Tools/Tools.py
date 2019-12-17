@@ -1,5 +1,4 @@
-# Imports:
-from Configuration.Configuration import configuration
+from  Pipeline.Configuration.Configuration import configuration
 from datetime import datetime
 from time import time
 import traceback
@@ -7,12 +6,12 @@ import traceback
 
 
 # Decorator tools:
-def monitor(
-    monitor = configuration['monitor']['monitor'],                    
-    verbose = configuration['monitor']['verbose'], 
+def monitor_me(
+    monitor = configuration['monitor_me']['monitor'],                    
+    verbose = configuration['monitor_me']['verbose'], 
     start = time(),                                                   
-    arg_length = configuration['monitor']['arg_length'], 
-    traceback_lines = configuration['monitor']['traceback_lines']
+    arg_length = configuration['monitor_me']['arg_length'], 
+    traceback_lines = configuration['monitor_me']['traceback_lines']
     ):
     
     ''' time_it decorator, used to time execution time of functions '''

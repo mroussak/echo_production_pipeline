@@ -2,7 +2,7 @@ from time import time
 
 # Configuration:
 configuration = {
-    'monitor' : {
+    'monitor_me' : {
         'monitor' : True,
         'verbose' : True,
         #'start' : time(),
@@ -11,5 +11,8 @@ configuration = {
     },
     'handlers' : {
         'log' : True,
-    }
+    },
+    'models' : {
+        'view_model_type' : 'video',
+    },
 }

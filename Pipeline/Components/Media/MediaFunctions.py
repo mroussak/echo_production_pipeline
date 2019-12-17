@@ -1,11 +1,11 @@
-from Tools import Tools as tools
+from  Pipeline.Tools import Tools as tools
 import pickle
 import cv2
 import os
 
 
 
-@tools.monitor()
+@tools.monitor_me()
 def GetDicomData(dicom_data_file_path):
     
     ''' Accepts dicom data file path, returns dicom object '''
@@ -17,7 +17,7 @@ def GetDicomData(dicom_data_file_path):
     
     
     
-@tools.monitor()
+@tools.monitor_me()
 def BuildMediaBaseDirectory(MEDIA_DIR):
     
     ''' Accepts file paths, builds media base '''
@@ -27,21 +27,21 @@ def BuildMediaBaseDirectory(MEDIA_DIR):
     
 
     
-@tools.monitor()
+@tools.monitor_me()
 def BuildJpegs(dicom, destinaton):
     
     pass
     
     
     
-@tools.monitor()
+@tools.monitor_me()
 def BuildGif(dicom, destinaton):
     
     pass
     
     
     
-@tools.monitor()
+@tools.monitor_me()
 def BuildAVI(dicom, destinaton):
     
     width = dicom['pixel_data'].shape[2]
@@ -59,7 +59,7 @@ def BuildAVI(dicom, destinaton):
     
     
     
-@tools.monitor()
+@tools.monitor_me()
 def BuildMP4(dicom, destinaton):
     
     width = dicom['pixel_data'].shape[2]
@@ -79,7 +79,7 @@ def BuildMP4(dicom, destinaton):
     
 
 
-@tools.monitor()
+@tools.monitor_me()
 def BuildWebm(dicom, destinaton):
     
     width = dicom['pixel_data'].shape[2]

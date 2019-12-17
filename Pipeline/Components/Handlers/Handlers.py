@@ -1,5 +1,5 @@
-from Configuration.Configuration import configuration
-from Tools import Tools
+from  Pipeline.Configuration.Configuration import configuration
+from  Pipeline.Tools import Tools
 import importlib
 import sys
 import os
