@@ -4,6 +4,7 @@ from Pipeline.Tools import Tools as tools
 from collections import Counter
 from decouple import config
 import numpy as np
+import sagemaker
 import pydicom 
 import pickle
 import boto3
@@ -33,6 +34,9 @@ def GetPrediction(dicom):
     # intialize variables:
     input_to_model = []
     prediction = []
+    
+    # start sagemaker session:
+    sagemaker.Session(boto3.session.Session())
     
     # convert frames to grayscale and resize:
     for frame in dicom['pixel_data']:
@@ -325,212 +329,12 @@ def ParsePrediction_view_only_video_level(dicom_id, predictions):
     return result
 
 
+
 def ParsePrediction_view_and_binary_video_level(dicom_id, predictions):
     
-    pass
+    return -1
 
-
-# @tools.monitor_me()
-# def ParsePrediction(dicom_id, predictions):
     
-#     unique_views = [
-#         'A2C',                      'A2C Zoomed Mitral',        'A3C',                  'A3C Zoomed Aorta',
-#         'A4C',                      'A4C Zoomed LV',            'A4C Zoomed Mitral',    'A4C Zoomed RV',
-#         'A5C',                      'A5C Zoomed Aorta',         'PLAX',                 'PLAX Aortic Cusps',
-#         'PLAX Mitral Cusps',        'PLAX Paricardial',         'PSAX Apex',            'PSAX Mitral', 
-#         'PSAX Papillary',           'PSAXA',                    'PSAXA Pulmonary',      'PSAXA Zoomed Aorta',
-#         'PSAXA Zoomed Tricuspid',   'RVIT',                     'SUB IVC',              'SUB Short Axis',           
-#         'SUBCOSTAL',                'Suprasternal',
-#     ]
-    
-#     # use frame model:
-#     if configuration['models']['view_model_type'] == 'frame':
-    
-#         # intialize variables:
-#         max_confidences = []
-#         view_predictions = []
-    
-#         # find prediction of each frame:
-#         for prediction in predictions:
-            
-#             # get the value with the highest confidence and its index:
-#             max_value = max(prediction)
-#             max_value_index = np.argmax(prediction)
-            
-#             # append the highest confidence to the list;
-#             max_confidences.append(max_value)
-            
-#             # get the predicted view and append to the list:
-#             predicted_view = unique_views[max_value_index]
-#             view_predictions.append(predicted_view)
-        
-#         # get the view that was predicted most often:
-#         most_common_view = Counter(view_predictions).most_common(1)[0][0]
-        
-#         # calculate how many times the most common view was predicted as a perecent of total predictions:
-#         most_common_view_probability = Counter(view_predictions).most_common(1)[0][1]/len(view_predictions)
-        
-#         # get the probability of the most common view on each frame:
-#         probs_winning_class = np.array(max_confidences)[np.where(np.array(view_predictions) == most_common_view)[0]]
-        
-#         # calculate frame_view_threshold metric:
-#         frame_view_threshold = np.std(probs_winning_class)/np.mean(probs_winning_class)
-        
-#         # determine if view is usable:
-#         if (most_common_view_probability>0.5) & (frame_view_threshold<0.1):
-#             usable_view = True
-        
-#         else:
-#             usable_view = False
-        
-#         result = {
-#             'dicom_id' : dicom_id,
-#             'predicted_view' : most_common_view, 
-#             'frame_view_threshold' : frame_view_threshold, 
-#             'video_view_threshold' : most_common_view_probability,
-#             'usable_view' : usable_view,
-#             'model_type' : 'subview frame',
-#         }
-        
-#     # use video model:
-#     elif configuration['models']['view_model_type'] == 'video':
-        
-#         # get max confidence value, index:
-#         max_confidence = max(predictions[0])
-#         max_confidence_index = np.argmax(predictions[0])
-        
-#         # determine view:
-#         predicted_view = unique_views[max_confidence_index]
-        
-#         # determine if view is usable:
-#         if max_confidence > 0.5:
-#             usable_view = True
-#         else:
-#             usable_view = False
-        
-#         result = {
-#             'dicom_id' : dicom_id,
-#             'predicted_view' : predicted_view, 
-#             'video_view_threshold' : max_confidence,
-#             'usable_view' : usable_view,
-#             'model_type' : 'subview video',
-#         }   
-    
-#     return result
-    
-    
-
-@tools.monitor_me()
-def ParsePredictionBinary(dicom_id, predictions):
-    
-    unique_views = [
-        'A2C',                      'A2C Zoomed Mitral',        'A3C',                  'A3C Zoomed Aorta',
-        'A4C',                      'A4C Zoomed LV',            'A4C Zoomed Mitral',    'A4C Zoomed RV',
-        'A5C',                      'A5C Zoomed Aorta',         'PLAX',                 'PLAX Aortic Cusps',
-        'PLAX Mitral Cusps',        'PLAX Paricardial',         'PSAX Apex',            'PSAX Mitral', 
-        'PSAX Papillary',           'PSAXA',                    'PSAXA Pulmonary',      'PSAXA Zoomed Aorta',
-        'PSAXA Zoomed Tricuspid',   'RVIT',                     'SUB IVC',              'SUB Short Axis',           
-        'SUBCOSTAL',                'Suprasternal',
-    ]
-    abnormalities = ['abnormal','normal']
-    
-    # use frame model:
-    if configuration['models']['view_model_type'] == 'frame':
-    
-        # intialize variables:
-        max_view_confidences = []
-        max_abnormality_confidences = []
-        view_predictions = []
-        abnormality_predictions = []
-    
-        # find prediction of each frame:
-        for prediction in predictions:
-            
-            # get the value with the highest confidence and its index:
-            max_view_value = max(prediction['score0'])
-            max_abnormality_value = max(prediction['score1'])
-            max_view_value_index = np.argmax(prediction['score0'])
-            max_abnormality_value_index = np.argmax(prediction['score1'])
-            
-            # append the highest confidence to the list;
-            max_view_confidences.append(max_view_value)
-            max_abnormality_confidences.append(max_abnormality_value)
-            
-            # get the predicted view and append to the list:
-            predicted_view = unique_views[max_view_value_index]
-            predicted_abnormality = abnormalities[max_abnormality_value_index]
-            view_predictions.append(predicted_view)
-            abnormality_predictions.append(predicted_abnormality)
-        print(abnormality_predictions)
-        # get the view that was predicted most often:
-        most_common_view = Counter(view_predictions).most_common(1)[0][0]
-        
-        # calculate how many times the most common view was predicted as a perecent of total predictions:
-        most_common_view_probability = Counter(view_predictions).most_common(1)[0][1]/len(view_predictions)
-        
-        # get the probability of the most common view on each frame:
-        probs_winning_class = np.array(max_view_confidences)[np.where(np.array(view_predictions) == most_common_view)[0]]
-        
-        # calculate frame_view_threshold metric:
-        frame_view_threshold = np.std(probs_winning_class)/np.mean(probs_winning_class)
-        
-        # determine if abnormality is present:
-        total_abnormal_frames = 0
-        for abnormality_prediction in abnormality_predictions:
-            if abnormality_prediction == 'abnormal':
-                total_abnormal_frames += 1
-        
-        # report abnormality if at least 20% of the frames are abnormal:
-        if total_abnormal_frames/len(abnormality_predictions) > 0.2:
-            abnormality = True
-        else:
-            abnormality = False
-        
-        # determine if view is usable:
-        if (most_common_view_probability>0.5) & (frame_view_threshold<0.1):
-            usable_view = True
-        
-        else:
-            usable_view = False
-        
-        result = {
-            'dicom_id' : dicom_id,
-            'predicted_view' : most_common_view, 
-            'abnormality' : abnormality,
-            'frame_view_threshold' : frame_view_threshold, 
-            'view_confidence' : most_common_view_probability,
-            'usable_view' : usable_view,
-            'model_type' : 'subview frame',
-        }
-        
-    # use video model:
-    elif configuration['models']['view_model_type'] == 'video':
-        
-        # get max confidence value, index:
-        max_confidence = max(predictions[0])
-        max_confidence_index = np.argmax(predictions[0])
-        
-        # determine view:
-        predicted_view = unique_views[max_confidence_index]
-        
-        # determine if view is usable:
-        if max_confidence > 0.5:
-            usable_view = True
-        else:
-            usable_view = False
-        
-        result = {
-            'dicom_id' : dicom_id,
-            'predicted_view' : predicted_view, 
-            'view_confidence' : max_confidence,
-            'usable_view' : usable_view,
-            'model_type' : 'subview video',
-        }   
-    
-    return result
-
-
-
 
 @tools.monitor_me()
 def ExportPrediction(prediction, destination):
