@@ -1,4 +1,4 @@
-from  Pipeline.Components.Views import ViewsFunctions as funcs
+from Pipeline.Components.Views import ViewsFunctions as funcs
 
 
 
@@ -19,6 +19,7 @@ def ViewsPipeline(file_paths):
     
     # Step 3, parse prediction:
     parsed_prediction = funcs.ParsePrediction(dicom_id, prediction)
+    #parsed_prediction = funcs.ParsePredictionBinary(dicom_id, prediction)
     
     # Step 4, export prediction:
     funcs.ExportPrediction(parsed_prediction, view_data_destination)

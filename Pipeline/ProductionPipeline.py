@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from Pipeline.Components.Handlers.Handlers import Initializer, Terminator
 from Pipeline.Components.Reports.ReportsPipeline import ReportsPipeline
 from Pipeline.Components.Dicoms.DicomsPipeline import DicomsPipeline
@@ -18,7 +19,7 @@ def ProductionPipeline(input_dictionary):
     dicom_id = input_dictionary['dicom_id']
     file_name = input_dictionary['file_name']
     
-    BASE_DIR = '/WebAppData/Users/' + str(user_id) + '/Visits/' + str(visit_id) + '/Files/' + str(file_id) + '/'
+    BASE_DIR = '/tmp/WebAppData/Users/' + str(user_id) + '/Visits/' + str(visit_id) + '/Files/' + str(file_id) + '/'
     DATA_DIR = BASE_DIR + 'Data/'
     DICOMS_DIR = BASE_DIR + 'Dicoms/'
     MEDIA_DIR = BASE_DIR + 'Media/'
@@ -77,12 +78,13 @@ def ProductionPipeline(input_dictionary):
     ReportsPipeline(file_paths)
 
     # Step 5) Terminator:
-    Terminator()
+    Terminator(file_paths)
 
+    # Step 6) return json to django app:
     with open(file_paths['reports_json'], 'r') as file:
         result = json.load(file)
-
     return result
+
 
 
 if __name__ == '__main__':    
@@ -94,7 +96,9 @@ if __name__ == '__main__':
         input_data = {
             'user_id' : 'daniel@icardio.ai',
             'visit_id' : 2,
-            'dicom_id' : dicom_id
+            'file_id' : dicom_id,
+            'dicom_id' : dicom_id,
+            'file_name' : dicom_id,
         }
         
         ProductionPipeline(input_data)

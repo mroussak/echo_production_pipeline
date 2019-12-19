@@ -1,16 +1,23 @@
+import traceback
+import json
+import sys
+
+from time import time, sleep
+
 from django.contrib.auth.decorators import login_required
-from EchoAnalyzer.models import File, Visit, hash_file
 from django.contrib.messages import get_messages
-from EchoAnalyzer.tasks import ProcessVisit
-from WebTools.Tools import PrintTitle
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.contrib import messages
 from django.urls import reverse
-from time import time, sleep
-import traceback
-import json
-import sys
+from django.conf import settings
+
+from EchoAnalyzer.models import File, Visit, hash_file
+from EchoAnalyzer.utils import get_s3
+from EchoAnalyzer.tasks import ProcessVisit
+from WebTools.Tools import PrintTitle
+
+
 
 
 @login_required(login_url='/login/')
@@ -180,12 +187,12 @@ def CheckVisitStatus(request):
     
     ''' Accepts request to check_visit_status, checks if pipeline completed '''
     
-    PrintTitle('EchoAnalyzer.views.CheckVisitStatus')
+    #PrintTitle('EchoAnalyzer.views.CheckVisitStatus')
     
     try:
         
         # debug:
-        print('[EchoAnalyzer.views.CheckVisitStatus]: Got post request with [%s]' %request.POST)
+        #print('[EchoAnalyzer.views.CheckVisitStatus]: Got post request with [%s]' %request.POST)
         
         # unpack post request:
         user = request.user
@@ -245,8 +252,37 @@ def LoadResultsPage(request, visit_id):
 
         # get visit object by id:
         visit = Visit.objects.get(pk=visit_id, user_id=request.user)
-        
         results = visit.results
+        
+        # connect to s3:
+        s3 = get_s3()
+        
+        start = time()
+        
+        # add s3 links to media files:
+        for result in results['result']:
+
+            # initialize empty links dictionary:
+            result['links'] = {}
+
+            # get s3 link for each item in media:
+            for key, value in result['media'].items():
+
+                # create s3 url params:
+                Params = {
+                    'Bucket': settings.AWS_S3_BUCKET_NAME,
+                    'Key':result['media'][key][1:] # drop initial '/' in s3_key name
+                }
+                
+                # get url:
+                url = s3.generate_presigned_url(ClientMethod='get_object', Params=Params, ExpiresIn=3600)
+                
+                # append url to result object:
+                result['links'][key] = url
+        
+        end = time()
+        
+        print('[EchoAnalyzer.views.LoadResultsPage]: Getting urls took [%7.2f s]' %(end-start))
         
         success = True
         status = 0
@@ -255,7 +291,7 @@ def LoadResultsPage(request, visit_id):
         
     except Exception as error:
         
-        results = 0
+        results = -1
         
         success = False
         status = 1

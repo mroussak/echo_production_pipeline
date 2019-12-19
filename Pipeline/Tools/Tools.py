@@ -1,4 +1,4 @@
-from  Pipeline.Configuration.Configuration import configuration
+from Pipeline.Configuration.Configuration import configuration
 from datetime import datetime
 from time import time
 import traceback

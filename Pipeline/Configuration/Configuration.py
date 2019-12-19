@@ -13,6 +13,7 @@ configuration = {
         'log' : True,
     },
     'models' : {
-        'view_model_type' : 'video',
+        'view_model_type' : 'frame',
+        'binary_model_type' : 'frame',
     },
 }

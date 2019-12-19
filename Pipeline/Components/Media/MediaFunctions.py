@@ -1,4 +1,4 @@
-from  Pipeline.Tools import Tools as tools
+from Pipeline.Tools import Tools as tools
 import pickle
 import cv2
 import os

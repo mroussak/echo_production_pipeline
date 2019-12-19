@@ -1,21 +1,105 @@
-{% block title %}Upload Echo{% endblock %}
-{% load static %}
-{% block content %}
+
+<!DOCTYPE html>
+<!-- iCardio.ai -->
+<html style="height:100%;overscroll-behavior: none;">
+
+<head>
+    
+    {% load static %}
+     <link type="text/css" rel="stylesheet" href="{% static '../static/css/custom.css' %}" media="screen,projection" />
+         <!--Import materialize.css-->
+    <link type="text/css" rel="stylesheet" href="{% static '../static/css/materialize.css' %}"  media="screen,projection" />
+    <title>iCardio.ai</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+
 <body>
+    <div class="main-wrapper">
+    <header class="custom-nav">
+        <h5 class="loader typewriter" id="typewriter">username: {{user.username}}</h5>
+        <a href="{% url 'upload' %}">upload more files</a>
+    </header>
+
 {% for result in results.result %}
-    </br>
-    <table>
-        <tr> User ID: {{ result.user_id }} </tr> </br> 
-        <tr> Visit ID: {{ result.visit_id }} </tr> </br> 
-        <tr> File ID: {{ result.file_id }} </tr> </br>
-        <tr> Dicom ID: {{ result.dicom_id }} </tr> </br>
-        <tr> Filename: {{ result.file_name }} </tr> </br>
-        <tr> Predicted View: {{ result.view.predicted_view }} </tr> </br>
-        <tr> Model Type: {{ result.view.model_type }} </tr> </br>
-        <tr> Confidence (video view threshold): {{ result.view.video_view_threshold }} </tr> </br>
-        <tr> Usable view: {{ result.view.usable_view }} </tr> 
-    </table>
-    <video type="video/mp4" loop="" controls="true" width="360px" height="480px" autoplay="" class="analysis-img fb614a" src="{{result.media.webm}}" data-id="fb614a"> </video> </br>
-{% endfor %}  
+    <div class="table-wrapper">
+        <div class="item-wrap">
+    <ul>
+        
+        <li> <span> Filename: </span> <span> {{ result.file_name }}</span> </li>
+        <li> <span> Model Type: </span> <span> {{ result.view.model_type }}</span> </li>
+        <li> <span> Usable View: </span> <span> {{ result.view.usable_view }}</span> </li> 
+        <li> <span> Predicted View: </span> <span> {{ result.view.predicted_view }}</span> </li>
+        <li> <span> View Confidence: </span> <span> {{ result.view.view_confidence|floatformat:2  }}</span> </li>
+        <li> <span> Predicted Abnormality: </span><span> {{ result.view.abnormality }}</span> </li> 
+        <li> <span> Abnormality Confidence: </span> <span> {{ result.view.abnormality_confidence|floatformat:2 }}</span> </li>
+        
+    </ul>
+    </div>
+    <div class="vid-wrapper">
+    <video type="video/mp4" loop="" controls="true" width="360px" height="480px" autoplay="" class="analysis-img fb614a" src="{{result.links.webm}}" data-id="fb614a"> </video> </br>
+    </div>
+</div>
+{% endfor %} 
+</div>
+
+<script>
+
+   
+// set up text to print, each item in array is new line
+//var set = new Array(
+//"There are only 10 types of people in the world:", 
+//"Those who understand binary, and those who don't"
+//);
+var setData = "username: {{user.username}}"
+var iSpeed = 10; // time delay of print out
+var iIndex = 0; // start printing array at this posision
+var iArrLength = setData.length; // the length of the text array
+var iScrollAt = 20; // start scrolling up at this many lines
+var shouldChange = 1;
+var iTextPos = 0; // initialise text position
+var sContents = ''; // initialise contents variable
+var iRow; // initialise current row
+var shouldStop = 0;
+
+function typewriter()
+{
+ if(shouldChange == 1)
+ {
+	 iIndex = 0; 
+	 iArrLength = setData.length; 
+	 iScrollAt = 20; 
+	 shouldChange = 0;
+	 iTextPos = 0; 
+ }
+ if(shouldStop == 1)
+ return;
+
+ sContents = ' ';
+ iRow = Math.max(0, iIndex-iScrollAt);
+ var destination = document.getElementById("typewriter");
+ 
+// while ( iRow < iIndex ) {
+//  sContents += aText[iRow++] + '<br />';
+// }
+ destination.innerHTML = sContents + setData.substring(0, iTextPos) + "";
+ if ( iTextPos++ == iArrLength ) {
+  iTextPos = 0;
+  iIndex++;
+  shouldStop = 1;
+//  debugger;
+ // if ( iIndex != aText.length ) {
+   iArrLength = setData.length;
+   
+   //setTimeout("typewriter()", 500);
+   //}
+
+}
+}
+    setInterval(function() {
+     typewriter();
+	 }, 50);
+
+    
+</script>
+
 </body>
-{% endblock %}

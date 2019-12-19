@@ -1,16 +1,15 @@
+from Pipeline.ProductionPipeline import ProductionPipeline
 from EchoAnalyzer.models import File, Visit
+from datetime import datetime, timezone
 from WebTools.Tools import PrintTitle
 from django.http import HttpResponse
 from django.shortcuts import render
 from multiprocessing import Pool
 from django.urls import reverse
-from datetime import datetime, timezone
 from time import time, sleep
 import traceback
 import json
 import sys
-
-from Pipeline.ProductionPipeline import ProductionPipeline
 
 
 
