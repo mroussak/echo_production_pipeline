@@ -1,4 +1,5 @@
 from Pipeline.Tools import Tools as tools
+import numpy as np
 import pickle
 import cv2
 import os
@@ -91,6 +92,35 @@ def BuildWebm(dicom, destinaton):
     video = cv2.VideoWriter(destinaton, fourcc, float(FPS), (width, height))
     
     for frame in dicom['pixel_data']:
+        video.write(frame)
+    
+    video.release()
+    
+    
+    
+@tools.monitor_me()
+def BuildWebmGrayscale(dicom, destinaton):
+    
+    # initialize variables:
+    grayscale_frames = []
+    
+    # convert dicom data to grayscale:
+    for frame in dicom['pixel_data']:
+        grayscale_frame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+        grayscale_frames.append(grayscale_frame)
+    
+    # convert to np array:
+    grayscale_frames = np.array(grayscale_frames)
+    
+    width = grayscale_frames.shape[2]
+    height = grayscale_frames.shape[1]
+    FPS = 10
+    seconds = dicom['number_of_frames'] / FPS
+    
+    fourcc = cv2.VideoWriter_fourcc(*'VP80')
+    video = cv2.VideoWriter(destinaton, fourcc, float(FPS), (width, height))
+    
+    for frame in grayscale_frames:
         video.write(frame)
     
     video.release()

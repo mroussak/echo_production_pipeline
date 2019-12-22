@@ -15,7 +15,7 @@ def ViewsPipeline(file_paths):
     dicom = funcs.GetDicomData(dicom_data_destination)
     
     # Step 2, get prediction:
-    prediction = funcs.GetPrediction(dicom)
+    prediction = funcs.GetPrediction(dicom, file_paths)
     
     # Step 3, parse prediction:
     parsed_prediction = funcs.ParsePrediction(dicom_id, prediction)

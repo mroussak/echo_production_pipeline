@@ -2,6 +2,7 @@ from Pipeline.Configuration.Configuration import configuration
 from sagemaker.tensorflow.serving import Predictor
 from Pipeline.Tools import Tools as tools
 from collections import Counter
+from scipy.ndimage import zoom
 from decouple import config
 import numpy as np
 import sagemaker
@@ -11,6 +12,8 @@ import boto3
 import sys
 import cv2
 import os
+
+from Pipeline.Tools.EchoPipelineTools import load_video
 
 
 
@@ -26,17 +29,29 @@ def GetDicomData(dicom_data_file_path):
     
     
 
-@tools.monitor_me()    
-def GetPrediction(dicom):
+@tools.monitor_me()
+def GetPrediction(dicom, file_paths):
+
+    if configuration['models']['view_model_type'] == 'frame':
+        prediction = GetPrediction_frame(dicom, file_paths)
+        
+    elif configuration['models']['view_model_type'] == 'video':
+        prediction = GetPrediction_video(dicom, file_paths)
+        
+    elif configuration['models']['view_model_type'] == 'spline':
+        prediction = GetPrediction_spline(dicom, file_paths)
+
+    return prediction
+
+
+
+def GetPrediction_frame(dicom, file_paths):
     
     ''' Accepts dicom, return prediction from model '''
     
     # intialize variables:
     input_to_model = []
     prediction = []
-    
-    # start sagemaker session:
-    sagemaker.Session(boto3.session.Session())
     
     # convert frames to grayscale and resize:
     for frame in dicom['pixel_data']:
@@ -50,46 +65,66 @@ def GetPrediction(dicom):
         # append to list:
         input_to_model.append(reduced_image)
     
-    # use frame model:
-    if configuration['models']['view_model_type'] == 'frame':
+    # convert data to numpy array for further processing:
+    input_to_model = np.array(input_to_model)
     
-        # convert data to numpy array for further processing:
-        input_to_model = np.array(input_to_model)
-        
-        # reshape video to fit model requirements:
-        number_of_frames = input_to_model.shape[0]
-        means = input_to_model.reshape(number_of_frames, -1).mean(-1)
-        stds = input_to_model.reshape(number_of_frames, -1).std(-1)
-        input_to_model = input_to_model - means[:, np.newaxis, np.newaxis]
-        input_to_model = input_to_model / stds[:, np.newaxis, np.newaxis]
-        input_to_model = input_to_model.reshape(input_to_model.shape+(1,))
-        
-        input_to_model = pickle.dumps(input_to_model.astype('float16'))
-        
-        if configuration['models']['binary_model_type'] == 'None':
-        
-            # get endpoint of model:
-            views_predictor = Predictor('tf-multi-model-endpoint', model_name='views_model', content_type='application/npy', serializer=None)
-
-        elif configuration['models']['binary_model_type'] == 'frame':
-
-            # get endpoint of model:
-            views_predictor = Predictor('tf-multi-model-endpoint', model_name='master_model', content_type='application/npy', serializer=None)
-
-    # use video model:
-    elif configuration['models']['view_model_type'] == 'video':
-        
-        # drop frames:
-        input_to_model = input_to_model[0:20]
-        
-        # convert data to numpy array for further processing:
-        input_to_model = np.array(input_to_model)
-        input_to_model = input_to_model.reshape(input_to_model.shape+(1,))
-        input_to_model = np.array([input_to_model.astype('float32')])
-        input_to_model = pickle.dumps(input_to_model)
-        
+    # reshape video to fit model requirements:
+    number_of_frames = input_to_model.shape[0]
+    means = input_to_model.reshape(number_of_frames, -1).mean(-1)
+    stds = input_to_model.reshape(number_of_frames, -1).std(-1)
+    input_to_model = input_to_model - means[:, np.newaxis, np.newaxis]
+    input_to_model = input_to_model / stds[:, np.newaxis, np.newaxis]
+    input_to_model = input_to_model.reshape(input_to_model.shape+(1,))
+    
+    input_to_model = pickle.dumps(input_to_model.astype('float16'))
+    
+    if configuration['models']['binary_model_type'] == 'None':
+    
         # get endpoint of model:
-        views_predictor = Predictor('tf-multi-model-endpoint', model_name='views_model_vid', content_type='application/npy', serializer=None)
+        views_predictor = Predictor('tf-multi-model-endpoint', model_name='views_model', content_type='application/npy', serializer=None)
+
+    elif configuration['models']['binary_model_type'] == 'frame':
+
+        # get endpoint of model:
+        views_predictor = Predictor('tf-multi-model-endpoint', model_name='master_model', content_type='application/npy', serializer=None)
+
+    # contact endpoint for prediction:
+    prediction = np.array(views_predictor.predict(input_to_model)['predictions'])
+    
+    return prediction
+    
+    
+
+def GetPrediction_video(dicom, file_paths):
+
+    ''' Accepts dicom, return prediction from model '''
+    
+    # intialize variables:
+    input_to_model = []
+    prediction = []
+    
+    # convert frames to grayscale and resize:
+    for frame in dicom['pixel_data']:
+        
+        # convert frame to grayscale:
+        grayscale_image = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+        
+        # reduce frame size:
+        reduced_image = cv2.resize(grayscale_image,(96*2,64*2))
+        
+        # append to list:
+        input_to_model.append(reduced_image)
+
+    # convert data to numpy array for further processing:
+    path_to_dicom = file_paths['DICOMS_DIR'] + os.listdir(file_paths['DICOMS_DIR'])[0]
+    
+    input_to_model = load_video(path_to_dicom, img_type='dicom', normalize=None, downsample=True, frames_per_vid=20)
+    input_to_model = input_to_model.reshape(input_to_model.shape+(1,))
+    input_to_model = np.array([input_to_model.astype('float32')])
+    input_to_model = pickle.dumps(input_to_model)
+    
+    # get endpoint of model:
+    views_predictor = Predictor('tf-multi-model-endpoint', model_name='views_model_vid_dows', content_type='application/npy', serializer=None)
         
     # contact endpoint for prediction:
     prediction = np.array(views_predictor.predict(input_to_model)['predictions'])
@@ -98,18 +133,58 @@ def GetPrediction(dicom):
     
 
 
+def GetPrediction_spline(dicom, file_paths):
+    
+    ''' Accepts dicom, return prediction from model '''
+    
+    # intialize variables:
+    input_to_model = []
+    prediction = []
+    
+    # convert frames to grayscale and resize:
+    for frame in dicom['pixel_data']:
+        
+        # convert frame to grayscale:
+        grayscale_image = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+        
+        # append to list:
+        input_to_model.append(grayscale_image)
+        
+    # get resample ratios:
+    frame_ratio = 20/dicom['pixel_data'].shape[0]
+    height_ratio = 192/dicom['pixel_data'].shape[0]
+    width_ratio = 128/dicom['pixel_data'].shape[0]
+    
+    # resample video:
+    input_to_model = zoom(input_to_model, (frame_ratio, height_ratio, width_ratio))
+    
+    # prep input for model:
+    input_to_model = input_to_model.reshape(input_to_model.shape+(1,))
+    input_to_model = np.array([input_to_model.astype('float32')])
+    print(input_to_model.shape)
+    input_to_model = pickle.dumps(input_to_model)
+    
+    # get endpoint of model:
+    views_predictor = Predictor('tf-multi-model-endpoint', model_name='views_model_vid_spline', content_type='application/npy', serializer=None)
+    
+    # contact endpoint for prediction:
+    prediction = np.array(views_predictor.predict(input_to_model)['predictions'])
+    
+    return prediction
+    
+    
 
 @tools.monitor_me()
 def ParsePrediction(dicom_id, predictions):
 
     # use frame model:
-    if configuration['models']['view_model_type'] == 'frame' and configuration['models']['binary_model_type'] == 'None':
+    if configuration['models']['view_model_type'] == 'frame' and configuration['models']['binary_model_type'] == 'none':
         result = ParsePrediction_view_only_frame_level(dicom_id, predictions)
         
     elif configuration['models']['view_model_type'] == 'frame' and configuration['models']['binary_model_type'] == 'frame':
         result = ParsePrediction_view_and_binary_frame_level(dicom_id, predictions)
         
-    elif configuration['models']['view_model_type'] == 'video' and configuration['models']['binary_model_type'] == 'None':
+    elif configuration['models']['view_model_type'] == 'video' and configuration['models']['binary_model_type'] == 'none':
         result = ParsePrediction_view_only_video_level(dicom_id, predictions)
         
     elif configuration['models']['view_model_type'] == 'video' and configuration['models']['binary_model_type'] == 'video':
@@ -131,7 +206,6 @@ def ParsePrediction_view_only_frame_level(dicom_id, predictions):
         'SUBCOSTAL',                'Suprasternal',
     ]
     
-   
     # intialize variables:
     max_confidences = []
     view_predictions = []
@@ -332,7 +406,45 @@ def ParsePrediction_view_only_video_level(dicom_id, predictions):
 
 def ParsePrediction_view_and_binary_video_level(dicom_id, predictions):
     
-    return -1
+    unique_views = [
+        'A2C',                      'A2C Zoomed Mitral',        'A3C',                  'A3C Zoomed Aorta',
+        'A4C',                      'A4C Zoomed LV',            'A4C Zoomed Mitral',    'A4C Zoomed RV',
+        'A5C',                      'A5C Zoomed Aorta',         'PLAX',                 'PLAX Aortic Cusps',
+        'PLAX Mitral Cusps',        'PLAX Paricardial',         'PSAX Apex',            'PSAX Mitral', 
+        'PSAX Papillary',           'PSAXA',                    'PSAXA Pulmonary',      'PSAXA Zoomed Aorta',
+        'PSAXA Zoomed Tricuspid',   'RVIT',                     'SUB IVC',              'SUB Short Axis',           
+        'SUBCOSTAL',                'Suprasternal',
+    ]
+    abnormalities = ['abnormal','normal']
+    
+    # get max confidence value, index:
+    max_view_confidence = max(predictions[0]['score0'])
+    max_abnormality_confidence = max(predictions[0]['score1'])
+    
+    max_view_confidence_index = np.argmax(predictions[0]['score0'])
+    max_abnormality_confidence_index = np.argmax(predictions[0]['score1'])
+    
+    # determine view:
+    predicted_view = unique_views[max_view_confidence_index]
+    predicted_abnormality = abnormalities[max_abnormality_confidence_index]
+    
+    # determine if view is usable:
+    if max_view_confidence > 0.5:
+        usable_view = True
+    else:
+        usable_view = False
+    
+    result = {
+        'dicom_id' : dicom_id,
+        'predicted_view' : predicted_view, 
+        'predicted_abnormality' : predicted_abnormality,
+        'view_confidence' : max_view_confidence,
+        'abnormality_confidence' : max_abnormality_confidence,
+        'usable_view' : usable_view,
+        'model_type' : 'subview video',
+    }   
+    
+    return result
 
     
 
