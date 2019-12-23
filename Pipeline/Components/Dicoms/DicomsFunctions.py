@@ -1,6 +1,7 @@
 from Pipeline.Tools import Tools as tools
 from decouple import config
 import numpy as np
+import skvideo.io
 import pydicom 
 import pickle
 import boto3
@@ -17,7 +18,7 @@ manufacturer_groups = {
         'Acuson Cypress',           'GE Healthcare LOGIQe',     'GE Healthcare Ultrasound Vivid iq',    
         'GE Healthcare Vivid i',    'GE Healthcare Vivide',     'GEMS Ultrasound Vivid i',      
         'MINDRAY M7',               'SIEMENS ACUSON P500',      'Teratech Corp. Terason Ultrasound Imaging System',
-        None,                       'Acuson',
+        'Acuson',                   None,
     ],
     2 : [
         'Sonoscanner',
@@ -49,15 +50,62 @@ def DownloadFileFromS3(s3_file_path, destination_directory):
 
 
 @tools.monitor_me()
-def ReadDicomFile(dicom_file_path):
+def ReadDicomFile(dicom_file_path, file_name):
     
-    ''' Accepts dicom file path, returns dicom raises ERROR if file is not a dicom ".dcm" file '''
+    ''' Accepts dicom file path (hashed s3_key) and file_name (original file name), returns dicom raises ERROR if file is not a dicom ".dcm" file '''
     
-    # # raise error if file is not a dicom file:
-    # if dicom_file_path[:-3] != 'dcm':
-    #     raise(Exception('[ERROR] in [ReadDicomFile]: iCardio.ai is currently only supporting dicom ".dcm" file formats'))
+    # if dicom file, extract using pydicom library:
+    if file_name[-3:] == 'dcm':
         
-    dicom = pydicom.dcmread(dicom_file_path)
+        dicom = pydicom.dcmread(dicom_file_path)
+        
+    # if .mov or .mp4 file, create mock dicom object:
+    elif file_name[-3:] == 'mov' or file_name[-3:] == 'mp4':
+        
+        # create mock dicom object:
+        class Dicom:
+        
+            def __init__(self, path_to_non_dicom_file):
+                
+                raw_video = cv2.VideoCapture(path_to_non_dicom_file)
+    
+                # get numpy shape from video:
+                frame_count = int(raw_video.get(cv2.CAP_PROP_FRAME_COUNT))
+                frame_height = int(raw_video.get(cv2.CAP_PROP_FRAME_HEIGHT))
+                frame_width = int(raw_video.get(cv2.CAP_PROP_FRAME_WIDTH))
+                
+                # initialize pixel data array:
+                pixel_data = np.empty((frame_count, frame_height, frame_width, 3), np.dtype('uint8'))
+            
+                counter = 0
+                extraction_success = True
+                
+                # extract each frame:
+                while (counter < frame_count and extraction_success):
+                    extraction_success, pixel_data[counter] = raw_video.read()
+                    counter += 1
+                
+                # limit frame count to first 150 frames:
+                if pixel_data.shape[0] > 150:
+                    pixel_data = pixel_data[0:150]
+                
+                # create dicom fields for extraction:
+                self.pixel_array = pixel_data
+                self.NumberOfFrames = pixel_data.shape[0]
+                self.Manufacturer = 'unknown'
+        
+        # instantiate dicom with data from video:    
+        dicom = Dicom(dicom_file_path)
+        
+        # # temporary file rename:
+        # temp_file_name = dicom_file_path + '.' + file_name[-3:]
+        # os.rename(dicom_file_path, temp_file_name)
+        
+        # # instantiate dicom with data from video:    
+        # dicom = Dicom(temp_file_name)
+        
+        # # rename file to original name (for further processing in the pipeline):
+        # os.rename(temp_file_name, dicom_file_path)
         
     return dicom
 

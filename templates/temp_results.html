@@ -26,12 +26,13 @@
     <ul>
         
         <li> <span> Filename: </span> <span> {{ result.file_name }}</span> </li>
-        <li> <span> Model Type: </span> <span> {{ result.view.model_type }}</span> </li>
         <li> <span> Usable View: </span> <span> {{ result.view.usable_view }}</span> </li> 
         <li> <span> Predicted View: </span> <span> {{ result.view.predicted_view }}</span> </li>
         <li> <span> View Confidence: </span> <span> {{ result.view.view_confidence|floatformat:2  }}</span> </li>
+        <li> <span> View Model Type: </span> <span> {{ result.view.view_model_type }}</span> </li>
         <li> <span> Predicted Abnormality: </span><span> {{ result.view.abnormality }}</span> </li> 
         <li> <span> Abnormality Confidence: </span> <span> {{ result.view.abnormality_confidence|floatformat:2 }}</span> </li>
+        <li> <span> Binary Model Type: </span> <span> {{ result.view.binary_model_type }}</span> </li>
         
     </ul>
     </div>

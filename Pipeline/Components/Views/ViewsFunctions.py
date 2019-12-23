@@ -152,8 +152,8 @@ def GetPrediction_spline(dicom, file_paths):
         
     # get resample ratios:
     frame_ratio = 20/dicom['pixel_data'].shape[0]
-    height_ratio = 192/dicom['pixel_data'].shape[0]
-    width_ratio = 128/dicom['pixel_data'].shape[0]
+    height_ratio = 192/dicom['pixel_data'].shape[1]
+    width_ratio = 128/dicom['pixel_data'].shape[2]
     
     # resample video:
     input_to_model = zoom(input_to_model, (frame_ratio, height_ratio, width_ratio))
@@ -161,11 +161,11 @@ def GetPrediction_spline(dicom, file_paths):
     # prep input for model:
     input_to_model = input_to_model.reshape(input_to_model.shape+(1,))
     input_to_model = np.array([input_to_model.astype('float32')])
-    print(input_to_model.shape)
+    
     input_to_model = pickle.dumps(input_to_model)
     
     # get endpoint of model:
-    views_predictor = Predictor('tf-multi-model-endpoint', model_name='views_model_vid_spline', content_type='application/npy', serializer=None)
+    views_predictor = Predictor('tf-multi-model-endpoint', model_name='ResNet50V2_views_model_vid_spline', content_type='application/npy', serializer=None)
     
     # contact endpoint for prediction:
     prediction = np.array(views_predictor.predict(input_to_model)['predictions'])
@@ -177,17 +177,20 @@ def GetPrediction_spline(dicom, file_paths):
 @tools.monitor_me()
 def ParsePrediction(dicom_id, predictions):
 
+    views_model = configuration['models']['view_model_type']
+    binary_model = configuration['models']['binary_model_type']
+
     # use frame model:
-    if configuration['models']['view_model_type'] == 'frame' and configuration['models']['binary_model_type'] == 'none':
+    if views_model == 'frame' and binary_model == 'none':
         result = ParsePrediction_view_only_frame_level(dicom_id, predictions)
         
-    elif configuration['models']['view_model_type'] == 'frame' and configuration['models']['binary_model_type'] == 'frame':
+    elif views_model == 'frame' and binary_model == 'frame':
         result = ParsePrediction_view_and_binary_frame_level(dicom_id, predictions)
         
-    elif configuration['models']['view_model_type'] == 'video' and configuration['models']['binary_model_type'] == 'none':
+    elif (views_model == 'video' or views_model == 'spline') and binary_model == 'none':
         result = ParsePrediction_view_only_video_level(dicom_id, predictions)
         
-    elif configuration['models']['view_model_type'] == 'video' and configuration['models']['binary_model_type'] == 'video':
+    elif (views_model == 'video' or views_model == 'spline') and binary_model == 'video':
         result = ParsePrediction_view_and_binary_video_level(dicom_id, predictions)
         
     return result
@@ -249,7 +252,8 @@ def ParsePrediction_view_only_frame_level(dicom_id, predictions):
         'frame_view_threshold' : frame_view_threshold, 
         'video_view_threshold' : most_common_view_probability,
         'usable_view' : usable_view,
-        'model_type' : 'subview frame',
+        'view_model_type' : configuration['models']['view_model_type'],
+        'binary_model_type' : configuration['models']['binary_model_type'],
     }
     
     return result
@@ -360,7 +364,8 @@ def ParsePrediction_view_and_binary_frame_level(dicom_id, predictions):
         'view_confidence' : most_common_view_probability,
         'abnormality_confidence' : abnormality_confidence,
         'usable_view' : usable_view,
-        'model_type' : 'subview frame',
+        'view_model_type' : configuration['models']['view_model_type'],
+        'binary_model_type' : configuration['models']['binary_model_type'],
     }
     
     return result
@@ -397,7 +402,8 @@ def ParsePrediction_view_only_video_level(dicom_id, predictions):
         'predicted_view' : predicted_view, 
         'view_confidence' : max_confidence,
         'usable_view' : usable_view,
-        'model_type' : 'subview video',
+        'view_model_type' : configuration['models']['view_model_type'],
+        'binary_model_type' : configuration['models']['binary_model_type'],
     }   
     
     return result
@@ -441,7 +447,8 @@ def ParsePrediction_view_and_binary_video_level(dicom_id, predictions):
         'view_confidence' : max_view_confidence,
         'abnormality_confidence' : max_abnormality_confidence,
         'usable_view' : usable_view,
-        'model_type' : 'subview video',
+        'view_model_type' : configuration['models']['view_model_type'],
+        'binary_model_type' : configuration['models']['binary_model_type'],
     }   
     
     return result

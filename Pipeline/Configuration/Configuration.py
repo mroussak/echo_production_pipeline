@@ -10,12 +10,12 @@ configuration = {
         'traceback_lines' : 3,
     },
     'handlers' : {
-        'log' : False,
+        'log' : True,
     },
     'models' : {
         #'view_model_type' : 'frame',
-        'view_model_type' : 'video',
-        #'view_model_type' : 'spline',
+        #'view_model_type' : 'video',
+        'view_model_type' : 'spline',
         'binary_model_type' : 'none',
         #'binary_model_type' : 'frame',
         #'binary_model_type' : 'video',

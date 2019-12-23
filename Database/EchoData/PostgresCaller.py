@@ -37,7 +37,7 @@ if __name__ == '__main__':
         'create_table' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/GeneralQueries/create_table_query.sql',
         #'create_table' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/GeneralQueries/create_fact_table_query.sql',
         'alter_table' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/GeneralQueries/alter_table_query.sql',
-        'select' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/GeneralQueries/select_query.sql',
+        'select' : r'/echo_pipeline/Database/EchoData/Queries/GeneralQueries/select_query.sql',
         'insert' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/GeneralQueries/insert_query.sql',
         'update' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/GeneralQueries/update_query.sql',
         'clean' : r'/sandbox/dsokol/echo_production_pipeline/Database/EchoData/Queries/GeneralQueries/clean_query.sql',
@@ -57,7 +57,7 @@ if __name__ == '__main__':
     #query_file = file_paths['create_table']
     query_file = file_paths['schema']
     #query_file = file_paths['alter_table']
-    #query_file = file_paths['select']
+    query_file = file_paths['select']
     #query_file = file_paths['insert']
     #query_file = file_paths['update']
     #query_file = file_paths['clean']
@@ -88,7 +88,10 @@ if __name__ == '__main__':
     result = main(query_file, parameters, verbose=True, start=time())
     #print(int(result.iloc[0]))
     #print(result.iloc[4]) 
-    print(result)
+    print(result.set_index('subview'))
+    
+    result.set_index('subview').to_pickle('vvm.pkl')
+    
     
     # try:
     #     result_strings = result.select_dtypes(['object'])

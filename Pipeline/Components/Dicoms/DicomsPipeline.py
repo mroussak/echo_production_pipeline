@@ -8,6 +8,7 @@ def DicomsPipeline(file_paths):
     
     # unpack files:
     dicom_id = file_paths['dicom_id']
+    file_name = file_paths['file_name']
     destination_directory = file_paths['DICOMS_DIR']
     dicom_data_destination = file_paths['dicom_data']
     
@@ -17,7 +18,7 @@ def DicomsPipeline(file_paths):
     dicom_file_path = funcs.DownloadFileFromS3(dicom_id, destination_directory)
     
     # Step 2, read dicom file:
-    dicom = funcs.ReadDicomFile(dicom_file_path)
+    dicom = funcs.ReadDicomFile(dicom_file_path, file_name)
     
     # Step 3, get manufacturer details:
     manufacturer_details = funcs.GetManufacturerDetails(dicom)

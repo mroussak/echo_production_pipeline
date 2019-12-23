@@ -23,5 +23,5 @@ def MediaPipeline(file_paths):
     funcs.BuildMediaBaseDirectory(MEDIA_DIR)
     
     # Step 3, build video:
-    funcs.BuildMP4(dicom, mp4_destination)
+    #funcs.BuildMP4(dicom, mp4_destination)
     funcs.BuildWebm(dicom, webm_destination) ## 1 minute processing time
