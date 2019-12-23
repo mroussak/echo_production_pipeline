@@ -1,7 +1,6 @@
 from Pipeline.Tools import Tools as tools
 from decouple import config
 import numpy as np
-import skvideo.io
 import pydicom 
 import pickle
 import boto3

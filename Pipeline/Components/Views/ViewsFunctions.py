@@ -13,7 +13,9 @@ import sys
 import cv2
 import os
 
-from Pipeline.Tools.EchoPipelineTools import load_video
+#from Pipeline.Tools.EchoPipelineTools import load_video
+def load_video(**kwargs):
+    pass
 
 
 
