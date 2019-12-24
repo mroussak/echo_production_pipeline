@@ -2,6 +2,7 @@ from Pipeline.Configuration.Configuration import configuration
 from Pipeline.Tools import Tools as tools
 from decouple import config
 import importlib
+import shutil
 import boto3
 import sys
 import os
@@ -62,8 +63,6 @@ def Terminator(file_paths):
             
             # write to bucket:
             s3.Bucket(BUCKET_NAME).upload_file(local_file, s3_destination)
-            
-    # delete existing temp data off of server:
     
     # reroute stdout back to console:        
     sys.stdout = sys.__stdout__

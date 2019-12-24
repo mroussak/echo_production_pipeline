@@ -27,6 +27,7 @@ def BuildReportJson(file_paths, dicom_data, view_data):
     
     # build report json:
     report_json = {
+        'VISIT_DIR' : file_paths['VISIT_DIR'],
         'user_id' : file_paths['user_id'],
         'visit_id' : file_paths['visit_id'],
         'file_id' : file_paths['file_id'],

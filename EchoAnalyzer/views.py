@@ -257,8 +257,6 @@ def LoadResultsPage(request, visit_id):
         # connect to s3:
         s3 = get_s3()
         
-        start = time()
-        
         # add s3 links to media files:
         for result in results['result']:
 
@@ -279,10 +277,6 @@ def LoadResultsPage(request, visit_id):
                 
                 # append url to result object:
                 result['links'][key] = url
-        
-        end = time()
-        
-        print('[EchoAnalyzer.views.LoadResultsPage]: Getting urls took [%7.2f s]' %(end-start))
         
         success = True
         status = 0

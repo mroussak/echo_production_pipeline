@@ -1,0 +1,522 @@
+{
+  "PLAX Paricardial": {
+    "Left Ventricle": [
+      "Diastolic dysfunction.",
+      "Focal upper septal hypertrophy.",
+      "Left ventricular diastolic function.",
+      "Left ventricular hypertrophy.",
+      "Left ventricular enlargement.",
+      "Paradoxical septal motion consistent with  history of CABG.",
+      "Septal hypokinesis."
+    ],
+    "Left Atrium": [
+      "Hypermobile interatrial septum.",
+      "Left atrial dilation.",
+      "Left atrial elongation.",
+      "Left atrial enlargement.",
+      "Lipomatous hypertrophy of the interatrial septum."
+    ],
+    "Right Ventricle": [
+      "Right ventricular enlargement."
+    ],
+    "Aortic Valve": [
+      "Aortic insufficiency.",
+      "Aortic regurgitation.",
+      "Aortic sclerosis.",
+      "Aortic valve is trileaflet and thickened.",
+      "Calcification of the aortic leaflets with decreased excursion.",
+      "Calcification of the aortic leaflets with preserved excursion.",
+      "Elevated aortic outflow velocities."
+    ],
+    "Mitral Valve": [
+      "Mitral regurgitation.",
+      "Mitral valve insufficiency.",
+      "Mitral valve prolapse.",
+      "Mitral valve sclerosis without prolapse.",
+      "Posterior mitral annular calcification.",
+      "Thickening of the mitral leaflets with preserved excursion."
+    ],
+    "Aortic Root": [
+      "Aortic root dilation.",
+      "Aortic root enlargement.",
+      "Enalargement at the Sinus of Valsalva."
+    ],
+    "Pericardium": [
+      "Anterior pericardial fat pad.",
+      "Circumferential pericardial fat pad.",
+      "Pericardial effusion."
+    ]
+  },
+  "PLAX": {
+    "Left Ventricle": [
+      "Diastolic dysfunction.",
+      "Focal upper septal hypertrophy.",
+      "Left ventricular diastolic function.",
+      "Left ventricular hypertrophy.",
+      "Left ventricular enlargement.",
+      "Paradoxical septal motion consistent with  history of CABG.",
+      "Septal hypokinesis."
+    ],
+    "Left Atrium": [
+      "Hypermobile interatrial septum.",
+      "Left atrial dilation.",
+      "Left atrial elongation.",
+      "Left atrial enlargement.",
+      "Lipomatous hypertrophy of the interatrial septum."
+    ],
+    "Right Ventricle": [
+      "Right ventricular enlargement."
+    ],
+    "Aortic Valve": [
+      "Aortic insufficiency.",
+      "Aortic regurgitation.",
+      "Aortic sclerosis.",
+      "Aortic valve is trileaflet and thickened.",
+      "Calcification of the aortic leaflets with decreased excursion.",
+      "Calcification of the aortic leaflets with preserved excursion.",
+      "Elevated aortic outflow velocities."
+    ],
+    "Mitral Valve": [
+      "Mitral regurgitation.",
+      "Mitral valve insufficiency.",
+      "Mitral valve prolapse.",
+      "Mitral valve sclerosis without prolapse.",
+      "Posterior mitral annular calcification.",
+      "Thickening of the mitral leaflets with preserved excursion."
+    ],
+    "Aortic Root": [
+      "Aortic root dilation.",
+      "Aortic root enlargement.",
+      "Enalargement at the Sinus of Valsalva."
+    ]
+  },
+  "PLAX Aortic Cusps": {
+    "Aortic Valve": [
+      "Aortic insufficiency.",
+      "Aortic regurgitation.",
+      "Aortic sclerosis.",
+      "Aortic valve is trileaflet and thickened.",
+      "Calcification of the aortic leaflets with decreased excursion.",
+      "Calcification of the aortic leaflets with preserved excursion.",
+      "Elevated aortic outflow velocities."
+    ],
+    "Aortic Root": [
+      "Aortic root dilation.",
+      "Aortic root enlargement.",
+      "Enalargement at the Sinus of Valsalva."
+    ]
+  },
+  "PLAX Mitral Cusps": {
+    "Mitral Valve": [
+      "Mitral regurgitation.",
+      "Mitral valve insufficiency.",
+      "Mitral valve prolapse.",
+      "Mitral valve sclerosis without prolapse.",
+      "Posterior mitral annular calcification.",
+      "Thickening of the mitral leaflets with preserved excursion."
+    ]
+  },
+  "RVIT": {
+    "Right Atrium": [
+      "Aneurysmal interatrial septum.",
+      "Right atrial dilation.",
+      "Right atrial enlargement."
+    ],
+    "Tricuspid Valve": [
+      "Tricuspid insufficiency.",
+      "Tricuspid regurgitation."
+    ]
+  },
+  "PSAX Apex": {
+    "Left Ventricle": [
+      "Diastolic dysfunction.",
+      "Focal upper septal hypertrophy.",
+      "Left ventricular diastolic function.",
+      "Left ventricular hypertrophy.",
+      "Left ventricular enlargement.",
+      "Paradoxical septal motion consistent with  history of CABG.",
+      "Septal hypokinesis."
+    ]
+  },
+  "PSAX Papillary": {
+    "Left Ventricle": [
+      "Diastolic dysfunction.",
+      "Focal upper septal hypertrophy.",
+      "Left ventricular diastolic function.",
+      "Left ventricular hypertrophy.",
+      "Left ventricular enlargement.",
+      "Paradoxical septal motion consistent with  history of CABG.",
+      "Septal hypokinesis."
+    ]
+  },
+  "PSAX Mitral": {
+    "Mitral Valve": [
+      "Mitral regurgitation.",
+      "Mitral valve insufficiency.",
+      "Mitral valve prolapse.",
+      "Mitral valve sclerosis without prolapse.",
+      "Posterior mitral annular calcification.",
+      "Thickening of the mitral leaflets with preserved excursion."
+    ]
+  },
+  "PSAXA": {
+    "Aortic Valve": [
+      "Aortic insufficiency.",
+      "Aortic regurgitation.",
+      "Aortic sclerosis.",
+      "Aortic valve is trileaflet and thickened.",
+      "Calcification of the aortic leaflets with decreased excursion.",
+      "Calcification of the aortic leaflets with preserved excursion.",
+      "Elevated aortic outflow velocities."
+    ],
+    "Tricuspid Valve": [
+      "Tricuspid insufficiency.",
+      "Tricuspid regurgitation."
+    ],
+    "pulmonary_artery": [
+      "Pulmonary hypertension.",
+      "Elevated pulmonary artery systolic pressure."
+    ]
+  },
+  "PSAXA Zoomed Aorta": {
+    "Aortic Valve": [
+      "Aortic insufficiency.",
+      "Aortic regurgitation.",
+      "Aortic sclerosis.",
+      "Aortic valve is trileaflet and thickened.",
+      "Calcification of the aortic leaflets with decreased excursion.",
+      "Calcification of the aortic leaflets with preserved excursion.",
+      "Elevated aortic outflow velocities."
+    ],
+    "Aortic Root": [
+      "Aortic root dilation.",
+      "Aortic root enlargement.",
+      "Enalargement at the Sinus of Valsalva."
+    ]
+  },
+  "PSAXA Pulmonary": {
+    "Pulmonic Valve": [
+      "Pulmonic insufficiency.",
+      "Pulmonic regurgitation."
+    ],
+    "pulmonary_artery": [
+      "Pulmonary hypertension.",
+      "Elevated pulmonary artery systolic pressure."
+    ]
+  },
+  "PSAXA Zoomed Tricuspid": {
+    "Tricuspid Valve": [
+      "Tricuspid insufficiency.",
+      "Tricuspid regurgitation."
+    ]
+  },
+  "A4C": {
+    "Left Ventricle": [
+      "Diastolic dysfunction.",
+      "Focal upper septal hypertrophy.",
+      "Left ventricular diastolic function.",
+      "Left ventricular hypertrophy.",
+      "Left ventricular enlargement.",
+      "Paradoxical septal motion consistent with  history of CABG.",
+      "Septal hypokinesis."
+    ],
+    "Left Atrium": [
+      "Hypermobile interatrial septum.",
+      "Left atrial dilation.",
+      "Left atrial elongation.",
+      "Left atrial enlargement.",
+      "Lipomatous hypertrophy of the interatrial septum."
+    ],
+    "Right Ventricle": [
+      "Right ventricular enlargement."
+    ],
+    "Right Atrium": [
+      "Aneurysmal interatrial septum.",
+      "Right atrial dilation.",
+      "Right atrial enlargement."
+    ],
+    "Mitral Valve": [
+      "Mitral regurgitation.",
+      "Mitral valve insufficiency.",
+      "Mitral valve prolapse.",
+      "Mitral valve sclerosis without prolapse.",
+      "Posterior mitral annular calcification.",
+      "Thickening of the mitral leaflets with preserved excursion."
+    ],
+    "Tricuspid Valve": [
+      "Tricuspid insufficiency.",
+      "Tricuspid regurgitation."
+    ]
+  },
+  "A4C Zoomed LV": {
+    "Left Ventricle": [
+      "Diastolic dysfunction.",
+      "Focal upper septal hypertrophy.",
+      "Left ventricular diastolic function.",
+      "Left ventricular hypertrophy.",
+      "Left ventricular enlargement.",
+      "Paradoxical septal motion consistent with  history of CABG.",
+      "Septal hypokinesis."
+    ],
+    "Mitral Valve": [
+      "Mitral regurgitation.",
+      "Mitral valve insufficiency.",
+      "Mitral valve prolapse.",
+      "Mitral valve sclerosis without prolapse.",
+      "Posterior mitral annular calcification.",
+      "Thickening of the mitral leaflets with preserved excursion."
+    ],
+    "Tricuspid Valve": [
+      "Tricuspid insufficiency.",
+      "Tricuspid regurgitation."
+    ]
+  },
+  "A4C Zoomed RV": {
+    "Right Ventricle": [
+      "Right ventricular enlargement."
+    ],
+    "Right Atrium": [
+      "Aneurysmal interatrial septum.",
+      "Right atrial dilation.",
+      "Right atrial enlargement."
+    ]
+  },
+  "A4C Zoomed Mitral": {
+    "Mitral Valve": [
+      "Mitral regurgitation.",
+      "Mitral valve insufficiency.",
+      "Mitral valve prolapse.",
+      "Mitral valve sclerosis without prolapse.",
+      "Posterior mitral annular calcification.",
+      "Thickening of the mitral leaflets with preserved excursion."
+    ]
+  },
+  "A5C": {
+    "Left Ventricle": [
+      "Diastolic dysfunction.",
+      "Focal upper septal hypertrophy.",
+      "Left ventricular diastolic function.",
+      "Left ventricular hypertrophy.",
+      "Left ventricular enlargement.",
+      "Paradoxical septal motion consistent with  history of CABG.",
+      "Septal hypokinesis."
+    ],
+    "Left Atrium": [
+      "Hypermobile interatrial septum.",
+      "Left atrial dilation.",
+      "Left atrial elongation.",
+      "Left atrial enlargement.",
+      "Lipomatous hypertrophy of the interatrial septum."
+    ],
+    "Right Atrium": [
+      "Aneurysmal interatrial septum.",
+      "Right atrial dilation.",
+      "Right atrial enlargement."
+    ],
+    "Aortic Valve": [
+      "Aortic insufficiency.",
+      "Aortic regurgitation.",
+      "Aortic sclerosis.",
+      "Aortic valve is trileaflet and thickened.",
+      "Calcification of the aortic leaflets with decreased excursion.",
+      "Calcification of the aortic leaflets with preserved excursion.",
+      "Elevated aortic outflow velocities."
+    ],
+    "Mitral Valve": [
+      "Mitral regurgitation.",
+      "Mitral valve insufficiency.",
+      "Mitral valve prolapse.",
+      "Mitral valve sclerosis without prolapse.",
+      "Posterior mitral annular calcification.",
+      "Thickening of the mitral leaflets with preserved excursion."
+    ],
+    "Tricuspid Valve": [
+      "Tricuspid insufficiency.",
+      "Tricuspid regurgitation."
+    ]
+  },
+  "A5C Zoomed Aorta": {
+    "Aortic Valve": [
+      "Aortic insufficiency.",
+      "Aortic regurgitation.",
+      "Aortic sclerosis.",
+      "Aortic valve is trileaflet and thickened.",
+      "Calcification of the aortic leaflets with decreased excursion.",
+      "Calcification of the aortic leaflets with preserved excursion.",
+      "Elevated aortic outflow velocities."
+    ],
+    "Aortic Root": [
+      "Aortic root dilation.",
+      "Aortic root enlargement.",
+      "Enalargement at the Sinus of Valsalva."
+    ]
+  },
+  "A2C": {
+    "Left Ventricle": [
+      "Diastolic dysfunction.",
+      "Focal upper septal hypertrophy.",
+      "Left ventricular diastolic function.",
+      "Left ventricular hypertrophy.",
+      "Left ventricular enlargement.",
+      "Paradoxical septal motion consistent with  history of CABG.",
+      "Septal hypokinesis."
+    ],
+    "Left Atrium": [
+      "Hypermobile interatrial septum.",
+      "Left atrial dilation.",
+      "Left atrial elongation.",
+      "Left atrial enlargement.",
+      "Lipomatous hypertrophy of the interatrial septum."
+    ],
+    "Mitral Valve": [
+      "Mitral regurgitation.",
+      "Mitral valve insufficiency.",
+      "Mitral valve prolapse.",
+      "Mitral valve sclerosis without prolapse.",
+      "Posterior mitral annular calcification.",
+      "Thickening of the mitral leaflets with preserved excursion."
+    ]
+  },
+  "A2C Zoomed Mitral": {
+    "Mitral Valve": [
+      "Mitral regurgitation.",
+      "Mitral valve insufficiency.",
+      "Mitral valve prolapse.",
+      "Mitral valve sclerosis without prolapse.",
+      "Posterior mitral annular calcification.",
+      "Thickening of the mitral leaflets with preserved excursion."
+    ]
+  },
+  "A3C": {
+    "Left Ventricle": [
+      "Diastolic dysfunction.",
+      "Focal upper septal hypertrophy.",
+      "Left ventricular diastolic function.",
+      "Left ventricular hypertrophy.",
+      "Left ventricular enlargement.",
+      "Paradoxical septal motion consistent with  history of CABG.",
+      "Septal hypokinesis."
+    ],
+    "Left Atrium": [
+      "Hypermobile interatrial septum.",
+      "Left atrial dilation.",
+      "Left atrial elongation.",
+      "Left atrial enlargement.",
+      "Lipomatous hypertrophy of the interatrial septum."
+    ],
+    "Aortic Valve": [
+      "Aortic insufficiency.",
+      "Aortic regurgitation.",
+      "Aortic sclerosis.",
+      "Aortic valve is trileaflet and thickened.",
+      "Calcification of the aortic leaflets with decreased excursion.",
+      "Calcification of the aortic leaflets with preserved excursion.",
+      "Elevated aortic outflow velocities."
+    ],
+    "Mitral Valve": [
+      "Mitral regurgitation.",
+      "Mitral valve insufficiency.",
+      "Mitral valve prolapse.",
+      "Mitral valve sclerosis without prolapse.",
+      "Posterior mitral annular calcification.",
+      "Thickening of the mitral leaflets with preserved excursion."
+    ],
+    "Aortic Root": [
+      "Aortic root dilation.",
+      "Aortic root enlargement.",
+      "Enalargement at the Sinus of Valsalva."
+    ]
+  },
+  "A3C Zoomed Aorta": {
+    "Aortic Valve": [
+      "Aortic insufficiency.",
+      "Aortic regurgitation.",
+      "Aortic sclerosis.",
+      "Aortic valve is trileaflet and thickened.",
+      "Calcification of the aortic leaflets with decreased excursion.",
+      "Calcification of the aortic leaflets with preserved excursion.",
+      "Elevated aortic outflow velocities."
+    ]
+  },
+  "SUBCOSTAL": {
+    "Left Ventricle": [
+      "Diastolic dysfunction.",
+      "Focal upper septal hypertrophy.",
+      "Left ventricular diastolic function.",
+      "Left ventricular hypertrophy.",
+      "Left ventricular enlargement.",
+      "Paradoxical septal motion consistent with  history of CABG.",
+      "Septal hypokinesis."
+    ],
+    "Left Atrium": [
+      "Hypermobile interatrial septum.",
+      "Left atrial dilation.",
+      "Left atrial elongation.",
+      "Left atrial enlargement.",
+      "Lipomatous hypertrophy of the interatrial septum."
+    ],
+    "Right Ventricle": [
+      "Right ventricular enlargement."
+    ],
+    "Right Atrium": [
+      "Aneurysmal interatrial septum.",
+      "Right atrial dilation.",
+      "Right atrial enlargement."
+    ],
+    "Aortic Valve": [
+      "Aortic insufficiency.",
+      "Aortic regurgitation.",
+      "Aortic sclerosis.",
+      "Aortic valve is trileaflet and thickened.",
+      "Calcification of the aortic leaflets with decreased excursion.",
+      "Calcification of the aortic leaflets with preserved excursion.",
+      "Elevated aortic outflow velocities."
+    ],
+    "Mitral Valve": [
+      "Mitral regurgitation.",
+      "Mitral valve insufficiency.",
+      "Mitral valve prolapse.",
+      "Mitral valve sclerosis without prolapse.",
+      "Posterior mitral annular calcification.",
+      "Thickening of the mitral leaflets with preserved excursion."
+    ],
+    "Tricuspid Valve": [
+      "Tricuspid insufficiency.",
+      "Tricuspid regurgitation."
+    ],
+    "Pericardium": [
+      "Anterior pericardial fat pad.",
+      "Circumferential pericardial fat pad.",
+      "Pericardial effusion."
+    ]
+  },
+  "SUB IVC": {
+    "Right Atrium": [
+      "Aneurysmal interatrial septum.",
+      "Right atrial dilation.",
+      "Right atrial enlargement."
+    ],
+    "Tricuspid Valve": [
+      "Tricuspid insufficiency.",
+      "Tricuspid regurgitation."
+    ],
+    "Pericardium": [
+      "Anterior pericardial fat pad.",
+      "Circumferential pericardial fat pad.",
+      "Pericardial effusion."
+    ]
+  },
+  "SUB Short Axis": {
+    "Pericardium": [
+      "Anterior pericardial fat pad.",
+      "Circumferential pericardial fat pad.",
+      "Pericardial effusion."
+    ]
+  },
+  "Suprasternal": {
+    "Aortic Arch": [
+      "Atherosclerosis.",
+      "Dilation."
+    ]
+  }
+}

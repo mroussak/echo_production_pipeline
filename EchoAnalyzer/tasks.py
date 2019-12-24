@@ -8,6 +8,7 @@ from multiprocessing import Pool
 from django.urls import reverse
 from time import time, sleep
 import traceback
+import shutil
 import json
 import sys
 
@@ -77,14 +78,15 @@ def ProcessVisit(user_id, visit_id):
         
         file.save()
     
+    # delete existing temp data off of server:
+    shutil.rmtree(result_json['VISIT_DIR'])
+    
     # pack result list as json:
     result_json = {'result' : result_json_list}
     
     # set completed processing time and save results:
-    
     visit.finished_processing_at = datetime.now(timezone.utc)
     visit.results = result_json
     visit.save()
-    
     
     return result_json
