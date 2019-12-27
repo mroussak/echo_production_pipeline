@@ -10,7 +10,7 @@ configuration = {
         'traceback_lines' : 3,
     },
     'handlers' : {
-        'log' : True,
+        'log' : False,
     },
     'models' : {
         #'view_model_type' : 'frame',

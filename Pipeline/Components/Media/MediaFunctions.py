@@ -7,14 +7,14 @@ import os
 
 
 @tools.monitor_me()
-def GetDicomData(dicom_data_file_path):
+def GetData(data_file_path):
     
-    ''' Accepts dicom data file path, returns dicom object '''
+    ''' Accepts data file path, returns object '''
     
-    with open(dicom_data_file_path, 'rb') as handle:
-        dicom = pickle.load(handle)
+    with open(data_file_path, 'rb') as handle:
+        data = pickle.load(handle)
     
-    return dicom
+    return data
     
     
     

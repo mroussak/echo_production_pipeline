@@ -17,6 +17,7 @@ def ProductionPipeline(input_dictionary):
     dicom_id = input_dictionary['dicom_id']
     file_name = input_dictionary['file_name']
     
+    # build base directories:
     USER_DIR = '/tmp/WebAppData/Users/' + str(user_id) + '/'
     VISIT_DIR = '/tmp/WebAppData/Users/' + str(user_id) + '/Visits/' + str(visit_id) + '/'
     FILE_DIR =  '/tmp/WebAppData/Users/' + str(user_id) + '/Visits/' + str(visit_id) + '/Files/' + str(file_id) + '/'
@@ -49,12 +50,14 @@ def ProductionPipeline(input_dictionary):
         # data:
         'dicom_data' : DATA_DIR + dicom_id + '_dicom.pkl',
         'view_data' : DATA_DIR + dicom_id + '_view.pkl',
+        'segmentation_data' : DATA_DIR + '_segmentation.pkl',
         
         # media:
         'dicom_jpegs' : MEDIA_DIR + '/Jpegs/',
         'dicom_gif' : MEDIA_DIR + dicom_id +'.gif',
         'dicom_mp4' : MEDIA_DIR + dicom_id + '.mp4',
         'dicom_webm' : MEDIA_DIR + dicom_id + '.webm',
+        'segmentation_webm' : MEDIA_DIR + dicom_id + '_segmentation.webm',
         
         # reports:
         'reports_json' : REPORTS_DIR + dicom_id + '_report.json',

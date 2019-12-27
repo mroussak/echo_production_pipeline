@@ -163,12 +163,19 @@ def GetPrediction_spline(dicom, file_paths):
     # prep input for model:
     input_to_model = input_to_model.reshape(input_to_model.shape+(1,))
     input_to_model = np.array([input_to_model.astype('float32')])
-    
     input_to_model = pickle.dumps(input_to_model)
     
     # get endpoint of model:
-    views_predictor = Predictor('tf-multi-model-endpoint', model_name='ResNet50V2_views_model_vid_spline', content_type='application/npy', serializer=None)
+    if configuration['models']['binary_model_type'] == 'none':
     
+        # get endpoint of model:
+        views_predictor = Predictor('tf-multi-model-endpoint', model_name='ResNet50V2_views_model_vid_spline', content_type='application/npy', serializer=None)
+
+    elif configuration['models']['binary_model_type'] == 'spline':
+
+        # get endpoint of model:
+        views_predictor = Predictor('tf-multi-model-endpoint', model_name='ResNet50V2_master_model_vid_spline', content_type='application/npy', serializer=None)
+
     # contact endpoint for prediction:
     prediction = np.array(views_predictor.predict(input_to_model)['predictions'])
     
@@ -192,7 +199,7 @@ def ParsePrediction(dicom_id, predictions):
     elif (views_model == 'video' or views_model == 'spline') and binary_model == 'none':
         result = ParsePrediction_view_only_video_level(dicom_id, predictions)
         
-    elif (views_model == 'video' or views_model == 'spline') and binary_model == 'video':
+    elif (views_model == 'video' or views_model == 'spline') and (binary_model == 'video' or binary_model == 'spline'):
         result = ParsePrediction_view_and_binary_video_level(dicom_id, predictions)
         
     return result
@@ -435,7 +442,7 @@ def ParsePrediction_view_and_binary_video_level(dicom_id, predictions):
     # determine view:
     predicted_view = unique_views[max_view_confidence_index]
     predicted_abnormality = abnormalities[max_abnormality_confidence_index]
-    
+    print(max_abnormality_confidence_index)
     # determine if view is usable:
     if max_view_confidence > 0.5:
         usable_view = True
