@@ -15,6 +15,10 @@ body{
     width: 100%;
     margin: 0 auto;
 }
+#results .typewriter{
+    position: relative;
+    margin-left: 0;
+}
 
 .custom-nav{
     display: flex;

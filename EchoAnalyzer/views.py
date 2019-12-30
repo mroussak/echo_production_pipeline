@@ -16,6 +16,7 @@ from EchoAnalyzer.models import File, Visit, hash_file
 from EchoAnalyzer.utils import get_s3
 from EchoAnalyzer.tasks import ProcessVisit
 from WebTools.Tools import PrintTitle
+from EchoAnalyzer.features import FEATURES
 
 
 
@@ -277,6 +278,14 @@ def LoadResultsPage(request, visit_id):
                 
                 # append url to result object:
                 result['links'][key] = url
+                
+            view = result['view']['predicted_view']
+            if view in FEATURES:
+                result['view']['features'] = FEATURES[view]
+            else:
+                 result['view']['features'] = []
+            
+            
         
         success = True
         status = 0

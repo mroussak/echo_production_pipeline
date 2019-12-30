@@ -1,19 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Results{% endblock %}
+{% load static %}
+{% block extra_css %}
+ <link type="text/css" rel="stylesheet" href="{% static '../static/css/custom.css' %}" media="screen,projection" />
+{% endblock %}
+{% block content %}
 
-<!DOCTYPE html>
-<!-- iCardio.ai -->
-<html style="height:100%;overscroll-behavior: none;">
-
-<head>
-    
-    {% load static %}
-     <link type="text/css" rel="stylesheet" href="{% static '../static/css/custom.css' %}" media="screen,projection" />
-         <!--Import materialize.css-->
-    <link type="text/css" rel="stylesheet" href="{% static '../static/css/materialize.css' %}"  media="screen,projection" />
-    <title>iCardio.ai</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-</head>
-
-<body>
+<body id='results'>
     <div class="main-wrapper">
     <header class="custom-nav">
         <h5 class="loader typewriter" id="typewriter">username: {{user.username}}</h5> 
@@ -40,6 +33,17 @@
             <section id="myModal" class="pop-up">
                 <section class="modal-content">
                     <span class="close">&times;</span>
+                    <ul>
+                    {% for item, values in result.view.features.items %}
+                    <li>{{item}}
+                        <ul>
+                            {% for v in values %}
+                                <li>{{v}}</li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    {% endfor %}
+                    </ul>
                     <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit,
                     sed diam nonummy nibh euismod tincidunt ut laoreet dolore
                     magna aliquam erat volutpat. Ut wisi enim ad minim veniam,
@@ -195,3 +199,5 @@ function typewriter()
 </script>
 
 </body>
+
+{% endblock %}
