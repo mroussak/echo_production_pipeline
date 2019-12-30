@@ -24,7 +24,7 @@ class VisitAdmin(admin.ModelAdmin):
     list_display_links = ['id', 'results_preview']
 
     def file_list(self, instance):
-        return list(instance.file_set.all().values_list('file', flat=True))
+        return list(instance.file_set.all().values_list('file_name', flat=True))
 
 
 

@@ -16,9 +16,11 @@
 <body>
     <div class="main-wrapper">
     <header class="custom-nav">
-        <h5 class="loader typewriter" id="typewriter">username: {{user.username}}</h5>
+        <h5 class="loader typewriter" id="typewriter">username: {{user.username}}</h5> 
         <a href="{% url 'upload' %}">upload more files</a>
     </header>
+        
+<h6 class='main-wrapper'> model name: {{results.result.0.view.model_name}}</h6>
 
 {% for result in results.result %}
     <div class="table-wrapper">

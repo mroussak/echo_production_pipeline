@@ -14,11 +14,9 @@ configuration = {
     },
     'models' : {
         #'view_model_type' : 'frame',
-        #'view_model_type' : 'video',
-        'view_model_type' : 'spline',
-        'binary_model_type' : 'none',
+        'view_model_type' : 'video',
+        #'binary_model_type' : 'none',
         #'binary_model_type' : 'frame',
-        #'binary_model_type' : 'video',
-        #'binary_model_type' : 'spline',
+        'binary_model_type' : 'video',
     },
 }

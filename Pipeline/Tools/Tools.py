@@ -2,6 +2,7 @@ from Pipeline.Configuration.Configuration import configuration
 from datetime import datetime
 from time import time
 import traceback
+import pickle
 
 
 
@@ -11,7 +12,8 @@ def monitor_me(
     verbose = configuration['monitor_me']['verbose'], 
     start = time(),                                                   
     arg_length = configuration['monitor_me']['arg_length'], 
-    traceback_lines = configuration['monitor_me']['traceback_lines']
+    traceback_lines = configuration['monitor_me']['traceback_lines'],
+    save_output = False,
     ):
     
     ''' time_it decorator, used to time execution time of functions '''
@@ -68,6 +70,11 @@ def monitor_me(
                             )
                             
                     print(result['message'])
+        
+            # save output to .pkl file if save_output = True:
+            if save_output:
+                with open('/tmp/' + function.__name__ + '.pkl', 'wb') as handle:
+                    pickle.dump(result, handle)
         
             return result['content']
         

@@ -20,7 +20,7 @@ def MediaPipeline(file_paths):
     
     # Step 1, get dicom, segmentation data:
     dicom = funcs.GetData(dicom_file)
-    segmentation = funcs.GetData(segmentation_file)
+    #segmentation = funcs.GetData(segmentation_file)
     
     # Step 2, build media base directory:
     funcs.BuildMediaBaseDirectory(MEDIA_DIR)
