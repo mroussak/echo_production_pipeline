@@ -33,6 +33,7 @@ class Visit(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     started_processing_at = models.DateTimeField(null=True, blank=True)
     finished_processing_at = models.DateTimeField(null=True, blank=True)
+    processing_time = models.DurationField(null=True, blank=True)
     results = JSONField(null=True, blank=True)
 
     @property
@@ -56,6 +57,7 @@ class File(models.Model):
     log = models.TextField(null=True, blank=True)
     started_processing_at = models.DateTimeField(null=True, blank=True)
     finished_processing_at = models.DateTimeField(null=True, blank=True)
+    processing_time = models.DurationField(null=True, blank=True)
     
     @property
     def log_preview(self):

@@ -67,6 +67,7 @@ def ProcessVisit(user_id, visit_id):
         
         # set finish processing time, log:
         file.finished_processing_at = datetime.now(timezone.utc)
+        file.processing_time = datetime.now(timezone.utc) - file.started_processing_at
         
         # get log:
         for result_json in result_json_list:
@@ -86,6 +87,7 @@ def ProcessVisit(user_id, visit_id):
     
     # set completed processing time and save results:
     visit.finished_processing_at = datetime.now(timezone.utc)
+    visit.processing_time = datetime.now(timezone.utc) - visit.started_processing_at
     visit.results = result_json
     visit.save()
     

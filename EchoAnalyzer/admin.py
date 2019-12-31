@@ -10,7 +10,7 @@ class FileInline(admin.TabularInline):
 
 class FileAdmin(admin.ModelAdmin):
     
-    list_display = ('id', 'get_file', 'file_name', 'user', 'created_at', 'visit', 'log_preview', 'started_processing_at', 'finished_processing_at')
+    list_display = ('id', 'get_file', 'file_name', 'user', 'processing_time',  'created_at', 'visit', 'log_preview', 'started_processing_at', 'finished_processing_at')
     list_display_links = ['id', 'log_preview']
     
     def get_file(self, instance):
@@ -20,7 +20,7 @@ class FileAdmin(admin.ModelAdmin):
     
 class VisitAdmin(admin.ModelAdmin):
     
-    list_display = ('id', 'user', 'user_email', 'created_at', 'started_processing_at', 'finished_processing_at', 'results_preview', 'file_list')
+    list_display = ('id', 'user', 'user_email', 'processing_time', 'results_preview', 'file_list',  'created_at', 'started_processing_at', 'finished_processing_at',)
     list_display_links = ['id', 'results_preview']
 
     def file_list(self, instance):
