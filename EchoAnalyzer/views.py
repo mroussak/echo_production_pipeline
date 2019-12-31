@@ -278,14 +278,14 @@ def LoadResultsPage(request, visit_id):
                 
                 # append url to result object:
                 result['links'][key] = url
-                
+            
+            # get list of features:    
             view = result['view']['predicted_view']
-            if view in FEATURES:
-                result['view']['features'] = FEATURES[view]
-            else:
-                 result['view']['features'] = []
+            result['view']['features'] = FEATURES[view]
             
-            
+            # multiply confidences by 100 (to be percentages):
+            result['view']['abnormality_confidence'] *= 100
+            result['view']['view_confidence'] *= 100
         
         success = True
         status = 0

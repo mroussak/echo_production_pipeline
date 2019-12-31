@@ -2,144 +2,131 @@
 {% block title %}Results{% endblock %}
 {% load static %}
 {% block extra_css %}
- <link type="text/css" rel="stylesheet" href="{% static '../static/css/custom.css' %}" media="screen,projection" />
+    <link type="text/css" rel="stylesheet" href="{% static '../static/css/custom.css' %}" media="screen,projection" />
 {% endblock %}
 {% block content %}
 
 <body id='results'>
     <div class="main-wrapper">
-    <header class="custom-nav">
-        <h5 class="loader typewriter" id="typewriter">username: {{user.username}}</h5> 
-        <a href="{% url 'upload' %}">upload more files</a>
-    </header>
-        
-<h6 class='main-wrapper'> model name: {{results.result.0.view.model_name}}</h6>
+        <header class="custom-nav">
+            <h5 class="loader typewriter" id="typewriter">username: {{user.username}}</h5> 
+            <a href="{% url 'upload' %}">upload more files</a>
+        </header>
+        <h6 class='main-wrapper'> model name: {{results.result.0.view.model_name}}</h6>
 
 {% for result in results.result %}
     <div class="table-wrapper">
         <div class="item-wrap">
-    <ul>
-        
-        <li> <span> Filename: </span> <span> {{ result.file_name }}</span> </li>
-        <li> <span> Usable View: </span> <span> {{ result.view.usable_view }}</span> </li> 
-        <li> <span> Predicted View: </span> <span> {{ result.view.predicted_view }}</span> </li>
-        <li> <span> View Confidence: </span> <span> {{ result.view.view_confidence|floatformat:2  }}</span> </li>
-        <li> <span> View Model Type: </span> <span> {{ result.view.view_model_type }}</span> </li>
-        <li> <span> Predicted Abnormality: </span><span> {{ result.view.predicted_abnormality }}</span> </li> 
-        <li> <span> Abnormality Confidence: </span> <span> {{ result.view.abnormality_confidence|floatformat:2 }}</span> </li>
-        <li> <span> Binary Model Type: </span> <span> {{ result.view.binary_model_type }}</span> </li>
-        <li>
-            <span><button id="myBtn">Details</button></span>
-            <section id="myModal" class="pop-up">
-                <section class="modal-content">
-                    <span class="close">&times;</span>
-                    <ul>
-                    {% for item, values in result.view.features.items %}
-                    <li>{{item}}
-                        <ul>
-                            {% for v in values %}
-                                <li>{{v}}</li>
-                            {% endfor %}
-                        </ul>
-                    </li>
-                    {% endfor %}
-                    </ul>
-                    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit,
-                    sed diam nonummy nibh euismod tincidunt ut laoreet dolore
-                    magna aliquam erat volutpat. Ut wisi enim ad minim veniam,
-                    quis nostrud exerci tation ullamcorper suscipit lobortis nisl
-                    ut aliquip ex ea commodo consequat. Duis autem vel eum iriure
-                    dolor in hendrerit in vulputate velit esse molestie consequat,
-                    vel illum dolore eu feugiat nulla facilisis at vero eros et
-                    accumsan et.</p>
-                </section>
-            </section>
-        </li>
-        
-        
-    </ul>
+            <ul>
+                <li> <span> filename: </span> <span> {{ result.file_name }}</span> </li>
+                <li> <span> predicted view: </span> <span> {{ result.view.predicted_view }}</span> </li>
+                <li> <span> predicted view confidence: </span> <span> {{ result.view.view_confidence|floatformat:2  }} %</span> </li>
+                <li> <span> probability of abnormality: </span> <span> {{ result.view.abnormality_confidence|floatformat:2 }} %</span> </li>
+                <li>
+                    
+                    <span><button id="myBtn_{{result.view.predicted_view}}" class="myBtn", value='{{result.view.predicted_view}}', onclick="open_onclick_handler('{{result.view.predicted_view}}')">details</button></span>
+                    
+                    <section id="myModal_{{result.view.predicted_view}}" class="pop-up" name='myModal' + '_{{result.view.predicted_view}}'>
+                        <section class="modal-content">
+                            <ul>
+                                <p class="top-p">our algorithms have determined this view to be [{{ result.view.predicted_view }}]; in this view, our algorithms detect the following abnormalities:</p>
+                                <section class="lists-wrapper">
+                                    {% for item, values in result.view.features.items %}
+                                        <li class="sub-heading"><p>feature: [{{item|lower}}], abnormalities:</p>
+                                            <ul class="list-contents">
+                                                {% for v in values %}
+                                                    <li>{{v|lower}}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </li>
+                                    {% endfor %}
+                                </section>
+                            </ul>
+                            <a class="close" onclick="close_onclick_handler('{{result.view.predicted_view}}')">Close</a>
+                        </section>
+                    </section>
+                
+                </li>
+            </ul>
+        </div>
+        <div class="vid-wrapper">
+            <video type="video/mp4" loop="" controls="true" width="360px" height="480px" autoplay="" class="analysis-img fb614a" src="{{result.links.webm}}" data-id="fb614a"> </video> </br>
+        </div>
     </div>
-    <div class="vid-wrapper">
-    <video type="video/mp4" loop="" controls="true" width="360px" height="480px" autoplay="" class="analysis-img fb614a" src="{{result.links.webm}}" data-id="fb614a"> </video> </br>
-    </div>
-</div>
 {% endfor %} 
-</div>
+
+    </div>
+
 
 <script>
 
-var json_object = {
-    "Left Ventricle": [
-      "Diastolic dysfunction.",
-      "Focal upper septal hypertrophy.",
-      "Left ventricular diastolic function.",
-      "Left ventricular hypertrophy.",
-      "Left ventricular enlargement.",
-      "Paradoxical septal motion consistent with  history of CABG.",
-      "Septal hypokinesis."
-    ],
-    "Left Atrium": [
-      "Hypermobile interatrial septum.",
-      "Left atrial dilation.",
-      "Left atrial elongation.",
-      "Left atrial enlargement.",
-      "Lipomatous hypertrophy of the interatrial septum."
-    ],
-    "Right Ventricle": [
-      "Right ventricular enlargement."
-    ],
-    "Aortic Valve": [
-      "Aortic insufficiency.",
-      "Aortic regurgitation.",
-      "Aortic sclerosis.",
-      "Aortic valve is trileaflet and thickened.",
-      "Calcification of the aortic leaflets with decreased excursion.",
-      "Calcification of the aortic leaflets with preserved excursion.",
-      "Elevated aortic outflow velocities."
-    ],
-    "Mitral Valve": [
-      "Mitral regurgitation.",
-      "Mitral valve insufficiency.",
-      "Mitral valve prolapse.",
-      "Mitral valve sclerosis without prolapse.",
-      "Posterior mitral annular calcification.",
-      "Thickening of the mitral leaflets with preserved excursion."
-    ],
-    "Aortic Root": [
-      "Aortic root dilation.",
-      "Aortic root enlargement.",
-      "Enalargement at the Sinus of Valsalva."
-    ],
-    "Pericardium": [
-      "Anterior pericardial fat pad.",
-      "Circumferential pericardial fat pad.",
-      "Pericardial effusion."
-    ]
-  }
 
-
-    const modal = document.getElementById("myModal");
-const btn = document.getElementById("myBtn")
+//const modal = document.getElementById("myModal");
+const btn = document.getElementsByClassName("myBtn");
 const close = document.getElementsByClassName("close")[0];
+const modal = [];
 
-btn.onclick = function(){
-    modal.style.display = "flex"
-    console.log("okay!!")
+const views = [
+        'A2C',                      'A2C Zoomed Mitral',        'A3C',                  'A3C Zoomed Aorta',
+        'A4C',                      'A4C Zoomed LV',            'A4C Zoomed Mitral',    'A4C Zoomed RV',
+        'A5C',                      'A5C Zoomed Aorta',         'PLAX',                 'PLAX Aortic Cusps',
+        'PLAX Mitral Cusps',        'PLAX Paricardial',         'PSAX Apex',            'PSAX Mitral', 
+        'PSAX Papillary',           'PSAXA',                    'PSAXA Pulmonary',      'PSAXA Zoomed Aorta',
+        'PSAXA Zoomed Tricuspid',   'RVIT',                     'SUB IVC',              'SUB Short Axis',           
+        'SUBCOSTAL',                'Suprasternal',
+    ]
+    
+
+// create modal for each subview:
+for(var i=0; i<views.length; i++) {
+    
+    modal[i] = document.getElementById('myModal_' + views[i])
+    
+    if (typeof modal[i]==='undefined' || modal[i]==null) {}
+    else {
+        console.log(modal[i]);
+    }
 }
 
-close.onclick = function(){
-    modal.style.display = "none"
-} 
+// open modal on click:
+function open_onclick_handler(subview_input) {
+    
+    // get index in list of views based on subview:
+    var index = views.indexOf(subview_input);
+    
+    console.log(subview_input);
+    console.log(index);
+    console.log(modal[index].id);
+    
+    modal[index].style.display = "flex";
+    
+}
+
+// close modal on click:
+function close_onclick_handler(subview_input) {
+    
+    // get index in list of views based on subview:
+    var index = views.indexOf(subview_input);
+    
+    console.log(subview_input);
+    console.log(index);
+    console.log(modal[index].id);
+    
+    modal[index].style.display = "none";
+    
+}
 
 window.onclick = function(event){
-    if(event.target == modal){
-        modal.style.display = "none"
+    for(var i=0; i<views.length; i++) {
+        if(event.target == modal[i]){
+            
+            modal[i].style.display = "none"
+        }
     }
 }
 </script>
 
 <script>
-
    
 // set up text to print, each item in array is new line
 //var set = new Array(

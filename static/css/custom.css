@@ -74,7 +74,7 @@ body{
         width: 62%;
 }
 
-#myBtn{
+.myBtn{
     outline: none;
     color: white;
     background-color: rgb(78, 78, 78);
@@ -106,9 +106,33 @@ body{
     background: #fefefe;
     margin: auto;
     padding: 20px;
-    max-width: 600px;
+    max-width: 1000px;
     width: 100%;
     color: black;
+    height: auto;
+    border-radius: 10px;
+    transition: 2s;
+}
+
+.modal-content p{
+    font-size: 18px;
+}
+
+.top-p{
+    margin-bottom: 12px;
+}
+
+.modal-content ul li{
+    font-size: 15px;
+}
+
+.sub-heading{
+    margin-bottom: 6px;
+    width: 50%;
+}
+
+.list-contents{
+    text-indent: 50px;
 }
 
 .close{
@@ -122,4 +146,9 @@ body{
     color: #000;
     text-decoration: none;
     cursor: pointer;
+}
+
+.lists-wrapper{
+    display: flex;
+    flex-wrap: wrap;
 }
