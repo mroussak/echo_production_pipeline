@@ -109,7 +109,7 @@ def ProcessVisit(user_id, visit_id):
     result_json_list = FilePipelinePostprocessing(user_id, visit_id, file_list)
         
     # delete existing temp data off of server:
-    #shutil.rmtree(result_json_list[0]['VISIT_DIR'])
+    shutil.rmtree(result_json_list[0]['VISIT_DIR'])
     
     # pack result list as json:
     results = {'results' : result_json_list}
