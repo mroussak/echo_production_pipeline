@@ -54,6 +54,7 @@ def ProductionPipeline(input_dictionary):
         
         # media:
         'dicom_jpegs' : MEDIA_DIR + '/Jpegs/',
+        'dicom_avi' : MEDIA_DIR + dicom_id +'.avi',
         'dicom_gif' : MEDIA_DIR + dicom_id +'.gif',
         'dicom_mp4' : MEDIA_DIR + dicom_id + '.mp4',
         'dicom_webm' : MEDIA_DIR + dicom_id + '.webm',
@@ -85,15 +86,9 @@ def ProductionPipeline(input_dictionary):
     # Step 4) Reports Pipeline:
     ReportsPipeline(file_paths)
 
-    # Step 5) return json to django app:
-    with open(file_paths['reports_json'], 'r') as file:
-        result = json.load(file)
-    
-    # Step 6) Terminator:
+    # Step 5) Terminator:
     Terminator(file_paths)
     
-    return result
-
 
 
 if __name__ == '__main__':    

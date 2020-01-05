@@ -12,6 +12,7 @@ def MediaPipeline(file_paths):
     segmentation_file = file_paths['segmentation_data']
     jpeg_destintation = file_paths['dicom_jpegs']
     gif_destination = file_paths['dicom_gif']
+    avi_destinaton = file_paths['dicom_avi']
     mp4_destination = file_paths['dicom_mp4']
     webm_destination = file_paths['dicom_webm']
     segmentation_webm_destination = file_paths['segmentation_webm']
@@ -26,6 +27,7 @@ def MediaPipeline(file_paths):
     funcs.BuildMediaBaseDirectory(MEDIA_DIR)
     
     # Step 3, build videos:
+    #funcs.BuildAVI(dicom, avi_destinaton)
     #funcs.BuildMP4(dicom, mp4_destination)
     funcs.BuildWebm(dicom, webm_destination) ## 1 minute processing time
     #funcs.BuildWebm(segmentation, segmentation_webm_destination)

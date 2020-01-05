@@ -12,9 +12,9 @@
             <h5 class="loader typewriter" id="typewriter">username: {{user.username}}</h5> 
             <a href="{% url 'upload' %}">upload more files</a>
         </header>
-        <h6 class='main-wrapper'> model name: {{results.result.0.view.model_name}}</h6>
+        <h6 class='main-wrapper'> model name: {{results.results.0.view.model_name}}</h6>
 
-{% for result in results.result %}
+{% for result in results.results %}
     <div class="table-wrapper">
         <div class="item-wrap">
             <ul>

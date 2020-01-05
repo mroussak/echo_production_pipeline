@@ -13,6 +13,9 @@ configuration = {
         'log' : True,
     },
     'models' : {
+        'preprocessing' : 'downsample',
+        #'preprocessing' : 'zoom_cv2',
+        #'preprocessing' : 'zoom',
         #'view_model_type' : 'frame',
         'view_model_type' : 'video',
         #'binary_model_type' : 'none',

@@ -14,81 +14,108 @@ import sys
 
 
 
-def ProcessVisit(user_id, visit_id):
+def FilePipelinePreprocessing(user_id, visit_id, file_list):
 
-    ''' Accepts a user_id, visit_id, processes all files for that visit + user '''
-    
-    PrintTitle('EchoAnalyzer.tasks.ProcessVisit')
-    
-    visit = Visit.objects.get(pk=visit_id)
-    
-    # set start processing time:
-    visit.started_processing_at = datetime.now(timezone.utc)
-    visit.save()
-    
-    # get list of files associated to visit:
-    file_list = list(visit.file_set.all().values_list('id', flat=True))
-    
-    # get number of threads:
-    number_of_threads = len(file_list)
-    
-    # create pool:
-    pool = Pool(number_of_threads)
-    
-    # set up array for multiprocessing:
+    # initialize variables:
     multiprocess_input = []
-
+    
     # file pipeline preprocessing:
     for file_id in file_list:
         
-        # get file object:
+        # get file object, start timer:
         file = File.objects.get(pk=file_id)
         file_name = file.file_name
         dicom_id = file.dicom_id
-        
-        # set start processing time:
         file.started_processing_at = datetime.now(timezone.utc)
         file.save()
     
+        # create input point, append to list:
         input_point = {'user_id':user_id, 'visit_id':visit_id, 'file_id':file_id, 'dicom_id':dicom_id, 'file_name':file_name}
-        
-        print('[EchoAnalyzer.tasks.ProcessVisit]: input [%s]' %input_point)
-
         multiprocess_input.append(input_point)
+        
+        # debug:
+        print('[EchoAnalyzer.tasks.ProcessVisit]: input [%s]' %input_point)
     
-    # multiprocess:
-    result_json_list = pool.map(ProductionPipeline, multiprocess_input)
+    return multiprocess_input
+
+
+
+def FilePipelinePostprocessing(user_id, visit_id, file_list):
+    
+    # initialize variables:
+    result_json_list = []
     
     # file pipeline post processing:
     for file_id in file_list:
         
         # get file object:
         file = File.objects.get(pk=file_id)
+        dicom_id = file.dicom_id
         
-        # set finish processing time, log:
-        file.finished_processing_at = datetime.now(timezone.utc)
-        file.processing_time = datetime.now(timezone.utc) - file.started_processing_at
+        # get result json file path:
+        BASE_DIR = '/tmp/WebAppData/Users/' + str(user_id) + '/Visits/' + str(visit_id) + '/Files/' + str(file_id) + '/'
+        REPORTS_DIR = BASE_DIR + 'Reports/'
+        JSON_FILE = REPORTS_DIR + dicom_id + '_report.json'
+        
+        # get result_json:
+        with open(JSON_FILE, 'r') as handle:
+            result_json = json.load(handle)
         
         # get log:
-        for result_json in result_json_list:
-            
-            if result_json['file_id'] == file.id: 
+        with open(result_json['reports']['log'], 'r') as log:
+            file.log = log.read()
         
-                with open(result_json['reports']['log'], 'r') as log:
-                    file.log = log.read()
-        
+        # set finish processing time:
+        file.finished_processing_at = datetime.now(timezone.utc)
+        file.processing_time = datetime.now(timezone.utc) - file.started_processing_at
         file.save()
+        
+        # append result_json to list for visit object:
+        result_json_list.append(result_json)
     
+    return result_json_list
+
+
+
+def ProcessVisit(user_id, visit_id):
+
+    ''' Accepts a user_id, visit_id, processes all files for that visit + user '''
+    
+    PrintTitle('EchoAnalyzer.tasks.ProcessVisit')
+    
+    # initialize variables:
+    multiprocess_input = []
+    result_json_list = []
+    
+    # get visit by id, start timer:
+    visit = Visit.objects.get(pk=visit_id)
+    visit.started_processing_at = datetime.now(timezone.utc)
+    visit.save()
+    
+    # get list of files associated to visit:
+    file_list = list(visit.file_set.all().values_list('id', flat=True))
+    
+    # set up multiprocessing pool:
+    number_of_threads = len(file_list)
+    pool = Pool(number_of_threads)
+    
+    # file preprocessing:
+    multiprocess_input = FilePipelinePreprocessing(user_id, visit_id, file_list)
+
+    # multiprocess:
+    pool.map(ProductionPipeline, multiprocess_input)
+    
+    # file postprocessing:
+    result_json_list = FilePipelinePostprocessing(user_id, visit_id, file_list)
+        
     # delete existing temp data off of server:
-    shutil.rmtree(result_json['VISIT_DIR'])
+    #shutil.rmtree(result_json_list[0]['VISIT_DIR'])
     
     # pack result list as json:
-    result_json = {'result' : result_json_list}
+    results = {'results' : result_json_list}
     
     # set completed processing time and save results:
     visit.finished_processing_at = datetime.now(timezone.utc)
     visit.processing_time = datetime.now(timezone.utc) - visit.started_processing_at
-    visit.results = result_json
+    visit.results = results
     visit.save()
-    
-    return result_json

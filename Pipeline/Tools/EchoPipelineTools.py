@@ -105,7 +105,7 @@ def load_video(vid_dir, img_type='dicom', normalize=None, downsample=False, imag
         
     return Echo_Frames
     
-def downsample_video(vid, frames_per_vid, method='mean'):
+def downsample_video(vid, frames_per_vid, method='first'):
     delims = [math.floor(i*len(vid)/frames_per_vid) for i in list(range(1,frames_per_vid))]
     if method == 'mean':
         vid = np.array([np.mean(i, axis=0) for i in np.array_split(vid, delims)])

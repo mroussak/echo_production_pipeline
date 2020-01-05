@@ -33,6 +33,7 @@ def Initializer(file_paths):
     
     # Send stdout to log file:
     if configuration['handlers']['log']:
+        
         sys.stdout = open(file_paths['log_file'], 'w+')
     
     print(
@@ -40,8 +41,8 @@ def Initializer(file_paths):
         %(file_paths['user_id'], file_paths['visit_id'], file_paths['file_id'], file_paths['dicom_id'], file_paths['file_name'])
         )
         
-
-
+    
+    
 def Terminator(file_paths):
     
     ''' Reroutes stdout back to terminal, moves artifacts to s3 and deletes them on current instance '''

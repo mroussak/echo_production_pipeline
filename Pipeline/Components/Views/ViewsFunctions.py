@@ -9,10 +9,11 @@ import sagemaker
 import pydicom 
 import pickle
 import boto3
+import math
 import sys
 import cv2
 import os
-
+from Pipeline.Tools.EchoPipelineTools import load_video
 
 
 @tools.monitor_me()
@@ -30,6 +31,54 @@ def GetDicomData(dicom_data_file_path):
 @tools.monitor_me()    
 def PrepDataForModel(dicom, file_paths):    
 
+    preprocessing = configuration['models']['preprocessing']
+
+    # downsample:
+    if preprocessing == 'downsample':
+        return PrepDataForModel_downsample(dicom, file_paths)
+    
+    # spline + cv2:
+    if preprocessing == 'zoom_cv2':
+        return PrepDataForModel_zoom_cv2(dicom)
+    
+    # spline only:
+    if preprocessing == 'zoom':
+        return PrepDataForModel_zoom(dicom)
+
+
+
+def PrepDataForModel_downsample(dicom, file_paths):
+
+    # intialize variables:
+    input_to_model = []
+    
+    # convert frames to grayscale and resize:
+    for frame in dicom['pixel_data']:
+        
+        # convert frame to grayscale:
+        grayscale_image = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+        
+        # resize image: 
+        resized_image = cv2.resize(grayscale_image, (192,128))
+    
+        # append to list:
+        input_to_model.append(resized_image)
+    
+    # downsample model:
+    delims = [math.floor(i*len(input_to_model)/20) for i in list(range(1,20))]
+    input_to_model = np.array([i[0] for i in np.array_split(input_to_model, delims)])
+    
+    # prep input for model:
+    input_to_model = input_to_model.reshape(input_to_model.shape+(1,))
+    input_to_model = np.array([input_to_model.astype('float32')])
+    input_to_model = pickle.dumps(input_to_model)
+
+    return input_to_model
+
+
+
+def PrepDataForModel_zoom_cv2(dicom):
+
     # intialize variables:
     input_to_model = []
     prediction = []
@@ -45,21 +94,42 @@ def PrepDataForModel(dicom, file_paths):
     
         # append to list:
         input_to_model.append(resized_image)
-        #input_to_model.append(grayscale_image)
     
-    # # get resample ratios:
-    # frame_ratio = 20/dicom['pixel_data'].shape[0]
-    # height_ratio = 128/dicom['pixel_data'].shape[2]
-    # width_ratio = 192/dicom['pixel_data'].shape[1]
-    
-    # get resample ratios:
+    # resample video, spline + cv2 method:
     frame_ratio = 20/dicom['pixel_data'].shape[0]
     height_ratio = 1
     width_ratio = 1
-    
-    # resample video:
     input_to_model = zoom(input_to_model, (frame_ratio, height_ratio, width_ratio))
     
+    # prep input for model:
+    input_to_model = input_to_model.reshape(input_to_model.shape+(1,))
+    input_to_model = np.array([input_to_model.astype('float32')])
+    input_to_model = pickle.dumps(input_to_model)
+
+    return input_to_model
+
+
+
+def PrepDataForModel_zoom(dicom):
+
+    # intialize variables:
+    input_to_model = []
+    prediction = []
+    
+    # convert frames to grayscale and resize:
+    for frame in dicom['pixel_data']:
+        
+        # convert frame to grayscale:
+        grayscale_image = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+        
+        input_to_model.append(grayscale_image)
+    
+    # resample video, spline method:
+    frame_ratio = 20/dicom['pixel_data'].shape[0]
+    height_ratio = 128/dicom['pixel_data'].shape[2]
+    width_ratio = 192/dicom['pixel_data'].shape[1]
+    input_to_model = zoom(input_to_model, (frame_ratio, height_ratio, width_ratio))
+
     # prep input for model:
     input_to_model = input_to_model.reshape(input_to_model.shape+(1,))
     input_to_model = np.array([input_to_model.astype('float32')])
@@ -130,7 +200,7 @@ def GetPrediction_frame(input_to_model):
     
     # build prediction object:
     prediction = {
-        'model' : model_name,
+        'model_name' : model_name,
         'predictions' : result,
     }
     
@@ -142,17 +212,28 @@ def GetPrediction_video(input_to_model):
     
     ''' Accepts input_to_model, returns prediction from model '''
     
+    # intitalize variables:
+    preprocessing = configuration['models']['preprocessing']
+    
     # get endpoint of model:
     if configuration['models']['binary_model_type'] == 'none':
-    
-        # get endpoint of model:
+
+        # models:    
         model_name = 'ResNet50V2_views_model_vid_spline'
+        #model_name = 'ResNet50V2_views_model_vid_spline_noweights'
+
+        # get endpoint of model:
         views_predictor = Predictor('tf-multi-model-endpoint', model_name=model_name, content_type='application/npy', serializer=None)
 
     elif configuration['models']['binary_model_type'] == 'video':
 
+        # models:
+        if preprocessing == 'downsample':
+            model_name = 'ResNet50V2_master_model_vid_dows'
+        elif preprocessing == 'zoom_cv2' or preprocessing == 'zoom':
+            model_name = 'ResNet50V2_master_model_vid_spline'
+        
         # get endpoint of model:
-        model_name = 'ResNet50V2_master_model_vid_spline'
         views_predictor = Predictor('tf-multi-model-endpoint', model_name=model_name, content_type='application/npy', serializer=None)
 
     # contact endpoint for prediction:
@@ -415,6 +496,7 @@ def ParsePrediction_view_only_video_level(dicom_id, prediction):
         'view_model_type' : configuration['models']['view_model_type'],
         'binary_model_type' : configuration['models']['binary_model_type'],
         'model_name' : model_name,
+        'abnormality_confidence' : 'none',
     }   
     
     return result

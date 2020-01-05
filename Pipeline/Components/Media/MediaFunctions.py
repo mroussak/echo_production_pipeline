@@ -70,7 +70,16 @@ def BuildMP4(dicom, destinaton):
     
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     #fourcc = cv2.VideoWriter_fourcc(*'H264')
+    #fourcc = cv2.VideoWriter_fourcc(*'X264')
+    #fourcc = cv2.VideoWriter_fourcc(*'FMP4')
+    #fourcc = cv2.VideoWriter_fourcc(*'avc1')
+    #fourcc = cv2.VideoWriter_fourcc(*'mp4s')
+    #fourcc = cv2.VideoWriter_fourcc('m','p','4','a')
+    #fourcc = 0x31637661
     #fourcc = 0x00000021
+    #fourcc = -1
+    #fourcc = 0
+    #fourcc = cv2.VideoWriter_fourcc(*'VP09')
     video = cv2.VideoWriter(destinaton, fourcc, float(FPS), (width, height))
     
     for frame in dicom['pixel_data']:

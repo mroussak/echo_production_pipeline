@@ -156,7 +156,7 @@ def ExecutePipeline(request):
         
         # execute pipeline if not already started:
         if not visit.started_processing_at:
-            result = ProcessVisit(user_id, visit_id)
+            ProcessVisit(user_id, visit_id)
             
         success = True
         status = 0
@@ -259,7 +259,7 @@ def LoadResultsPage(request, visit_id):
         s3 = get_s3()
         
         # add s3 links to media files:
-        for result in results['result']:
+        for result in results['results']:
 
             # initialize empty links dictionary:
             result['links'] = {}
@@ -298,7 +298,7 @@ def LoadResultsPage(request, visit_id):
         
         success = False
         status = 1
-        internal_message = error
+        internal_message = traceback.format_exc()
         message = 'Error, could not find your results.'
         
     result = {
