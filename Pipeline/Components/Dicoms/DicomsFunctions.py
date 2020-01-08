@@ -1,3 +1,4 @@
+from moviepy.video.io.VideoFileClip import VideoFileClip
 from Pipeline.Tools import Tools as tools
 from decouple import config
 import numpy as np
@@ -61,50 +62,8 @@ def ReadDicomFile(dicom_file_path, file_name):
     # if .mov or .mp4 file, create mock dicom object:
     elif file_name[-3:] == 'mov' or file_name[-3:] == 'mp4':
         
-        # create mock dicom object:
-        class Dicom:
-        
-            def __init__(self, path_to_non_dicom_file):
-                
-                raw_video = cv2.VideoCapture(path_to_non_dicom_file)
-    
-                # get numpy shape from video:
-                frame_count = int(raw_video.get(cv2.CAP_PROP_FRAME_COUNT))
-                frame_height = int(raw_video.get(cv2.CAP_PROP_FRAME_HEIGHT))
-                frame_width = int(raw_video.get(cv2.CAP_PROP_FRAME_WIDTH))
-                
-                # initialize pixel data array:
-                pixel_data = np.empty((frame_count, frame_height, frame_width, 3), np.dtype('uint8'))
-            
-                counter = 0
-                extraction_success = True
-                
-                # extract each frame:
-                while (counter < frame_count and extraction_success):
-                    extraction_success, pixel_data[counter] = raw_video.read()
-                    counter += 1
-                
-                # limit frame count to first 150 frames:
-                if pixel_data.shape[0] > 150:
-                    pixel_data = pixel_data[0:150]
-                
-                # create dicom fields for extraction:
-                self.pixel_array = pixel_data
-                self.NumberOfFrames = pixel_data.shape[0]
-                self.Manufacturer = 'unknown'
-        
         # instantiate dicom with data from video:    
         dicom = Dicom(dicom_file_path)
-        
-        # # temporary file rename:
-        # temp_file_name = dicom_file_path + '.' + file_name[-3:]
-        # os.rename(dicom_file_path, temp_file_name)
-        
-        # # instantiate dicom with data from video:    
-        # dicom = Dicom(temp_file_name)
-        
-        # # rename file to original name (for further processing in the pipeline):
-        # os.rename(temp_file_name, dicom_file_path)
         
     return dicom
 
@@ -203,6 +162,21 @@ def GetNumberOfFramesDetails(dicom):
         
     return number_of_frames_details
     
+    
+    
+@tools.monitor_me()
+def GetFrameTimeDetails(dicom):
+    
+    ''' Accepts dicom object, returns seconds per frame in dicom '''
+    
+    # initialize variables:
+    seconds_per_frame = None
+    
+    seconds_per_frame = dicom.FrameTime
+    seconds_per_frame = float(seconds_per_frame)/1000
+        
+    return seconds_per_frame
+    
 
 
 @tools.monitor_me()
@@ -219,8 +193,8 @@ def GetPixelArrayDataDetails(dicom):
     
     
 
-@tools.monitor_me()
-def CompileDicomDetails(dicom_id, manufacturer_details, image_size_details, dicom_type_details, number_of_frames_details, pixel_data_details):
+@tools.monitor_me(save_output=True)
+def CompileDicomDetails(dicom_id, manufacturer_details, image_size_details, dicom_type_details, number_of_frames_details, frame_time_details, pixel_data_details):
     
     ''' Accepts dicom details, returns compiled dicom object '''
     
@@ -234,6 +208,7 @@ def CompileDicomDetails(dicom_id, manufacturer_details, image_size_details, dico
         'physical_delta_y' : image_size_details['physical_delta_y'],
         'dicom_type' : dicom_type_details,
         'number_of_frames' : number_of_frames_details,
+        'seconds_per_frame' : frame_time_details,
         'pixel_data' : pixel_data_details,
     }
     
@@ -244,9 +219,54 @@ def CompileDicomDetails(dicom_id, manufacturer_details, image_size_details, dico
 @tools.monitor_me()
 def ExportDicom(dicom, destination):
     
-    ''' Accepts dicom, destination, saves data in .pkl format '''
+    ''' Accepts dicom, saves data in .pkl format '''
     
     with open(destination, 'wb') as handle:
         pickle.dump(dicom, handle)
+
+
+
+# create mock dicom object:
+class Dicom:
+
+    def __init__(self, path_to_non_dicom_file):
+        
+        raw_video = cv2.VideoCapture(path_to_non_dicom_file)
+
+        # get numpy shape from video:
+        frame_count = int(raw_video.get(cv2.CAP_PROP_FRAME_COUNT))
+        frame_height = int(raw_video.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        frame_width = int(raw_video.get(cv2.CAP_PROP_FRAME_WIDTH))
+        
+        # initialize pixel data array:
+        pixel_data = np.empty((frame_count, frame_height, frame_width, 3), np.dtype('uint8'))
+        
+        counter = 0
+        extraction_success = True
+        
+        # extract each frame:
+        while (counter < frame_count and extraction_success):
+            extraction_success, pixel_data[counter] = raw_video.read()
+            counter += 1
+        
+        # get number of frames:
+        number_of_frames = pixel_data.shape[0]
+        
+        # get duration of video:
+        clip = VideoFileClip(path_to_non_dicom_file)
+        frame_time = clip.duration / number_of_frames * 1000 # convert to milliseconds
+        
+        # limit frame count to first 150 frames:
+        if pixel_data.shape[0] > 150:
+            pixel_data = pixel_data[0:150]
+            
+            frame_time *= 150/pixel_data.shape[0]
+        
+        # create dicom fields for extraction:
+        self.pixel_array = pixel_data
+        self.NumberOfFrames = number_of_frames
+        self.FrameTime = frame_time
+        self.Manufacturer = 'unknown'
+
     
     

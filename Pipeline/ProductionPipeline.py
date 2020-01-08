@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from Pipeline.Components.Segmentation.SegmentationPipeline import SegmentationPipeline
 from Pipeline.Components.Handlers.Handlers import Initializer, Terminator
 from Pipeline.Components.Reports.ReportsPipeline import ReportsPipeline
 from Pipeline.Components.Dicoms.DicomsPipeline import DicomsPipeline
@@ -51,6 +52,7 @@ def ProductionPipeline(input_dictionary):
         'dicom_data' : DATA_DIR + dicom_id + '_dicom.pkl',
         'view_data' : DATA_DIR + dicom_id + '_view.pkl',
         'segmentation_data' : DATA_DIR + '_segmentation.pkl',
+        'simpsons_data' : DATA_DIR + '_simpsons.pkl',
         
         # media:
         'dicom_jpegs' : MEDIA_DIR + '/Jpegs/',
@@ -59,19 +61,14 @@ def ProductionPipeline(input_dictionary):
         'dicom_mp4' : MEDIA_DIR + dicom_id + '.mp4',
         'dicom_webm' : MEDIA_DIR + dicom_id + '.webm',
         'segmentation_webm' : MEDIA_DIR + dicom_id + '_segmentation.webm',
+        'simpsons_webm' : MEDIA_DIR + dicom_id + '_simpsons.webm',
         
         # reports:
         'reports_json' : REPORTS_DIR + dicom_id + '_report.json',
         'log_file' : REPORTS_DIR + dicom_id + '_log.txt',
     }
     
-    # TODO get all files in visit and process each in its own thread:
-    ''' file_list = GetFilesFromVisitID() '''
-    ''' for file in file_list: ProductionPipeline '''
-    
-    # Redirect output to log file:
-    
-    # Step 1) Initializer:
+    # Step 0) Initializer:
     Initializer(file_paths)
     
     # Step 1) Dicom Pipeline:
@@ -79,14 +76,17 @@ def ProductionPipeline(input_dictionary):
     
     # Step 2) Views Pipeline:
     ViewsPipeline(file_paths)
+
+    # Step 4) Segmentation Pipeline:
+    SegmentationPipeline(file_paths)
     
-    # Step 3) Media Pipeline:
+    # Step 5) Media Pipeline:
     MediaPipeline(file_paths)
 
-    # Step 4) Reports Pipeline:
+    # Step 6) Reports Pipeline:
     ReportsPipeline(file_paths)
 
-    # Step 5) Terminator:
+    # Step 7) Terminator:
     Terminator(file_paths)
     
 

@@ -38,6 +38,8 @@ def BuildReportJson(file_paths, dicom_data, view_data):
         'media' : {
             'mp4' : file_paths['dicom_mp4'],
             'webm' : file_paths['dicom_webm'],
+            'segmentation_webm' : file_paths['segmentation_webm'],
+            'simpsons_webm' : file_paths['simpsons_webm'],
         },
         'reports' : {
             'log' : file_paths['log_file'],

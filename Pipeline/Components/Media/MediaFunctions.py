@@ -29,21 +29,23 @@ def BuildMediaBaseDirectory(MEDIA_DIR):
 
     
 @tools.monitor_me()
-def BuildJpegs(dicom, destinaton):
+def BuildJpegs(dicom, destination):
     
     pass
     
     
     
 @tools.monitor_me()
-def BuildGif(dicom, destinaton):
+def BuildGif(dicom, destination):
     
     pass
     
     
     
 @tools.monitor_me()
-def BuildAVI(dicom, destinaton):
+def BuildAVI(dicom, destination):
+    
+    ''' Accepts dicom, destination, builds avi file '''
     
     width = dicom['pixel_data'].shape[2]
     height = dicom['pixel_data'].shape[1]
@@ -51,7 +53,7 @@ def BuildAVI(dicom, destinaton):
     seconds = dicom['number_of_frames'] / FPS
     
     fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-    video = cv2.VideoWriter(destinaton, fourcc, float(FPS), (width, height))
+    video = cv2.VideoWriter(destination, fourcc, float(FPS), (width, height))
     
     for frame in dicom['pixel_data']:
         video.write(frame)
@@ -61,7 +63,9 @@ def BuildAVI(dicom, destinaton):
     
     
 @tools.monitor_me()
-def BuildMP4(dicom, destinaton):
+def BuildMP4(dicom, destination):
+    
+    ''' Accepts dicom, destination, builds mp4 file '''
     
     width = dicom['pixel_data'].shape[2]
     height = dicom['pixel_data'].shape[1]
@@ -80,7 +84,7 @@ def BuildMP4(dicom, destinaton):
     #fourcc = -1
     #fourcc = 0
     #fourcc = cv2.VideoWriter_fourcc(*'VP09')
-    video = cv2.VideoWriter(destinaton, fourcc, float(FPS), (width, height))
+    video = cv2.VideoWriter(destination, fourcc, float(FPS), (width, height))
     
     for frame in dicom['pixel_data']:
         video.write(frame)
@@ -90,15 +94,17 @@ def BuildMP4(dicom, destinaton):
 
 
 @tools.monitor_me()
-def BuildWebm(dicom, destinaton):
+def BuildWebm(dicom, destination):
+    
+    ''' Accepts dicom, destination, builds webm file '''
     
     width = dicom['pixel_data'].shape[2]
     height = dicom['pixel_data'].shape[1]
-    FPS = 10
+    FPS = 1/dicom['seconds_per_frame']
     seconds = dicom['number_of_frames'] / FPS
     
     fourcc = cv2.VideoWriter_fourcc(*'VP80')
-    video = cv2.VideoWriter(destinaton, fourcc, float(FPS), (width, height))
+    video = cv2.VideoWriter(destination, fourcc, float(FPS), (width, height))
     
     for frame in dicom['pixel_data']:
         video.write(frame)
@@ -108,7 +114,7 @@ def BuildWebm(dicom, destinaton):
     
     
 @tools.monitor_me()
-def BuildWebmGrayscale(dicom, destinaton):
+def BuildWebmGrayscale(dicom, destination):
     
     # initialize variables:
     grayscale_frames = []
@@ -127,7 +133,7 @@ def BuildWebmGrayscale(dicom, destinaton):
     seconds = dicom['number_of_frames'] / FPS
     
     fourcc = cv2.VideoWriter_fourcc(*'VP80')
-    video = cv2.VideoWriter(destinaton, fourcc, float(FPS), (width, height))
+    video = cv2.VideoWriter(destination, fourcc, float(FPS), (width, height))
     
     for frame in grayscale_frames:
         video.write(frame)

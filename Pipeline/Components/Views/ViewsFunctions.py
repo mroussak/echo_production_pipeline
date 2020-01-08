@@ -31,7 +31,7 @@ def GetDicomData(dicom_data_file_path):
 @tools.monitor_me()    
 def PrepDataForModel(dicom, file_paths):    
 
-    preprocessing = configuration['models']['preprocessing']
+    preprocessing = configuration['view']['preprocessing']
 
     # downsample:
     if preprocessing == 'downsample':
@@ -142,10 +142,10 @@ def PrepDataForModel_zoom(dicom):
 @tools.monitor_me()
 def GetPrediction(input_to_model):
 
-    if configuration['models']['view_model_type'] == 'frame':
+    if configuration['view']['view_model_type'] == 'frame':
         prediction = GetPrediction_frame(input_to_model)
         
-    elif configuration['models']['view_model_type'] == 'video':
+    elif configuration['view']['view_model_type'] == 'video':
         prediction = GetPrediction_video(input_to_model)
         
     return prediction
@@ -185,12 +185,12 @@ def GetPrediction_frame(input_to_model):
     
     # input_to_model = pickle.dumps(input_to_model.astype('float16'))
     
-    if configuration['models']['binary_model_type'] == 'None':
+    if configuration['view']['binary_model_type'] == 'None':
     
         # get endpoint of model:
         views_predictor = Predictor('tf-multi-model-endpoint', model_name='views_model', content_type='application/npy', serializer=None)
 
-    elif configuration['models']['binary_model_type'] == 'frame':
+    elif configuration['view']['binary_model_type'] == 'frame':
 
         # get endpoint of model:
         views_predictor = Predictor('tf-multi-model-endpoint', model_name='master_model', content_type='application/npy', serializer=None)
@@ -213,10 +213,10 @@ def GetPrediction_video(input_to_model):
     ''' Accepts input_to_model, returns prediction from model '''
     
     # intitalize variables:
-    preprocessing = configuration['models']['preprocessing']
+    preprocessing = configuration['view']['preprocessing']
     
     # get endpoint of model:
-    if configuration['models']['binary_model_type'] == 'none':
+    if configuration['view']['binary_model_type'] == 'none':
 
         # models:    
         model_name = 'ResNet50V2_views_model_vid_spline'
@@ -225,7 +225,7 @@ def GetPrediction_video(input_to_model):
         # get endpoint of model:
         views_predictor = Predictor('tf-multi-model-endpoint', model_name=model_name, content_type='application/npy', serializer=None)
 
-    elif configuration['models']['binary_model_type'] == 'video':
+    elif configuration['view']['binary_model_type'] == 'video':
 
         # models:
         if preprocessing == 'downsample':
@@ -253,8 +253,8 @@ def GetPrediction_video(input_to_model):
 def ParsePrediction(dicom_id, prediction):
 
     # get model configuration:
-    views_model = configuration['models']['view_model_type']
-    binary_model = configuration['models']['binary_model_type']
+    views_model = configuration['view']['view_model_type']
+    binary_model = configuration['view']['binary_model_type']
 
     # use frame model:
     if views_model == 'frame' and binary_model == 'none':
@@ -332,8 +332,8 @@ def ParsePrediction_view_only_frame_level(dicom_id, prediction):
         'frame_view_threshold' : frame_view_threshold, 
         'video_view_threshold' : most_common_view_probability,
         'usable_view' : usable_view,
-        'view_model_type' : configuration['models']['view_model_type'],
-        'binary_model_type' : configuration['models']['binary_model_type'],
+        'view_model_type' : configuration['view']['view_model_type'],
+        'binary_model_type' : configuration['view']['binary_model_type'],
         'model_name' : model_name,
     }
     
@@ -449,8 +449,8 @@ def ParsePrediction_view_and_binary_frame_level(dicom_id, prediction):
         'view_confidence' : most_common_view_probability,
         'abnormality_confidence' : abnormality_confidence,
         'usable_view' : usable_view,
-        'view_model_type' : configuration['models']['view_model_type'],
-        'binary_model_type' : configuration['models']['binary_model_type'],
+        'view_model_type' : configuration['view']['view_model_type'],
+        'binary_model_type' : configuration['view']['binary_model_type'],
         'model_name' : model_name,
     }
     
@@ -493,8 +493,8 @@ def ParsePrediction_view_only_video_level(dicom_id, prediction):
         'predicted_view' : predicted_view, 
         'view_confidence' : max_confidence,
         'usable_view' : usable_view,
-        'view_model_type' : configuration['models']['view_model_type'],
-        'binary_model_type' : configuration['models']['binary_model_type'],
+        'view_model_type' : configuration['view']['view_model_type'],
+        'binary_model_type' : configuration['view']['binary_model_type'],
         'model_name' : model_name,
         'abnormality_confidence' : 'none',
     }   
@@ -545,8 +545,8 @@ def ParsePrediction_view_and_binary_video_level(dicom_id, prediction):
         'view_confidence' : max_view_confidence,
         'abnormality_confidence' : max_abnormality_confidence,
         'usable_view' : usable_view,
-        'view_model_type' : configuration['models']['view_model_type'],
-        'binary_model_type' : configuration['models']['binary_model_type'],
+        'view_model_type' : configuration['view']['view_model_type'],
+        'binary_model_type' : configuration['view']['binary_model_type'],
         'model_name' : model_name,
     }   
     

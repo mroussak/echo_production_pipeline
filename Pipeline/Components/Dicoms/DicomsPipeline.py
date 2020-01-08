@@ -32,11 +32,14 @@ def DicomsPipeline(file_paths):
     # Step 6, get number of frames:
     number_of_frames_details = funcs.GetNumberOfFramesDetails(dicom)
 
-    # Step 7, get pixel data:
+    # Step 7, get frame time details:
+    frame_time_details = funcs.GetFrameTimeDetails(dicom)
+    
+    # Step 8, get pixel data:
     pixel_data_details = funcs.GetPixelArrayDataDetails(dicom)
 
-    # Step 8, compile dicom details:
-    dicom = funcs.CompileDicomDetails(dicom_id, manufacturer_details, image_size_details, dicom_type_details, number_of_frames_details, pixel_data_details)
+    # Step 9, compile dicom details:
+    dicom = funcs.CompileDicomDetails(dicom_id, manufacturer_details, image_size_details, dicom_type_details, number_of_frames_details, frame_time_details, pixel_data_details)
     
-    # Step 9, export dicom:
+    # Step 10, export dicom:
     funcs.ExportDicom(dicom, dicom_data_destination)
