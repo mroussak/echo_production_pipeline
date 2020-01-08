@@ -50,7 +50,7 @@
             </ul>
         </div>
         <div class="vid-wrapper">
-            <video type="video/mp4" loop="" controls="true" width="360px" height="480px" autoplay="" class="analysis-img fb614a" src="{{result.links.segmentation_webm}}" data-id="fb614a"> </video> </br>
+            <video type="video/mp4" loop="" controls="true" width="360px" height="480px" autoplay="" class="analysis-img fb614a" src="{% if result.view.predicted_view == 'A4C' or result.view.predicted_view == 'A2C' or result.view.predicted_view == 'A4C Zoomed LV' %}{{result.links.segmentation_webm}}{% else %} {{ result.links.webm }}{% endif %}" data-id="fb614a"> </video> </br>
         </div>
     </div>
 {% endfor %} 
