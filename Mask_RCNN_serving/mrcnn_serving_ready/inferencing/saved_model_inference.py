@@ -3,8 +3,8 @@ from tensorflow_serving.apis import prediction_service_pb2_grpc
 from tensorflow_serving.apis import predict_pb2
 import numpy as np
 import tensorflow as tf
-from inferencing import saved_model_config
-from inferencing.saved_model_preprocess import ForwardModel
+from .inferencing import saved_model_config
+from .inferencing.saved_model_preprocess import ForwardModel
 
 host = saved_model_config.HOST_NO
 port = saved_model_config.PORT_NO

@@ -1,5 +1,5 @@
-from mrcnn_serving_ready.inferencing import saved_model_config
-from mrcnn_serving_ready.inferencing import saved_model_utils
+from Mask_RCNN_serving.mrcnn_serving_ready.inferencing import saved_model_config
+from Mask_RCNN_serving.mrcnn_serving_ready.inferencing import saved_model_utils
 import numpy as np
 import math
 
