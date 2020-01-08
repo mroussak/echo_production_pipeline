@@ -1,7 +1,7 @@
 # Your Inference Config Class
 # Replace your own config
 # MY_INFERENCE_CONFIG = YOUR_CONFIG_CLASS
-from mrcnn_serving_ready.inferencing.config import Config
+from Mask_RCNN_serving.mrcnn_serving_ready.inferencing.config import Config
 import numpy as np
 
 class InferenceConfig(Config):

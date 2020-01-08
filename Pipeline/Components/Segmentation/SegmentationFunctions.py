@@ -1,5 +1,4 @@
-from Mask_RCNN_serving2.mrcnn_serving_ready.inferencing import saved_model_config, saved_model_preprocess
-#from mrcnn_serving_ready.inferencing import saved_model_config, saved_model_preprocess
+from Mask_RCNN_serving.mrcnn_serving_ready.inferencing import saved_model_config, saved_model_preprocess
 from Pipeline.Configuration.Configuration import configuration
 from sagemaker.tensorflow.serving import Predictor
 from Pipeline.Tools import Tools as tools
