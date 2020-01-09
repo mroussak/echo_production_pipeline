@@ -14,7 +14,6 @@ from django.conf import settings
 
 from EchoAnalyzer.models import File, Visit, hash_file
 from EchoAnalyzer.utils import get_s3
-from EchoAnalyzer.tasks import ProcessVisit
 from WebTools.Tools import PrintTitle
 from EchoAnalyzer.features import FEATURES
 

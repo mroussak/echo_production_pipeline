@@ -1,7 +1,7 @@
-from moviepy.video.io.VideoFileClip import VideoFileClip
 from Pipeline.Tools import Tools as tools
 from decouple import config
 import numpy as np
+import subprocess
 import pydicom 
 import pickle
 import boto3
@@ -193,7 +193,7 @@ def GetPixelArrayDataDetails(dicom):
     
     
 
-@tools.monitor_me(save_output=True)
+@tools.monitor_me()
 def CompileDicomDetails(dicom_id, manufacturer_details, image_size_details, dicom_type_details, number_of_frames_details, frame_time_details, pixel_data_details):
     
     ''' Accepts dicom details, returns compiled dicom object '''
@@ -253,8 +253,13 @@ class Dicom:
         number_of_frames = pixel_data.shape[0]
         
         # get duration of video:
-        clip = VideoFileClip(path_to_non_dicom_file)
-        frame_time = clip.duration / number_of_frames * 1000 # convert to milliseconds
+        ffprobe_result = subprocess.run(
+            ["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", path_to_non_dicom_file],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT
+        )
+        duration = float(ffprobe_result.stdout)
+        frame_time = duration / number_of_frames * 1000 # convert to milliseconds
         
         # limit frame count to first 150 frames:
         if pixel_data.shape[0] > 150:
