@@ -18,10 +18,17 @@
     <div class="table-wrapper">
         <div class="item-wrap">
             <ul>
-                <li> <span> filename: </span> <span> {{ result.file_name }}</span> </li>
+                <li> <span> filename: </span> <span> {{ result.file_name }} </span> </li>
+                <li> <span> manufacturer: </span> <span> {{ result.dicom.manufacturer|lower }} </span> </li>
                 <li> <span> predicted view: </span> <span> {{ result.view.predicted_view }}</span> </li>
                 <li> <span> predicted view confidence: </span> <span> {{ result.view.view_confidence|floatformat:2  }} %</span> </li>
                 <li> <span> probability of abnormality: </span> <span> {{ result.view.abnormality_confidence|floatformat:2 }} %</span> </li>
+                {% if result.segmentation.metrics.ef %}
+                </br> <li> <span> apical metrics</span> <span> </span> </li>
+                <li> <span> ejection fraction: </span> <span>{{result.segmentation.metrics.ef|floatformat:2}} %</span></li> 
+                <li> <span> lv diastolic volume: </span> <span>{{result.segmentation.metrics.lvdv|floatformat:2}} mL</span></li> 
+                <li> <span> lv systolic volume: </span> <span>{{result.segmentation.metrics.lvsv|floatformat:2}} mL</span></li> 
+                {% endif %}
                 <li>
                     
                     <span><button id="myBtn_{{result.view.predicted_view}}" class="myBtn", value='{{result.view.predicted_view}}', onclick="open_onclick_handler('{{result.view.predicted_view}}')">details</button></span>

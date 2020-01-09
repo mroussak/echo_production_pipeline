@@ -252,7 +252,7 @@ class Dicom:
         # get number of frames:
         number_of_frames = pixel_data.shape[0]
         
-        # get duration of video:
+        # get frame_time (milliseconds per frame):
         frame_time = 1000 / raw_video.get(cv2.CAP_PROP_FPS) 
         
         # limit frame count to first 150 frames:

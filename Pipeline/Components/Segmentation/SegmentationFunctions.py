@@ -135,7 +135,7 @@ def GetPrediction(prepped_data):
         else:
             masks.append(np.zeros(vid[0].shape[:-1]))
             
-    masks = np.array(masks)
+    masks = np.array(masks, dtype=np.uint8)
  
     return masks
     
@@ -145,6 +145,8 @@ def GetPrediction(prepped_data):
 def ParsePrediction(dicom, prediction):
     
     ''' Accepts segmentation prediction, parses data '''
+    
+    # initialize variables:
     original_vid = []
     
     # convert frames to grayscale and resize:
@@ -156,6 +158,7 @@ def ParsePrediction(dicom, prediction):
         # append to list:
         original_vid.append(grayscale_image)
     
+    # prep original video for post processing:
     original_vid = np.array(original_vid)
     number_of_frames = dicom['number_of_frames']
     seconds_per_frame = dicom['seconds_per_frame']
@@ -175,8 +178,17 @@ def ParsePrediction(dicom, prediction):
         # resample video:
         original_vid = zoom(original_vid, (frame_ratio, height_ratio, width_ratio))
     
-    # get masks:
-    seg_video, simp_video = overlay_masks(original_vid, prediction)
+    # check if the dicom contains meta data:
+    if dicom['physical_units_x_direction'] is not None:
+        
+        # get masks and metrics:
+        seg_video, simp_video, metrics = overlay_masks(original_vid, prediction, dicom)
+        
+    else:
+        
+        # get masks:
+        seg_video, simp_video = overlay_masks(original_vid, prediction)
+        metrics = None
     
     # pack result:
     parsed_prediction = {
@@ -184,13 +196,14 @@ def ParsePrediction(dicom, prediction):
             'pixel_data' : seg_video,
             'number_of_frames' : number_of_frames,
             'seconds_per_frame' : seconds_per_frame,
+            'metrics' : metrics,
         },
         'simpsons' : {
             'pixel_data' : simp_video,
             'number_of_frames' : number_of_frames,
             'seconds_per_frame' : seconds_per_frame,
+            'metrics' : metrics,
         },
-        
     }
         
     return parsed_prediction
@@ -257,9 +270,12 @@ def apical_disks(mask, number_of_disks):
     else:
         raise Exception('length less than 20')
     
-def overlay_masks(original_vid, masks):
+def overlay_masks(original_vid, masks, meta_data=None):
     seg_video = []
     simp_video = []
+    if meta_data:      
+        lv_diam = []
+        lvv_simpson = []
     number_of_disks = 20
     for idx, mask in enumerate(masks):
         frame = original_vid[idx].astype(np.uint8)
@@ -267,9 +283,11 @@ def overlay_masks(original_vid, masks):
         if (mask==0.0).all():
             seg_video.append(cv2.cvtColor(frame,cv2.COLOR_GRAY2RGB))
             simp_video.append(cv2.cvtColor(frame,cv2.COLOR_GRAY2RGB))
+            if meta_data:      
+                lv_diam.append(np.nan)                
+                lvv_simpson.append(np.nan)
         else:   
     #         Using connected components
-            mask = np.array(mask, dtype=np.uint8)
             ret, labels = cv2.connectedComponents(mask)
             (values,counts) = np.unique(labels,return_counts=True)
             values = values[1:]
@@ -288,12 +306,34 @@ def overlay_masks(original_vid, masks):
                 disk_length = top_bottom_distance/number_of_disks
                 for coord in coords:
                     cv2.line(frame_for_simpsons,tuple(coord[0]),tuple(coord[1]),100,1) 
+                if meta_data:
+                    lv_diams = []
+                    for coord in coords[1:]:
+                        diam = math.sqrt(((meta_data['physical_delta_x']*(coord[1][0]-coord[0][0]))**2)+
+                                                    ((meta_data['physical_delta_y']*(coord[1][1]-coord[0][1]))**2)) 
+                        lv_diams.append(diam)
+                        disk_volume += np.pi*((diam/2)**2)*disk_length*meta_data['physical_delta_y']
+                    lv_diam.append(max(lv_diams))                
+                    lvv_simpson.append(disk_volume)             
             except Exception as e:
                 print(e)
+                if meta_data:
+                    lv_diam.append(np.nan)                
+                    lvv_simpson.append(np.nan)
             simp_video.append(cv2.cvtColor(frame_for_simpsons,cv2.COLOR_GRAY2RGB))
     seg_video = np.array(seg_video)  
     simp_video = np.array(simp_video)
-    return seg_video, simp_video
+    if meta_data:
+#         lvv_simpson = medfilt(lvv_simpson)
+        lvdd = max(lv_diam)
+        lvsd = min(lv_diam)
+        lvdv = max(lvv_simpson)
+        lvsv = min(lvv_simpson)
+        ef = (1-lvsv/lvdv)*100
+    if meta_data:
+        return seg_video, simp_video, {'lvv_simpson' : lvv_simpson,'lvdd' : lvdd,'lvsd' : lvsd,'lvdv' : lvdv, 'lvsv' : lvsv, 'ef' : ef}
+    else:
+        return seg_video, simp_video
     
     
     

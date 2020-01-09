@@ -17,13 +17,17 @@ def GetData(data_file_path):
 
 
 @tools.monitor_me()
-def BuildReportJson(file_paths, dicom_data, view_data):
+def BuildReportJson(file_paths, dicom_data, view_data, segmentation_data):
     
     ''' Accepts data as dictionaries, returns compiled json '''
     
     # drop unused key, values:
     if dicom_data is not None:
         del dicom_data['pixel_data']
+    
+    # drop unused key, values:    
+    if segmentation_data is not None:
+        del segmentation_data['pixel_data']
     
     # build report json:
     report_json = {
@@ -33,8 +37,9 @@ def BuildReportJson(file_paths, dicom_data, view_data):
         'file_id' : file_paths['file_id'],
         'dicom_id' : file_paths['dicom_id'],
         'file_name' : file_paths['file_name'],
-        'view' : view_data,
         'dicom' : dicom_data,
+        'view' : view_data,
+        'segmentation' : segmentation_data,
         'media' : {
             'mp4' : file_paths['dicom_mp4'],
             'webm' : file_paths['dicom_webm'],
