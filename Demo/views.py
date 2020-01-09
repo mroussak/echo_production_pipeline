@@ -31,7 +31,7 @@ def Demo(request):
         print('[Demo.views.Demo]: Got post request with [%s]' %request.POST)
         
         # set demo visit id:
-        demo_visit_id = 606
+        demo_visit_id = 734
         
         # get visit object by id:
         visit = Visit.objects.get(pk=demo_visit_id)

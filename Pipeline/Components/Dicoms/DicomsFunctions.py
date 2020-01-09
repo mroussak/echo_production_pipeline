@@ -193,7 +193,7 @@ def GetPixelArrayDataDetails(dicom):
     
     
 
-@tools.monitor_me()
+@tools.monitor_me(save_output=True)
 def CompileDicomDetails(dicom_id, manufacturer_details, image_size_details, dicom_type_details, number_of_frames_details, frame_time_details, pixel_data_details):
     
     ''' Accepts dicom details, returns compiled dicom object '''
@@ -253,13 +253,7 @@ class Dicom:
         number_of_frames = pixel_data.shape[0]
         
         # get duration of video:
-        ffprobe_result = subprocess.run(
-            ["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", path_to_non_dicom_file],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT
-        )
-        duration = float(ffprobe_result.stdout)
-        frame_time = duration / number_of_frames * 1000 # convert to milliseconds
+        frame_time = 1000 / raw_video.get(cv2.CAP_PROP_FPS) 
         
         # limit frame count to first 150 frames:
         if pixel_data.shape[0] > 150:
