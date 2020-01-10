@@ -1,4 +1,5 @@
 from Pipeline.Tools import Tools as tools
+import subprocess
 import numpy as np
 import pickle
 import cv2
@@ -67,29 +68,28 @@ def BuildMP4(dicom, destination):
     
     ''' Accepts dicom, destination, builds mp4 file '''
     
+    # get video data:
     width = dicom['pixel_data'].shape[2]
     height = dicom['pixel_data'].shape[1]
-    FPS = 10
+    FPS = 1/dicom['seconds_per_frame']
     seconds = dicom['number_of_frames'] / FPS
     
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    #fourcc = cv2.VideoWriter_fourcc(*'H264')
-    #fourcc = cv2.VideoWriter_fourcc(*'X264')
-    #fourcc = cv2.VideoWriter_fourcc(*'FMP4')
-    #fourcc = cv2.VideoWriter_fourcc(*'avc1')
-    #fourcc = cv2.VideoWriter_fourcc(*'mp4s')
-    #fourcc = cv2.VideoWriter_fourcc('m','p','4','a')
-    #fourcc = 0x31637661
-    #fourcc = 0x00000021
-    #fourcc = -1
-    #fourcc = 0
-    #fourcc = cv2.VideoWriter_fourcc(*'VP09')
-    video = cv2.VideoWriter(destination, fourcc, float(FPS), (width, height))
+    # create temporary destination for opencv:
+    temp_destination = destination + '_temp_.mp4'
     
+    # specify opencv, cv2 details:
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    video = cv2.VideoWriter(temp_destination, fourcc, float(FPS), (width, height))
+    
+    # compile video frame by frame:
     for frame in dicom['pixel_data']:
         video.write(frame)
     
+    # release video:
     video.release()
+    
+    # convert mp4 codec to web-uable coded:
+    subprocess.run(['ffmpeg', '-loglevel', 'panic', '-i', temp_destination, '-vcodec', 'libx264', '-acodec', 'aac', destination])
     
 
 

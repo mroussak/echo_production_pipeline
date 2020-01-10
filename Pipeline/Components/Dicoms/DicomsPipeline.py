@@ -18,7 +18,7 @@ def DicomsPipeline(file_paths):
     dicom_file_path = funcs.DownloadFileFromS3(dicom_id, destination_directory)
     
     # Step 2, read dicom file:
-    dicom = funcs.ReadDicomFile(dicom_file_path, file_name)
+    dicom = funcs.ReadDicomFile(dicom_file_path)
     
     # Step 3, get manufacturer details:
     manufacturer_details = funcs.GetManufacturerDetails(dicom)

@@ -23,7 +23,7 @@ def upload_to(instance, filename):
     
     instance.file.open()
     
-    return hash_file(instance.file)
+    return "/staging/%s" % hash_file(instance.file)
     
     
     

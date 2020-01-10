@@ -23,6 +23,9 @@ manufacturer_groups = {
     2 : [
         'Sonoscanner',
     ],
+    3 : [
+        'Unknown',
+    ],
 }
 
 
@@ -43,27 +46,42 @@ def DownloadFileFromS3(s3_file_path, destination_directory):
     file_destination = destination_directory + s3_file_path
 
     # download file:
-    s3.Bucket(BUCKET_NAME).download_file(s3_file_path, file_destination)
+    print('/staging/' + s3_file_path)
+    s3.Bucket(BUCKET_NAME).download_file('staging/' + s3_file_path, file_destination)
+
+    # delete file from s3 staging folder:
+    #s3.Bucket(BUCKET_NAME).delete_objects(Delete={'Objects' : [ { 'Key' : s3_file_path, }]})
 
     return file_destination
 
 
 
 @tools.monitor_me()
-def ReadDicomFile(dicom_file_path, file_name):
+def ReadDicomFile(dicom_file_path):
     
-    ''' Accepts dicom file path (hashed s3_key) and file_name (original file name), returns dicom raises ERROR if file is not a dicom ".dcm" file '''
+    ''' Accepts dicom file path (hashed s3_key), returns dicom raises ERROR if file is not a dicom ".dcm" file '''
     
-    # if dicom file, extract using pydicom library:
-    if file_name[-3:] == 'dcm':
+    # try extracting as dicom file:
+    try:
         
         dicom = pydicom.dcmread(dicom_file_path)
         
-    # if .mov or .mp4 file, create mock dicom object:
-    elif file_name[-3:] == 'mov' or file_name[-3:] == 'mp4':
+    # otherwise try extracting as .mov or .mp4 file:
+    except:
         
         # instantiate dicom with data from video:    
         dicom = Dicom(dicom_file_path)
+        
+    # # if dicom file, extract using pydicom library:
+    # if file_name[-3:] == 'dcm':
+        
+    #     dicom = pydicom.dcmread(dicom_file_path)
+        
+    # # if .mov or .mp4 file, create mock dicom object:
+    # elif file_name[-3:] == 'mov' or file_name[-3:] == 'mp4':
+        
+    #     # instantiate dicom with data from video:    
+    #     dicom = Dicom(dicom_file_path)
         
     return dicom
 
@@ -88,6 +106,10 @@ def GetManufacturerDetails(dicom):
     elif dicom.Manufacturer in manufacturer_groups[2]:
         
         manufacturer_details['manufacturer'] = dicom.Manufacturer 
+        
+    elif dicom.Manufacturer in manufacturer_groups[3]:
+        
+        manufacturer_details['manufacturer'] = dicom.Manufacturer
         
     return manufacturer_details
     
@@ -119,6 +141,9 @@ def GetImageSizeDetails(dicom):
         image_size_details['physical_units_y_direction'] = dicom.PhysicalUnitsYDirection
         image_size_details['physical_delta_x'] = abs(dicom.PhysicalDeltaX)
         image_size_details['physical_delta_y'] = abs(dicom.PhysicalDeltaY)
+        
+    elif dicom.Manufacturer in manufacturer_groups[3]:
+        pass
             
     return image_size_details
     
@@ -145,6 +170,9 @@ def GetDicomTypeDetails(dicom):
             dicom_type_details = 'standard'
         elif dicom.RegionDataType == 2:
             dicom_type_details = 'color' 
+    
+    elif dicom.Manufacturer in manufacturer_groups[3]:
+        pass
     
     return dicom_type_details
     
@@ -229,6 +257,8 @@ def ExportDicom(dicom, destination):
 # create mock dicom object:
 class Dicom:
 
+    ''' Mock dicom object created from .mov or .mp4 files '''
+
     def __init__(self, path_to_non_dicom_file):
         
         raw_video = cv2.VideoCapture(path_to_non_dicom_file)
@@ -265,7 +295,7 @@ class Dicom:
         self.pixel_array = pixel_data
         self.NumberOfFrames = number_of_frames
         self.FrameTime = frame_time
-        self.Manufacturer = 'unknown'
+        self.Manufacturer = 'Unknown'
 
     
     

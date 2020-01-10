@@ -10,8 +10,11 @@ class FileInline(admin.TabularInline):
 
 class FileAdmin(admin.ModelAdmin):
     
-    list_display = ('id', 'get_file', 'file_name', 'user', 'processing_time',  'created_at', 'visit', 'log_preview', 'started_processing_at', 'finished_processing_at')
+    list_display = ('id', 'get_file', 'file_name', 'user', 'processing_time',  'created_at', 'visit', 'log_preview', 'dicom_id', 'started_processing_at', 'finished_processing_at')
     list_display_links = ['id', 'log_preview']
+    
+    search_fields = ('id', 'user__email', 'file', 'file_name',)
+    
     
     def get_file(self, instance):
         return instance.file

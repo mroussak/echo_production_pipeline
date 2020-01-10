@@ -4,16 +4,20 @@ from django.contrib.auth.models import User
 
 from .models import Profile
 
+
+
 class ProfileInline(admin.StackedInline):
     model = Profile
     can_delete = False
     verbose_name_plural = 'Profile'
     fk_name = 'user'
 
+
+
 class CustomUserAdmin(UserAdmin):
     inlines = (ProfileInline, )
 
-    list_display = ('email', 'get_phone', 'get_full_name')
+    list_display = ('email', 'get_phone', 'get_full_name', 'date_joined')
     list_select_related = ('profile', )
 
     def get_phone(self, instance):
@@ -28,6 +32,7 @@ class CustomUserAdmin(UserAdmin):
         if not obj:
             return list()
         return super(CustomUserAdmin, self).get_inline_instances(request, obj)
+
 
 
 admin.site.unregister(User)

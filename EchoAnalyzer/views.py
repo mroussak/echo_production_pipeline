@@ -65,7 +65,7 @@ def HandleUpload(request, visit_id):
         file = File.objects.create(**file_kwargs)
         
         # update dicom_id field:
-        file.dicom_id = str(file.file)
+        file.dicom_id = str(file.file).replace("/staging/", "")
         file.save()
         
         success = True
@@ -77,7 +77,7 @@ def HandleUpload(request, visit_id):
         
         success = False
         status = 1
-        internal_message = error
+        internal_message = traceback.format_exc()
         message = 'Error when uploading file.'
         
     result = {
@@ -236,6 +236,47 @@ def CheckVisitStatus(request):
     
     
 
+def AddMediaLinks(results):
+    
+    ''' Accepts results object, appends media links to results object '''
+    
+    # connect to s3:
+    s3 = get_s3()
+    
+    # add s3 links to media files:
+    for result in results['results']:
+
+        # initialize empty links dictionary:
+        result['links'] = {}
+
+        # get s3 link for each item in media:
+        for key, value in result['media'].items():
+
+            # create s3 url params:
+            Params = {
+                'Bucket' : settings.AWS_S3_BUCKET_NAME,
+                'Key' : result['media'][key][1:] # drop initial '/' in s3_key name
+            }
+            
+            # get url:
+            url = s3.generate_presigned_url(ClientMethod='get_object', Params=Params, ExpiresIn=3600)
+            
+            # append url to result object:
+            result['links'][key] = url
+        
+        # get list of features:
+        if result['view'] is not None:
+            view = result['view']['predicted_view']
+            result['view']['features'] = FEATURES[view]
+            
+            # multiply confidences by 100 (to be percentages):
+            result['view']['abnormality_confidence'] *= 100
+            result['view']['view_confidence'] *= 100
+
+    return results
+    
+
+
 @login_required(login_url='/login/')    
 def LoadResultsPage(request, visit_id):
     
@@ -255,37 +296,8 @@ def LoadResultsPage(request, visit_id):
         visit = Visit.objects.get(pk=visit_id, user_id=request.user)
         results = visit.results
         
-        # connect to s3:
-        s3 = get_s3()
-        
-        # add s3 links to media files:
-        for result in results['results']:
-
-            # initialize empty links dictionary:
-            result['links'] = {}
-
-            # get s3 link for each item in media:
-            for key, value in result['media'].items():
-
-                # create s3 url params:
-                Params = {
-                    'Bucket': settings.AWS_S3_BUCKET_NAME,
-                    'Key':result['media'][key][1:] # drop initial '/' in s3_key name
-                }
-                
-                # get url:
-                url = s3.generate_presigned_url(ClientMethod='get_object', Params=Params, ExpiresIn=3600)
-                
-                # append url to result object:
-                result['links'][key] = url
-            
-            # get list of features:    
-            view = result['view']['predicted_view']
-            result['view']['features'] = FEATURES[view]
-            
-            # multiply confidences by 100 (to be percentages):
-            result['view']['abnormality_confidence'] *= 100
-            result['view']['view_confidence'] *= 100
+        # add media links to results object: (must be done on load results page)
+        results = AddMediaLinks(results)
         
         success = True
         status = 0

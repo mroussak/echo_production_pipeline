@@ -58,10 +58,12 @@ def ProductionPipeline(input_dictionary):
         'dicom_jpegs' : MEDIA_DIR + '/Jpegs/',
         'dicom_avi' : MEDIA_DIR + dicom_id +'.avi',
         'dicom_gif' : MEDIA_DIR + dicom_id +'.gif',
-        'dicom_mp4' : MEDIA_DIR + dicom_id + '.mp4',
         'dicom_webm' : MEDIA_DIR + dicom_id + '.webm',
         'segmentation_webm' : MEDIA_DIR + dicom_id + '_segmentation.webm',
         'simpsons_webm' : MEDIA_DIR + dicom_id + '_simpsons.webm',
+        'dicom_mp4' : MEDIA_DIR + dicom_id + '.mp4',
+        'segmentation_mp4' : MEDIA_DIR + dicom_id + '_segmentation.mp4',
+        'simpsons_mp4' : MEDIA_DIR + dicom_id + '_simpsons.mp4',
         
         # reports:
         'reports_json' : REPORTS_DIR + dicom_id + '_report.json',

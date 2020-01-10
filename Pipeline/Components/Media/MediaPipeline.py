@@ -12,12 +12,10 @@ def MediaPipeline(file_paths):
     segmentation_data_file = file_paths['segmentation_data']
     simpsons_data_file = file_paths['simpsons_data']
     jpeg_destintation = file_paths['dicom_jpegs']
-    gif_destination = file_paths['dicom_gif']
-    avi_destinaton = file_paths['dicom_avi']
-    mp4_destination = file_paths['dicom_mp4']
-    webm_destination = file_paths['dicom_webm']
-    segmentation_webm_destination = file_paths['segmentation_webm']
-    simpsons_webm_destination = file_paths['simpsons_webm']
+    dicom_webm_destination = file_paths['dicom_webm']
+    dicom_mp4_destination = file_paths['dicom_mp4']
+    segmentation_mp4_destination = file_paths['segmentation_mp4']
+    simpsons_mp4_destination = file_paths['simpsons_mp4']
     
     print('\n[MediaPipeline]__')
     
@@ -30,8 +28,7 @@ def MediaPipeline(file_paths):
     funcs.BuildMediaBaseDirectory(MEDIA_DIR)
     
     # Step 3, build videos:
-    #funcs.BuildAVI(dicom, avi_destinaton)
-    #funcs.BuildMP4(dicom, mp4_destination)
-    funcs.BuildWebm(dicom_data, webm_destination) ## ~15 seconds processing time
-    funcs.BuildWebm(segmentation_data, segmentation_webm_destination)
-    funcs.BuildWebm(simpsons_data, simpsons_webm_destination)
+    #funcs.BuildWebm(dicom_data, webm_destination) ## ~15 seconds processing time
+    funcs.BuildMP4(dicom_data, dicom_mp4_destination)
+    funcs.BuildMP4(segmentation_data, segmentation_mp4_destination)
+    funcs.BuildMP4(simpsons_data, simpsons_mp4_destination)

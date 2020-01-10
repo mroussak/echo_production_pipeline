@@ -19,6 +19,52 @@ from EchoAnalyzer.features import FEATURES
 
 
 
+global DEMO_VISIT_ID
+DEMO_VISIT_ID = 817
+
+
+
+def AddMediaLinks(results):
+    
+    ''' Accepts results object, appends media links to results object '''
+    
+    # connect to s3:
+    s3 = get_s3()
+    
+    # add s3 links to media files:
+    for result in results['results']:
+
+        # initialize empty links dictionary:
+        result['links'] = {}
+
+        # get s3 link for each item in media:
+        for key, value in result['media'].items():
+
+            # create s3 url params:
+            Params = {
+                'Bucket' : settings.AWS_S3_BUCKET_NAME,
+                'Key' : result['media'][key][1:] # drop initial '/' in s3_key name
+            }
+            
+            # get url:
+            url = s3.generate_presigned_url(ClientMethod='get_object', Params=Params, ExpiresIn=3600)
+            
+            # append url to result object:
+            result['links'][key] = url
+        
+        # get list of features:
+        if result['view'] is not None:
+            view = result['view']['predicted_view']
+            result['view']['features'] = FEATURES[view]
+            
+            # multiply confidences by 100 (to be percentages):
+            result['view']['abnormality_confidence'] *= 100
+            result['view']['view_confidence'] *= 100
+
+    return results
+
+    
+    
 def Demo(request):
     
     ''' Accepts request to demo/, loads demo page '''
@@ -31,43 +77,14 @@ def Demo(request):
         print('[Demo.views.Demo]: Got post request with [%s]' %request.POST)
         
         # set demo visit id:
-        demo_visit_id = 734
+        demo_visit_id = DEMO_VISIT_ID
         
         # get visit object by id:
         visit = Visit.objects.get(pk=demo_visit_id)
         results = visit.results
         
-        # connect to s3:
-        s3 = get_s3()
-        
         # add s3 links to media files:
-        for result in results['results']:
-
-            # initialize empty links dictionary:
-            result['links'] = {}
-
-            # get s3 link for each item in media:
-            for key, value in result['media'].items():
-
-                # create s3 url params:
-                Params = {
-                    'Bucket': settings.AWS_S3_BUCKET_NAME,
-                    'Key':result['media'][key][1:] # drop initial '/' in s3_key name
-                }
-                
-                # get url:
-                url = s3.generate_presigned_url(ClientMethod='get_object', Params=Params, ExpiresIn=3600)
-                
-                # append url to result object:
-                result['links'][key] = url
-            
-            # get list of features:    
-            view = result['view']['predicted_view']
-            result['view']['features'] = FEATURES[view]
-            
-            # multiply confidences by 100 (to be percentages):
-            result['view']['abnormality_confidence'] *= 100
-            result['view']['view_confidence'] *= 100
+        results = AddMediaLinks(results)
         
         success = True
         status = 0
