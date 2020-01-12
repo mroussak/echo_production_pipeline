@@ -46,7 +46,6 @@ def DownloadFileFromS3(s3_file_path, destination_directory):
     file_destination = destination_directory + s3_file_path
 
     # download file:
-    print('/staging/' + s3_file_path)
     s3.Bucket(BUCKET_NAME).download_file('staging/' + s3_file_path, file_destination)
 
     # delete file from s3 staging folder:

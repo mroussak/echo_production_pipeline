@@ -1,18 +1,25 @@
 from Pipeline.Tools import Tools as tools
 import pickle
 import json
+import os
 
 
 
 @tools.monitor_me()
 def GetData(data_file_path):
     
-    ''' Accepts dicom data file path, returns dicom object '''
+    ''' Accepts data file path, returns object '''
     
-    with open(data_file_path, 'rb') as handle:
-        dicom = pickle.load(handle)
+    # initialize variables:
+    data = None
     
-    return dicom
+    # check if file exists:
+    if os.path.exists(data_file_path):
+    
+        with open(data_file_path, 'rb') as handle:
+            data = pickle.load(handle)
+    
+    return data
     
 
 
