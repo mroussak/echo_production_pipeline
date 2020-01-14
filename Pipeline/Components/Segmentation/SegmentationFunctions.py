@@ -4,6 +4,7 @@ from sagemaker.tensorflow.serving import Predictor
 from Pipeline.Tools import Tools as tools
 from collections import Counter
 from scipy.ndimage import zoom
+from datetime import datetime
 from decouple import config
 import numpy as np
 import sagemaker
@@ -106,6 +107,10 @@ def GetPrediction(prepped_data):
     # get endpoint of model:
     predictor = Predictor('tf-multi-model-endpoint', model_name='Mask_RCNN_a4c_seg', content_type='application/dict',serializer=None)
 
+    # timers #
+    sent_data_at = datetime.now()
+    # end timers #
+
     masks = []
     for idx in range(len(molded_images)):
         payload = {
@@ -120,7 +125,17 @@ def GetPrediction(prepped_data):
         
         input_to_model = pickle.dumps(payload)
         
+        # timers #
+        frame_send = datetime.now()
+        # end timers #
+        
         prediction = predictor.predict(input_to_model)
+        
+        # timers #
+        frame_receive = datetime.now()
+        # end timers #
+        
+        print('Index [%3d] - sent [%s] - received [%s] - delta [%s]' %(idx, frame_send, frame_receive, frame_receive-frame_send))
         
         result = {
             'detection': np.array([prediction['predictions'][0]['mrcnn_detection/Reshape_1']]), 
@@ -134,7 +149,13 @@ def GetPrediction(prepped_data):
             masks.append(mask)
         else:
             masks.append(np.zeros(vid[0].shape[:-1]))
-            
+    
+    # timers #
+    retreived_result_at = datetime.now()
+    print('         Sent data at [%s]' %sent_data_at)
+    print('  Retreived result at [%s]' %retreived_result_at)
+    # end timers #
+        
     masks = np.array(masks, dtype=np.uint8)
  
     return masks
@@ -349,11 +370,12 @@ def am_i_apical():
             try:
                 
                 # initialize variables:
-                apical_views = [
-                    'A2C',                      'A2C Zoomed Mitral',        'A3C',                  'A3C Zoomed Aorta',
-                    'A4C',                      'A4C Zoomed LV',            'A4C Zoomed Mitral',    'A4C Zoomed RV',
-                    'A5C',                      'A5C Zoomed Aorta',
-                ]
+                apical_views = ['A2C', 'A4C', 'A4C Zoomed LV']
+                # apical_views = [
+                #     'A2C',                      'A2C Zoomed Mitral',        'A3C',                  'A3C Zoomed Aorta',
+                #     'A4C',                      'A4C Zoomed LV',            'A4C Zoomed Mitral',    'A4C Zoomed RV',
+                #     'A5C',                      'A5C Zoomed Aorta',
+                # ]
                 
                 # get file paths object:
                 if 'file_paths' in kwargs:

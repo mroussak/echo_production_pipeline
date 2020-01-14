@@ -15,13 +15,13 @@ import os
 global manufacturer_groups
 manufacturer_groups = {
     1 : [
-        'Acuson Cypress',           'GE Healthcare LOGIQe',     'GE Healthcare Ultrasound Vivid iq',    
-        'GE Healthcare Vivid i',    'GE Healthcare Vivide',     'GEMS Ultrasound Vivid i',      
-        'MINDRAY M7',               'SIEMENS ACUSON P500',      'Teratech Corp. Terason Ultrasound Imaging System',
-        'Acuson',                   None,
+        'Acuson',                   'Acuson Cypress',           'GE Healthcare LOGIQe',     'GE Healthcare Ultrasound Vivid iq',    
+        'GE Healthcare Vivid i',    'GE Healthcare Vivide',     'GE Vingmed Ultrasound',    'GEMS Ultrasound Vivid i',  
+        'MINDRAY M7',               'Philips Medical Systems',  'SIEMENS ACUSON P500',      
+        'Teratech Corp. Terason Ultrasound Imaging System',      
     ],
     2 : [
-        'Sonoscanner',
+        'Sonoscanner',              None,
     ],
     3 : [
         'Unknown',
@@ -71,17 +71,6 @@ def ReadDicomFile(dicom_file_path):
         # instantiate dicom with data from video:    
         dicom = Dicom(dicom_file_path)
         
-    # # if dicom file, extract using pydicom library:
-    # if file_name[-3:] == 'dcm':
-        
-    #     dicom = pydicom.dcmread(dicom_file_path)
-        
-    # # if .mov or .mp4 file, create mock dicom object:
-    # elif file_name[-3:] == 'mov' or file_name[-3:] == 'mp4':
-        
-    #     # instantiate dicom with data from video:    
-    #     dicom = Dicom(dicom_file_path)
-        
     return dicom
 
 
@@ -91,25 +80,43 @@ def GetManufacturerDetails(dicom):
     
     ''' Accepts a dicom object, returns manufacturer detials '''
     
+    # method functions:
+    def method1(dicom):
+        return dicom.Manufacturer, dicom.ManufacturerModelName
+        
+    def method2(dicom):
+        return dicom.Manufacturer, None
+    
     # initialize variables:
+    manufacturer = None
+    manufacturer_model_name = None
+    
+    # group 1 method:
+    if dicom.Manufacturer in manufacturer_groups[1]:
+        manufacturer, manufacturer_model_name = method1(dicom)
+        
+    # group 2 method:
+    elif dicom.Manufacturer in manufacturer_groups[2]:
+        manufacturer, manufacturer_model_name = method2(dicom)
+        
+    # group 3 method:
+    elif dicom.Manufacturer in manufacturer_groups[3]:
+        manufacturer, manufacturer_model_name = method2(dicom)
+    
+    # unknown group method:
+    else: 
+        try: 
+            manufacturer, manufacturer_model_name = method1(dicom)
+            
+        except:
+            manufacturer, manufacturer_model_name = method2(dicom)
+            
+    # pack result:
     manufacturer_details = {
-        'manufacturer' : None,
-        'manufacturer_model_name' : None,
+        'manufacturer' : manufacturer,
+        'manufacturer_model_name' : manufacturer_model_name,
     } 
     
-    if dicom.Manufacturer in manufacturer_groups[1]:
-    
-        manufacturer_details['manufacturer'] = dicom.Manufacturer 
-        manufacturer_details['manufacturer_model_name'] = dicom.ManufacturerModelName
-        
-    elif dicom.Manufacturer in manufacturer_groups[2]:
-        
-        manufacturer_details['manufacturer'] = dicom.Manufacturer 
-        
-    elif dicom.Manufacturer in manufacturer_groups[3]:
-        
-        manufacturer_details['manufacturer'] = dicom.Manufacturer
-        
     return manufacturer_details
     
     
@@ -119,31 +126,59 @@ def GetImageSizeDetails(dicom):
     
     ''' Accepts dicom object, returns image size details '''
     
+    # method functions:
+    def method1(dicom):
+        
+        physical_units_x_direction = dicom.SequenceOfUltrasoundRegions[0].PhysicalUnitsXDirection
+        physical_units_y_direction = dicom.SequenceOfUltrasoundRegions[0].PhysicalUnitsYDirection
+        physical_delta_x = abs(dicom.SequenceOfUltrasoundRegions[0].PhysicalDeltaX)
+        physical_delta_y = abs(dicom.SequenceOfUltrasoundRegions[0].PhysicalDeltaY)
+        
+        return physical_units_x_direction, physical_units_y_direction, physical_delta_x, physical_delta_y
+    
+    def method2(dicom):
+        
+        physical_units_x_direction = dicom.PhysicalUnitsXDirection
+        physical_units_y_direction = dicom.PhysicalUnitsYDirection
+        physical_delta_x = abs(dicom.PhysicalDeltaX)
+        physical_delta_y = abs(dicom.PhysicalDeltaY)
+        
+        return physical_units_x_direction, physical_units_y_direction, physical_delta_x, physical_delta_y
+    
     # intialize variables:
-    image_size_details = {
-        'physical_delta_x' : None,
-        'physical_delta_y' : None,
-        'physical_units_x_direction' : None,
-        'physical_units_y_direction' : None,
-    }
+    physical_units_x_direction = None
+    physical_units_y_direction = None 
+    physical_delta_x = None
+    physical_delta_y = None
     
+    # group 1 method:
     if dicom.Manufacturer in manufacturer_groups[1]:
-    
-        image_size_details['physical_units_x_direction'] = dicom.SequenceOfUltrasoundRegions[0].PhysicalUnitsXDirection
-        image_size_details['physical_units_y_direction'] = dicom.SequenceOfUltrasoundRegions[0].PhysicalUnitsYDirection
-        image_size_details['physical_delta_x'] = abs(dicom.SequenceOfUltrasoundRegions[0].PhysicalDeltaX)
-        image_size_details['physical_delta_y'] = abs(dicom.SequenceOfUltrasoundRegions[0].PhysicalDeltaY)
+        physical_units_x_direction, physical_units_y_direction, physical_delta_x, physical_delta_y = method1(dicom)
         
+    # group 2 method:
     elif dicom.Manufacturer in manufacturer_groups[2]:
+        physical_units_x_direction, physical_units_y_direction, physical_delta_x, physical_delta_y = method2(dicom)
         
-        image_size_details['physical_units_x_direction'] = dicom.PhysicalUnitsXDirection
-        image_size_details['physical_units_y_direction'] = dicom.PhysicalUnitsYDirection
-        image_size_details['physical_delta_x'] = abs(dicom.PhysicalDeltaX)
-        image_size_details['physical_delta_y'] = abs(dicom.PhysicalDeltaY)
-        
+    # group 3 method:    
     elif dicom.Manufacturer in manufacturer_groups[3]:
         pass
+    
+    # unknown group method:
+    else:
+        try:
+            physical_units_x_direction, physical_units_y_direction, physical_delta_x, physical_delta_y = method1(dicom)
+              
+        except:
+            physical_units_x_direction, physical_units_y_direction, physical_delta_x, physical_delta_y = method2(dicom)
             
+    # pack result:
+    image_size_details = {
+        'physical_units_x_direction' : physical_units_x_direction,
+        'physical_units_y_direction' : physical_units_y_direction,
+        'physical_delta_x' : physical_delta_x,
+        'physical_delta_y' : physical_delta_y,
+    }
+        
     return image_size_details
     
     
@@ -153,25 +188,46 @@ def GetDicomTypeDetails(dicom):
     
     ''' Accepts dicom object, returns dicom type '''
     
+    # method functions:
+    def method1(dicom):
+        
+        if dicom.SequenceOfUltrasoundRegions[0].RegionDataType == 1:
+            return 'standard'
+        elif dicom.SequenceOfUltrasoundRegions[0].RegionDataType == 2:
+            return 'color'
+        else: 
+            return None
+    
+    def method2(dicom):
+        
+        if (dicom.RegionDataType == 1) or (dicom.RegionDataType == 0):
+            return 'standard'
+        elif dicom.RegionDataType == 2:
+            return 'color' 
+        else: 
+            return None
+    
     # initilaize varibles:
     dicom_type_details = None
     
+    # group 1 method:
     if dicom.Manufacturer in manufacturer_groups[1]: 
+        dicom_type_details = method1(dicom)
         
-        if dicom.SequenceOfUltrasoundRegions[0].RegionDataType == 1:
-            dicom_type_details = 'standard'
-        elif dicom.SequenceOfUltrasoundRegions[0].RegionDataType == 2:
-            dicom_type_details = 'color'
-    
+    # group 2 method:
     elif dicom.Manufacturer in manufacturer_groups[2]:
+        dicom_type_details = method2(dicom)
     
-        if (dicom.RegionDataType == 1) or (dicom.RegionDataType == 0):
-            dicom_type_details = 'standard'
-        elif dicom.RegionDataType == 2:
-            dicom_type_details = 'color' 
-    
+    # group 3 method:
     elif dicom.Manufacturer in manufacturer_groups[3]:
         pass
+    
+    # unkown group method:
+    else:
+        try:
+            dicom_type_details = method1(dicom)
+        except:
+            dicom_type_details = method2(dicom)
     
     return dicom_type_details
     
@@ -220,7 +276,7 @@ def GetPixelArrayDataDetails(dicom):
     
     
 
-@tools.monitor_me(save_output=True)
+@tools.monitor_me()
 def CompileDicomDetails(dicom_id, manufacturer_details, image_size_details, dicom_type_details, number_of_frames_details, frame_time_details, pixel_data_details):
     
     ''' Accepts dicom details, returns compiled dicom object '''
