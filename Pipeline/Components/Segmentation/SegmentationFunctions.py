@@ -9,6 +9,7 @@ from decouple import config
 import numpy as np
 import sagemaker
 import traceback
+import threading
 import pydicom 
 import pickle
 import boto3
@@ -90,6 +91,84 @@ def PrepDataForModel(dicom):
     
     
 
+# def GetSingleFramePrediction(prepped_data, index, predictor, response):
+    
+#     # unpack prepped data:
+#     vid = prepped_data['raw_input']
+#     preprocess_obj = prepped_data['preprocess_obj']
+#     windows = prepped_data['windows']
+#     molded_images = prepped_data['molded_images']
+#     image_metas = prepped_data['image_metas']
+#     image_shape = prepped_data['image_shape']
+#     anchors = prepped_data['anchors']
+    
+#     payload = {
+#         "instances": [
+#             {
+#                 "input_image": molded_images[index,:,:,:].tolist(),
+#                 "input_image_meta": image_metas[index,:].tolist(),
+#                 "input_anchors": anchors[index,:,:].tolist()
+#             }
+#         ]
+#     }
+    
+#     input_to_model = pickle.dumps(payload)
+    
+#     start = datetime.now()
+    
+#     prediction = predictor.predict(input_to_model)
+    
+#     end = datetime.now()
+    
+#     result = {
+#         'detection': np.array([prediction['predictions'][0]['mrcnn_detection/Reshape_1']]), 
+#         'mask': np.array([prediction['predictions'][0]['mrcnn_mask/Reshape_1']])
+#     }
+    
+#     result_dict = preprocess_obj.result_to_dict(np.expand_dims(vid[index], axis=0), molded_images, windows, result)[0]
+    
+#     if result_dict['mask'].size!=0:
+#         mask = np.where(result_dict['mask'][:,:,0],255.0,0.0).astype(np.uint8)
+#     else:
+#         mask = np.zeros(vid[0].shape[:-1])
+    
+#     #print('[GetSingleFramePrediction]: Started at [%s] | Ended at [%s] | Delta [%s] | index [%s], mask shape [%s]' %(start, end, end-start, index, mask.shape))
+    
+#     response.append(mask)
+    
+
+
+# @tools.monitor_me()
+# def GetPrediction(prepped_data):
+    
+#     molded_images = prepped_data['molded_images']
+#     predictor = Predictor('tf-multi-model-endpoint', model_name='Mask_RCNN_a4c_seg', content_type='application/dict',serializer=None)
+
+#     number_of_frames = len(molded_images)
+
+#     responses = []
+#     for index in range(number_of_frames):
+#         responses.append([])
+        
+#     threads = []
+#     for index in range(number_of_frames):
+#         #t = threading.Thread(target=GetSingleFramePrediction, args=(prepped_data, index, predictor,))
+#         t = threading.Thread(target=GetSingleFramePrediction, args=(prepped_data, index, predictor, responses[index],))
+#         threads.append(t)
+        
+#         t.start()
+        
+#     # wait for threads to complete:
+#     for t in threads:
+#         t.join()
+        
+#     responses = np.array(responses)  
+#     responses = np.squeeze(responses, axis=1)
+        
+#     return responses
+    
+
+
 @tools.monitor_me()
 def GetPrediction(prepped_data):
     
@@ -107,10 +186,6 @@ def GetPrediction(prepped_data):
     # get endpoint of model:
     predictor = Predictor('tf-multi-model-endpoint', model_name='Mask_RCNN_a4c_seg', content_type='application/dict',serializer=None)
 
-    # timers #
-    sent_data_at = datetime.now()
-    # end timers #
-
     masks = []
     for idx in range(len(molded_images)):
         payload = {
@@ -125,17 +200,7 @@ def GetPrediction(prepped_data):
         
         input_to_model = pickle.dumps(payload)
         
-        # timers #
-        frame_send = datetime.now()
-        # end timers #
-        
         prediction = predictor.predict(input_to_model)
-        
-        # timers #
-        frame_receive = datetime.now()
-        # end timers #
-        
-        print('Index [%3d] - sent [%s] - received [%s] - delta [%s]' %(idx, frame_send, frame_receive, frame_receive-frame_send))
         
         result = {
             'detection': np.array([prediction['predictions'][0]['mrcnn_detection/Reshape_1']]), 
@@ -150,12 +215,6 @@ def GetPrediction(prepped_data):
         else:
             masks.append(np.zeros(vid[0].shape[:-1]))
     
-    # timers #
-    retreived_result_at = datetime.now()
-    print('         Sent data at [%s]' %sent_data_at)
-    print('  Retreived result at [%s]' %retreived_result_at)
-    # end timers #
-        
     masks = np.array(masks, dtype=np.uint8)
  
     return masks

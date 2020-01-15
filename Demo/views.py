@@ -20,7 +20,11 @@ from EchoAnalyzer.features import FEATURES
 
 
 global DEMO_VISIT_ID
+global DEMO_SONOSCANNER_VISIT_ID
+global DEMO_GE_VINGMED_ULTRASOUND_VISIT_ID
 DEMO_VISIT_ID = 817
+DEMO_SONOSCANNER_VISIT_ID = 883
+DEMO_GE_VINGMED_ULTRASOUND_VISIT_ID = 906
 
 
 
@@ -65,9 +69,9 @@ def AddMediaLinks(results):
 
     
     
-def Demo(request):
+def CreateDemo(request, visit_id):
     
-    ''' Accepts request to demo/, loads demo page '''
+    ''' Accepts request to demo/, global variable visit id, loads demo page '''
     
     PrintTitle('Demo.views.Demo')
     
@@ -77,7 +81,7 @@ def Demo(request):
         print('[Demo.views.Demo]: Got post request with [%s]' %request.POST)
         
         # set demo visit id:
-        demo_visit_id = DEMO_VISIT_ID
+        demo_visit_id = visit_id
         
         # get visit object by id:
         visit = Visit.objects.get(pk=demo_visit_id)
@@ -111,3 +115,34 @@ def Demo(request):
     print('[EchoAnalyzer.views.LoadResultsPage]: Status [%d], Internal Message [%s], Message [%s]' %(status, internal_message, message))      
 
     return render(request, 'temp_results.html', context = result)
+
+    
+    
+def Demo(request):
+    
+    ''' Accepts request to demo/, loads demo page '''
+    
+    reponse = CreateDemo(request, DEMO_VISIT_ID)
+    
+    return response
+    
+    
+    
+
+def DemoSonoscanner(request):
+    
+    ''' Sonoscanner Demo '''
+    
+    response = CreateDemo(request, DEMO_SONOSCANNER_VISIT_ID)
+    
+    return response
+    
+    
+    
+def DemoGEVingmedUltrasound(request):
+    
+    ''' GE Vingmed Ultrasound demo '''
+    
+    response = CreateDemo(request, DEMO_GE_VINGMED_ULTRASOUND_VISIT_ID)
+    
+    return response
