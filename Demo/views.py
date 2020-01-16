@@ -122,7 +122,7 @@ def Demo(request):
     
     ''' Accepts request to demo/, loads demo page '''
     
-    reponse = CreateDemo(request, DEMO_VISIT_ID)
+    response = CreateDemo(request, DEMO_VISIT_ID)
     
     return response
     
