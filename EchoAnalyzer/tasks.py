@@ -102,7 +102,7 @@ def MultiProcessFileList(multiprocess_input):
         'timers' : timers,
     }
 
-    return result
+    return result_json
 
 
 
