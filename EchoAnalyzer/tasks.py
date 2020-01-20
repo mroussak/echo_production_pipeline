@@ -6,6 +6,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from multiprocessing import Pool
 from django.urls import reverse
+from datetime import datetime
 from time import time, sleep
 from django import db
 import traceback
@@ -17,6 +18,7 @@ import sys
 
 
 django.setup()
+
 
 
 def ResetDatabaseConnection():
@@ -32,18 +34,28 @@ def MultiProcessFileList(multiprocess_input):
     
     ''' Accepts multiprocess_input, multiprocesses file list '''
     
+    # timers:
+    timers = {}
+    timers['1'] = datetime.now()
+    
     # reset database connection for multiprocessing:
     ResetDatabaseConnection()
+    
+    timers['2'] = datetime.now()
     
     # unpack multiprocess input:
     user_id = multiprocess_input['user_id']
     visit_id = multiprocess_input['visit_id']
     file_id = multiprocess_input['file_id']
     
+    timers['3'] = datetime.now()
+    
     # get file object, start timer:
     file = File.objects.get(pk=file_id)
     file.started_processing_at = datetime.now(timezone.utc)
     file.save()
+
+    timers['4'] = datetime.now()
 
     # get dicom id, file name:
     file_name = file.file_name
@@ -51,92 +63,46 @@ def MultiProcessFileList(multiprocess_input):
 
     # create input point, append to list:
     pipeline_input = {'user_id':user_id, 'visit_id':visit_id, 'file_id':file_id, 'dicom_id':dicom_id, 'file_name':file_name}
-    
+
+    timers['5'] = datetime.now()
+
     # pass input to pipeline:
     ProductionPipeline(pipeline_input)
+
+    timers['6'] = datetime.now()
     
     # get result json file path:
     BASE_DIR = '/tmp/WebAppData/Users/' + str(user_id) + '/Visits/' + str(visit_id) + '/Files/' + str(file_id) + '/'
     REPORTS_DIR = BASE_DIR + 'Reports/'
     JSON_FILE = REPORTS_DIR + dicom_id + '_report.json'
     
+    timers['7'] = datetime.now()
+
     # get result_json:
     with open(JSON_FILE, 'r') as handle:
         result_json = json.load(handle)
+
+    timers['8'] = datetime.now()
     
     # get log:
     with open(result_json['reports']['log'], 'r') as log:
         file.log = log.read()
     
+    timers['9'] = datetime.now()
+
     # set finish processing time:
     file.finished_processing_at = datetime.now(timezone.utc)
     file.processing_time = datetime.now(timezone.utc) - file.started_processing_at
     file.save()
     
-    return result_json
+    timers['10'] = datetime.now()
 
+    result = {
+        'result_json' : result_json,
+        'timers' : timers,
+    }
 
-
-def FilePipelinePreprocessing(user_id, visit_id, file_list):
-
-    # initialize variables:
-    multiprocess_input = []
-    
-    # file pipeline preprocessing:
-    for file_id in file_list:
-        
-        # get file object, start timer:
-        file = File.objects.get(pk=file_id)
-        file_name = file.file_name
-        dicom_id = file.dicom_id
-        file.started_processing_at = datetime.now(timezone.utc)
-        file.save()
-    
-        # create input point, append to list:
-        input_point = {'user_id':user_id, 'visit_id':visit_id, 'file_id':file_id, 'dicom_id':dicom_id, 'file_name':file_name}
-        multiprocess_input.append(input_point)
-        
-        # debug:
-        print('[EchoAnalyzer.tasks.ProcessVisit]: input [%s]' %input_point)
-    
-    return multiprocess_input
-
-
-
-def FilePipelinePostprocessing(user_id, visit_id, file_list):
-    
-    # initialize variables:
-    result_json_list = []
-    
-    # file pipeline post processing:
-    for file_id in file_list:
-        
-        # get file object:
-        file = File.objects.get(pk=file_id)
-        dicom_id = file.dicom_id
-        
-        # get result json file path:
-        BASE_DIR = '/tmp/WebAppData/Users/' + str(user_id) + '/Visits/' + str(visit_id) + '/Files/' + str(file_id) + '/'
-        REPORTS_DIR = BASE_DIR + 'Reports/'
-        JSON_FILE = REPORTS_DIR + dicom_id + '_report.json'
-        
-        # get result_json:
-        with open(JSON_FILE, 'r') as handle:
-            result_json = json.load(handle)
-        
-        # get log:
-        with open(result_json['reports']['log'], 'r') as log:
-            file.log = log.read()
-        
-        # set finish processing time:
-        file.finished_processing_at = datetime.now(timezone.utc)
-        file.processing_time = datetime.now(timezone.utc) - file.started_processing_at
-        file.save()
-        
-        # append result_json to list for visit object:
-        result_json_list.append(result_json)
-    
-    return result_json_list
+    return result
 
 
 
@@ -158,9 +124,6 @@ def ProcessVisit(user_id, visit_id):
     # get list of files associated to visit:
     file_list = list(visit.file_set.all().values_list('id', flat=True))
     
-    
-    
-    ###### latest multiprocessing ######
     # set up multiprocessing pool:
     number_of_threads = len(file_list)
     pool = Pool(number_of_threads)
@@ -174,28 +137,15 @@ def ProcessVisit(user_id, visit_id):
     
     # multiprocess each file:
     result_json_list = pool.map(MultiProcessFileList, multiprocess_input)
-    ###### end latest multiprocessing ######
     
-    
-    
-    ###### legacy multiprocess ######
-    # # file preprocessing:
-    # multiprocess_input = FilePipelinePreprocessing(user_id, visit_id, file_list)
-
-    # # multiprocess:
-    # pool.map(ProductionPipeline, multiprocess_input)
-    
-    # # file postprocessing:
-    # result_json_list = FilePipelinePostprocessing(user_id, visit_id, file_list)
-    ###### end legeacy multiprocess #####
-    
-    
-        
     # delete existing temp data off of server:
     shutil.rmtree(result_json_list[0]['VISIT_DIR'])
-    
+
     # pack result list as json:
     results = {'results' : result_json_list}
+    
+    # convert results to json object: (handles json strings where there are NaNs)
+    results = json.loads(json.dumps(results).replace('NaN', 'null')) 
     
     # reset database connection for multiprocessing:
     ResetDatabaseConnection()

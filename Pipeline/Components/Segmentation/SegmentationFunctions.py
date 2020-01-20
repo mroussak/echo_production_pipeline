@@ -62,28 +62,25 @@ def PrepDataForModel(dicom):
         
         input_to_model = zoom(input_to_model, (frame_ratio, height_ratio, width_ratio))
         
+    # add extra dimension to video:
     input_to_model = input_to_model.reshape(input_to_model.shape+(1,))
-    #input_to_model = np.array([input_to_model.astype('float32')])
-    #input_to_model = pickle.dumps(input_to_model)
     
+    # get Mask RCNN Serbving configuration:
     model_config = saved_model_config.MY_INFERENCE_CONFIG
-    preprocess_obj = saved_model_preprocess.ForwardModel(model_config)
+    preprocess_object = saved_model_preprocess.ForwardModel(model_config)
 
-    molded_images, image_metas, windows = preprocess_obj.mold_inputs(input_to_model)
-    molded_images = molded_images.astype(np.float32)
-    image_metas = image_metas.astype(np.float32)
-    image_shape = molded_images[0].shape
-    
-    anchors = preprocess_obj.get_anchors(image_shape)
+    # build model objects:
+    molded_images, image_metas, windows = preprocess_object.mold_inputs(input_to_model)
+    anchors = preprocess_object.get_anchors(molded_images[0].shape)
     anchors = np.broadcast_to(anchors, (input_to_model.shape[0],) + anchors.shape)
     
+    # pack data:
     prepped_data = {
-        'raw_input' : input_to_model,
-        'preprocess_obj' : preprocess_obj,
+        'original_video' : input_to_model,
+        'preprocess_object' : preprocess_object,
         'windows' : windows,
         'molded_images' : molded_images,
         'image_metas' : image_metas,
-        'image_shape' : image_shape,
         'anchors' : anchors,
     }
     
@@ -91,135 +88,91 @@ def PrepDataForModel(dicom):
     
     
 
-# def GetSingleFramePrediction(prepped_data, index, predictor, response):
-    
-#     # unpack prepped data:
-#     vid = prepped_data['raw_input']
-#     preprocess_obj = prepped_data['preprocess_obj']
-#     windows = prepped_data['windows']
-#     molded_images = prepped_data['molded_images']
-#     image_metas = prepped_data['image_metas']
-#     image_shape = prepped_data['image_shape']
-#     anchors = prepped_data['anchors']
-    
-#     payload = {
-#         "instances": [
-#             {
-#                 "input_image": molded_images[index,:,:,:].tolist(),
-#                 "input_image_meta": image_metas[index,:].tolist(),
-#                 "input_anchors": anchors[index,:,:].tolist()
-#             }
-#         ]
-#     }
-    
-#     input_to_model = pickle.dumps(payload)
-    
-#     start = datetime.now()
-    
-#     prediction = predictor.predict(input_to_model)
-    
-#     end = datetime.now()
-    
-#     result = {
-#         'detection': np.array([prediction['predictions'][0]['mrcnn_detection/Reshape_1']]), 
-#         'mask': np.array([prediction['predictions'][0]['mrcnn_mask/Reshape_1']])
-#     }
-    
-#     result_dict = preprocess_obj.result_to_dict(np.expand_dims(vid[index], axis=0), molded_images, windows, result)[0]
-    
-#     if result_dict['mask'].size!=0:
-#         mask = np.where(result_dict['mask'][:,:,0],255.0,0.0).astype(np.uint8)
-#     else:
-#         mask = np.zeros(vid[0].shape[:-1])
-    
-#     #print('[GetSingleFramePrediction]: Started at [%s] | Ended at [%s] | Delta [%s] | index [%s], mask shape [%s]' %(start, end, end-start, index, mask.shape))
-    
-#     response.append(mask)
-    
-
-
-# @tools.monitor_me()
-# def GetPrediction(prepped_data):
-    
-#     molded_images = prepped_data['molded_images']
-#     predictor = Predictor('tf-multi-model-endpoint', model_name='Mask_RCNN_a4c_seg', content_type='application/dict',serializer=None)
-
-#     number_of_frames = len(molded_images)
-
-#     responses = []
-#     for index in range(number_of_frames):
-#         responses.append([])
-        
-#     threads = []
-#     for index in range(number_of_frames):
-#         #t = threading.Thread(target=GetSingleFramePrediction, args=(prepped_data, index, predictor,))
-#         t = threading.Thread(target=GetSingleFramePrediction, args=(prepped_data, index, predictor, responses[index],))
-#         threads.append(t)
-        
-#         t.start()
-        
-#     # wait for threads to complete:
-#     for t in threads:
-#         t.join()
-        
-#     responses = np.array(responses)  
-#     responses = np.squeeze(responses, axis=1)
-        
-#     return responses
-    
-
-
 @tools.monitor_me()
 def GetPrediction(prepped_data):
     
     ''' Accepts prepped data, returns prediction from segmentation model '''
     
     # unpack prepped data:
-    vid = prepped_data['raw_input']
-    preprocess_obj = prepped_data['preprocess_obj']
+    original_video = prepped_data['original_video']
+    preprocess_object = prepped_data['preprocess_object']
     windows = prepped_data['windows']
     molded_images = prepped_data['molded_images']
     image_metas = prepped_data['image_metas']
-    image_shape = prepped_data['image_shape']
     anchors = prepped_data['anchors']
     
-    # get endpoint of model:
-    predictor = Predictor('tf-multi-model-endpoint', model_name='Mask_RCNN_a4c_seg', content_type='application/dict',serializer=None)
-
+    # initialize variables:
+    BATCH_SIZE = 50
     masks = []
-    for idx in range(len(molded_images)):
-        payload = {
-            "instances": [
-                {
-                    "input_image": molded_images[idx,:,:,:].tolist(),
-                    "input_image_meta": image_metas[idx,:].tolist(),
-                    "input_anchors": anchors[idx,:,:].tolist()
-                }
-            ]
-        }
-        
-        input_to_model = pickle.dumps(payload)
-        
-        prediction = predictor.predict(input_to_model)
-        
-        result = {
-            'detection': np.array([prediction['predictions'][0]['mrcnn_detection/Reshape_1']]), 
-            'mask': np.array([prediction['predictions'][0]['mrcnn_mask/Reshape_1']])
-        }
-        
-        result_dict = preprocess_obj.result_to_dict(np.expand_dims(vid[idx], axis=0), molded_images, windows, result)[0]
-        
-        if result_dict['mask'].size!=0:
-            mask = np.where(result_dict['mask'][:,:,0],255.0,0.0).astype(np.uint8)
-            masks.append(mask)
-        else:
-            masks.append(np.zeros(vid[0].shape[:-1]))
     
+    # get endpoint of model:
+    predictor = Predictor('tf-multi-model-endpoint', model_name='Mask_RCNN_a4c_seg_batch50-compact', content_type='application/seg', serializer=None)
+    
+    # get number of frames, batches:
+    number_of_frames = len(molded_images)
+    number_of_missing_frames = 0
+    number_of_batches = int(np.ceil(number_of_frames/BATCH_SIZE))
+    
+    # iterate over each batch:    
+    for index in range(number_of_batches):
+        
+        # build payload batches:
+        image_batch = molded_images[index*BATCH_SIZE:(index+1)*BATCH_SIZE, :, :, :]
+        metas_batch = image_metas[index*BATCH_SIZE:(index+1)*BATCH_SIZE, :]
+        anchor_batch = anchors[index*BATCH_SIZE:(index+1)*BATCH_SIZE, :, :]
+        
+        # set number of missing frames to 0:
+        number_of_missing_frames = 0
+        
+        # pad batches smaller than batch size:
+        if len(image_batch) < BATCH_SIZE:
+            
+            # get number of missing frames:
+            number_of_missing_frames = BATCH_SIZE - len(image_batch)
+            
+            # build pads:
+            extra_images = np.zeros((number_of_missing_frames, image_batch.shape[1], image_batch.shape[2], image_batch.shape[3]))
+            extra_metas = np.zeros((number_of_missing_frames, metas_batch.shape[1]))
+            extra_anchors = np.zeros((number_of_missing_frames, anchor_batch.shape[1], anchor_batch.shape[2]))
+            
+            # concatenate batch and pads:
+            image_batch = np.concatenate((image_batch, extra_images))
+            metas_batch = np.concatenate((metas_batch, extra_metas))
+            anchor_batch = np.concatenate((anchor_batch, extra_anchors))
+    
+        # compile batch payload:
+        batch_payload = {
+            "molded_images": image_batch.astype(np.float16),
+            "image_metas": metas_batch.astype(np.float16),
+            "anchors": anchor_batch.astype(np.float16),
+        }
+        
+        # serialize input:
+        input_to_model = pickle.dumps(batch_payload)
+        
+        # get prediction:
+        response = predictor.predict(input_to_model)
+        
+        for index in range(BATCH_SIZE - number_of_missing_frames):
+            
+            result = {
+                'detection': np.array([response['predictions'][index]['mrcnn_detection/Reshape_50']]), 
+                'mask': np.array([response['predictions'][index]['mrcnn_mask/Reshape_1']]),
+            }
+            
+            result_dictionary = preprocess_object.result_to_dict(np.expand_dims(original_video[index], axis=0), molded_images, windows, result)[0]            
+            
+            if result_dictionary['mask'].size!=0:
+                mask = np.where(result_dictionary['mask'][:,:,0],255.0,0.0).astype(np.uint8)
+                masks.append(mask)
+            else:
+                masks.append(np.zeros(original_video[0].shape[:-1]))
+
     masks = np.array(masks, dtype=np.uint8)
- 
+    
     return masks
     
-    
+
 
 @tools.monitor_me()
 def ParsePrediction(dicom, prediction):

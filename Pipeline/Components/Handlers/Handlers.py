@@ -1,5 +1,6 @@
 from Pipeline.Configuration.Configuration import configuration
 from Pipeline.Tools import Tools as tools
+from datetime import datetime
 from decouple import config
 import importlib
 import shutil
@@ -42,7 +43,7 @@ def Initializer(file_paths):
         )
         
     
-    
+
 def Terminator(file_paths):
     
     ''' Reroutes stdout back to terminal, moves artifacts to s3 and deletes them on current instance '''
@@ -58,10 +59,14 @@ def Terminator(file_paths):
     for path, subdirs, files in os.walk(file_paths['BASE_DIR']):
         for name in files:
             
+            # skip uploading pkl files:
+            if name[-3:] == 'pkl':
+                continue
+            
             # get the file to be exported:
             local_file = os.path.join(path, name)
             s3_destination = local_file.replace('/tmp/','tmp/')
-            
+           
             # write to bucket:
             s3.Bucket(BUCKET_NAME).upload_file(local_file, s3_destination)
     

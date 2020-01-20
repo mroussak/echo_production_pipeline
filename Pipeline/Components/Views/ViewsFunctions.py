@@ -3,6 +3,7 @@ from sagemaker.tensorflow.serving import Predictor
 from Pipeline.Tools import Tools as tools
 from collections import Counter
 from scipy.ndimage import zoom
+from datetime import datetime
 from decouple import config
 import numpy as np
 import sagemaker
@@ -139,7 +140,7 @@ def PrepDataForModel_zoom(dicom):
 
 
 
-@tools.monitor_me()
+@tools.monitor_me(save_output=True)
 def GetPrediction(input_to_model):
 
     if configuration['view']['view_model_type'] == 'frame':

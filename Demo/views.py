@@ -127,7 +127,6 @@ def Demo(request):
     return response
     
     
-    
 
 def DemoSonoscanner(request):
     

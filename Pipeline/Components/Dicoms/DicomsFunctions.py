@@ -239,9 +239,18 @@ def GetNumberOfFramesDetails(dicom):
     ''' Accepts dicom object, returns number of frames in dicom '''
     
     # initialize variables:
-    number_of_frames_details = None
+    number_of_frames_details = {
+        'number_of_frames' : None,
+        'original_number_of_frames' : None,
+    }
     
-    number_of_frames_details = dicom.NumberOfFrames
+    # get number of frames details:
+    number_of_frames_details['number_of_frames'] = dicom.NumberOfFrames
+    number_of_frames_details['original_number_of_frames'] = dicom.NumberOfFrames
+    
+    # throttle videos above 150 frames:
+    if number_of_frames_details['number_of_frames'] > 150:
+        number_of_frames_details['number_of_frames'] = 150
         
     return number_of_frames_details
     
@@ -270,7 +279,12 @@ def GetPixelArrayDataDetails(dicom):
     # intialize variables:
     pixel_array_data_details = None
     
+    # get pixel array details:
     pixel_array_data_details = dicom.pixel_array
+    
+    # throttle videos above 150 frames:
+    if dicom.NumberOfFrames > 150:
+        pixel_array_data_details = pixel_array_data_details[0:150]
     
     return pixel_array_data_details
     
@@ -281,6 +295,7 @@ def CompileDicomDetails(dicom_id, manufacturer_details, image_size_details, dico
     
     ''' Accepts dicom details, returns compiled dicom object '''
     
+    # pack dicom for processing in the pipeline:
     dicom = {
         'dicom_id' : dicom_id,
         'manufacturer' : manufacturer_details['manufacturer'],
@@ -290,7 +305,8 @@ def CompileDicomDetails(dicom_id, manufacturer_details, image_size_details, dico
         'physical_delta_x' : image_size_details['physical_delta_x'],
         'physical_delta_y' : image_size_details['physical_delta_y'],
         'dicom_type' : dicom_type_details,
-        'number_of_frames' : number_of_frames_details,
+        'number_of_frames' : number_of_frames_details['number_of_frames'],
+        'original_number_of_frames' : number_of_frames_details['original_number_of_frames'],
         'seconds_per_frame' : frame_time_details,
         'pixel_data' : pixel_data_details,
     }
