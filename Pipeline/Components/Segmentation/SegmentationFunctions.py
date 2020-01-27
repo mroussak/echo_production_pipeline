@@ -106,7 +106,7 @@ def GetPrediction(prepped_data):
     masks = []
     
     # get endpoint of model:
-    predictor = Predictor('tf-multi-model-endpoint', model_name='Mask_RCNN_a4c_seg_batch50-compact', content_type='application/seg', serializer=None)
+    predictor = Predictor('tf-multi-model-endpoint', model_name='Mask_RCNN_a4c_seg_batch50-compact-cpu', content_type='application/seg', serializer=None)
     
     # get number of frames, batches:
     number_of_frames = len(molded_images)

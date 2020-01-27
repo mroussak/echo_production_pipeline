@@ -231,6 +231,7 @@ def GetPrediction_video(input_to_model):
         # models:
         if preprocessing == 'downsample':
             model_name = 'ResNet50V2_master_model_vid_dows'
+            #model_name = 'ResNet50V2_time_distributed_master_20200126-augoff_epoch20_downs_nonorm_vid'
         elif preprocessing == 'zoom_cv2' or preprocessing == 'zoom':
             model_name = 'ResNet50V2_master_model_vid_spline'
         
