@@ -18,7 +18,7 @@ chardet==3.0.4
 colorama==0.3.9
 cryptography==2.8
 dj-database-url==0.5.0
-Django==3.0
+Django==3.0.14
 django-celery-results==1.1.2
 django-s3-storage==0.13.0
 docker==3.7.3
