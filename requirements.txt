@@ -38,7 +38,7 @@ jmespath==0.9.4
 jsonschema==2.6.0
 kombu==4.6.7
 more-itertools==8.0.2
-numpy==1.17.4
+numpy==1.22.0
 opencv-python==4.1.2.30
 pandas==0.25.3
 paramiko==2.7.1
